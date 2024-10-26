@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8626EBDD-74F4-4749-9267-20039FF8370A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atoms.Web", "src\Atoms.Web\Atoms.Web.csproj", "{24E83915-4653-49B8-966D-F195097E71DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6133D5C7-ECC7-4C1C-9D59-A92E16F15002}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{24E83915-4653-49B8-966D-F195097E71DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24E83915-4653-49B8-966D-F195097E71DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24E83915-4653-49B8-966D-F195097E71DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24E83915-4653-49B8-966D-F195097E71DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{24E83915-4653-49B8-966D-F195097E71DC} = {8626EBDD-74F4-4749-9267-20039FF8370A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A9312641-14FC-404E-AEC5-338498E0A077}
+	EndGlobalSection
+EndGlobal
