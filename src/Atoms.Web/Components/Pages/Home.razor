@@ -1,7 +1,79 @@
-﻿@page "/"
+﻿@inherits HomePageComponent
+@page "/"
 
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+@if (State == GameState.Menu)
+{
+    <div id="intro">
+        <EditForm Model="Menu" OnSubmit="Submit">
+            <p>
+                Number of players:
+                <InputRadioGroup @bind-Value="Menu!.NumberOfPlayers">
+                    @for (var players = GameMenu.MinPlayers; players <= GameMenu.MaxPlayers; players++)
+                    {
+                        <InputRadio id="@($"players_{players}")" Value="@players" />
+                        <label for="@($"players_{players}")">@players</label>
+                    }
+                </InputRadioGroup>
+            </p>
+            <table>
+                <tbody>
+                    @for (var i = 0; i < Menu.NumberOfPlayers; i++)
+                    {
+                        var playerId = i;
+                        var playerIdClass = $"player{playerId}";
+                        var player = Menu!.Players[i];
+                        <tr id="@($"playerOptions{i}")">
+                            <th class="@playerIdClass">Player @(playerId + 1)</th>
+                            <td>
+                                <InputRadioGroup Name="@playerIdClass"
+                                                 @bind-Value="@player.Type">
+                                    @foreach (var type in Menu.PlayerTypes)
+                                    {
+                                        var radioId = $"player_{playerId}_{type.Key}";
+                                        <td>
+                                            <InputRadio id="@radioId"
+                                                        Value="@type.Key" />
+                                            <label for="@radioId">@type.Value</label>
+                                        </td>
+                                    }
+                                </InputRadioGroup>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <table>
+                <caption>Options</caption>
+                <tbody>
+                    <tr>
+                        <th>Colour scheme</th>
+                        <td>
+                            <InputRadioGroup @bind-Value="Menu!.ColourScheme">
+                                @foreach (var colourScheme in Menu!.ColourSchemes)
+                                {
+                                    <InputRadio id="@($"colours_{colourScheme.Key}")" Value="@colourScheme.Key" />
+                                    <label for="@($"colours_{colourScheme.Key}")">@colourScheme.Value</label>
+                                }
+                            </InputRadioGroup>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Atom shapes</th>
+                        <td>
+                            <InputRadioGroup @bind-Value="Menu!.AtomShape">
+                                @foreach (var atomShape in Menu!.AtomShapes)
+                                {
+                                    <InputRadio id="@($"shapes_{atomShape.Key}")" Value="@atomShape.Key" />
+                                    <label for="@($"shapes_{atomShape.Key}")">@atomShape.Value</label>
+                                }
+                            </InputRadioGroup>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                <button type="submit">Start game</button>
+            </p>
+        </EditForm>
+    </div>
+}
