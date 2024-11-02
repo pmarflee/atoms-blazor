@@ -5,7 +5,13 @@ namespace Atoms.Core.Enums;
 public enum GameState
 {
     Menu = 1,
-    Game
+    Game,
+}
+
+public enum MenuState
+{
+    Menu = 1,
+    About
 }
 
 public enum PlayerType

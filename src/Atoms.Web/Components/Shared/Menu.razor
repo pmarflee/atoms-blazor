@@ -1,6 +1,6 @@
 ﻿@inherits MenuComponent
 
-@if (GameMenu != null)
+@if (State == MenuState.Menu)
 {
     <div id="intro">
         <EditForm Model="GameMenu" OnSubmit="SubmitAsync">
@@ -73,6 +73,13 @@
             <p>
                 <button type="submit">Start game</button>
             </p>
+            <p>
+                <a href="" @onclick="@ShowAbout" @onclick:preventDefault>About the game</a>
+            </p>
         </EditForm>
     </div>
+}
+else if (State == MenuState.About)
+{
+    <About OnHide="@HideAbout" />
 }

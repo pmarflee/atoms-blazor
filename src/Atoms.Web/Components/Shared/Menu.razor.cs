@@ -1,4 +1,6 @@
-﻿namespace Atoms.Web.Components.Shared;
+﻿using Atoms.Core.Enums;
+
+namespace Atoms.Web.Components.Shared;
 
 public partial class MenuComponent : ComponentBase
 {
@@ -8,11 +10,13 @@ public partial class MenuComponent : ComponentBase
     [Inject]
     public IGameFactory GameFactory { get; set; } = default!;
 
+    protected MenuState State { get; set; }
     protected GameMenu GameMenu { get; set; } = default!;
 
     protected override void OnInitialized()
     {
         GameMenu = new(GameMenu.MinPlayers, GameMenu.MaxPlayers);
+        State = MenuState.Menu;
     }
 
     protected async Task SubmitAsync()
@@ -20,5 +24,15 @@ public partial class MenuComponent : ComponentBase
         var game = GameFactory.Create(GameMenu);
 
         await OnCreateGame.InvokeAsync(game);
+    }
+
+    protected void ShowAbout()
+    {
+        State = MenuState.About;
+    }
+
+    protected void HideAbout()
+    {
+        State = MenuState.Menu;
     }
 }
