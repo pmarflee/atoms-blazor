@@ -9,12 +9,23 @@
     <link rel="stylesheet" href="Atoms.Web.styles.css" />
     <link rel="shortcut icon" href="./images/favicon.png">
     <title>Atoms</title>
-    <HeadOutlet @rendermode="InteractiveServer" />
+    <HeadOutlet @rendermode="RenderMode" />
 </head>
 
 <body>
-    <Routes @rendermode="InteractiveServer" />
+    <Routes @rendermode="RenderMode" />
     <script src="_framework/blazor.web.js"></script>
 </body>
 
 </html>
+
+@code {
+    InteractiveServerRenderMode RenderMode { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        RenderMode = new InteractiveServerRenderMode(prerender: false);
+
+        base.OnInitialized();
+    }
+}
