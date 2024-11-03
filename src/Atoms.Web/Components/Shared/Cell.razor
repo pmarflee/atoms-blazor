@@ -1,0 +1,8 @@
+﻿@inherits CellComponent
+
+<button id="@Id" 
+        class="cell filled"
+        style="@Style"
+        data-atoms="@Data.Atoms"
+        data-max-atoms="@Data.MaxAtoms"
+        data-player-id="@(Data.Player?.Number ?? -1)"></button>

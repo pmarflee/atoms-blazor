@@ -5,3 +5,7 @@
 {
     <Menu OnCreateGame="@OnCreateGameAsync" />
 }
+else if (State == GameState.Game)
+{
+    <Board Game="@Game" />
+}

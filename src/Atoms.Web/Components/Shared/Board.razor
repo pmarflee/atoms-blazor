@@ -1,0 +1,11 @@
+﻿@inherits BoardComponent
+
+<div id="status">
+
+</div>
+<div id="board">
+    @foreach (var cell in Game.Board.Cells)
+    {
+        <Cell Data="@cell" />
+    }
+</div>
