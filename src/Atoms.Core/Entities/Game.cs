@@ -19,12 +19,14 @@ public class Game
         ColourScheme = colourScheme;
         AtomShape = atomShape;
         Board = new GameBoard(rows, columns);
+        Players[0].IsActive = true;
     }
 
     public class Player
     {
         public int Number { get; }
         public PlayerType Type { get; }
+        public bool IsActive { get; set; }
 
         internal Player(int number, PlayerType type)
         {
