@@ -1,4 +1,5 @@
-﻿namespace Atoms.Core.Entities;
+﻿
+namespace Atoms.Core.Entities;
 
 public class Game
 {
@@ -8,6 +9,7 @@ public class Game
     public int Rows => Board.Rows;
     public int Columns => Board.Columns;
     public GameBoard Board { get; }
+    public Player ActivePlayer => Players.First(p => p.IsActive);
 
     internal Game(int rows,
                   int columns,
@@ -22,11 +24,44 @@ public class Game
         Players[0].IsActive = true;
     }
 
+    public bool CanPlaceAtom(GameBoard.Cell cell)
+    {
+        return cell.Player is null || cell.Player == ActivePlayer;
+    }
+
+    public void PlaceAtom(GameBoard.Cell cell)
+    {
+        cell.AddAtom(ActivePlayer);
+
+        if (cell.Atoms > cell.MaxAtoms)
+        {
+            ChainReaction([cell]);
+        }
+
+        SetActivePlayer();
+    }
+
+    void SetActivePlayer()
+    {
+        var currentPlayer = ActivePlayer;
+        currentPlayer.IsActive = false;
+
+        var nextPlayer = Players[currentPlayer.Number % Players.Count];
+        nextPlayer.IsActive = true;
+    }
+
+    void ChainReaction(List<GameBoard.Cell> overloaded)
+    {
+
+    }
+
     public class Player
     {
         public int Number { get; }
         public PlayerType Type { get; }
         public bool IsActive { get; set; }
+        public string ClassName => $"player{Number - 1}";
+        public string ActiveClassName => $"{(IsActive ? "active" : "")}";
 
         internal Player(int number, PlayerType type)
         {
@@ -48,11 +83,11 @@ public class Game
         }
 
         public IEnumerable<Cell> Cells =>
-            from row in Enumerable.Range(0, Rows)
-            from column in Enumerable.Range(0, Columns)
+            from row in Enumerable.Range(1, Rows)
+            from column in Enumerable.Range(1, Columns)
             select this[row, column];
 
-        public Cell this[int row, int column] => _cells[row, column];
+        public Cell this[int row, int column] => _cells[row - 1, column - 1];
 
         private static Cell[,] CreateCells(int rows, int columns)
         {
@@ -92,6 +127,12 @@ public class Game
             public int MaxAtoms { get; } = maxAtoms;
             public Player? Player { get; private set; }
             public int Atoms { get; private set; }
+
+            internal void AddAtom(Player player)
+            {
+                Atoms++;
+                Player = player;
+            }
         }
     }
 }

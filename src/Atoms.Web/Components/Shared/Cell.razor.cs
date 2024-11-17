@@ -1,4 +1,5 @@
-﻿using static Atoms.Core.Entities.Game;
+﻿using Atoms.Web.CustomEvents;
+using System.Text;
 
 namespace Atoms.Web.Components.Shared;
 
@@ -8,7 +9,10 @@ public partial class CellComponent : ComponentBase
     protected string Style = default!;
 
     [Parameter]
-    public GameBoard.Cell Data { get; set; } = default!;
+    public Game.GameBoard.Cell Data { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<CellClickEventArgs> OnCellClicked { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -16,5 +20,21 @@ public partial class CellComponent : ComponentBase
         Style = $"grid-area: {Data.Row} / {Data.Column}";
         
         base.OnParametersSet();
+    }
+
+    protected async Task CellClick()
+    {
+        await OnCellClicked.InvokeAsync(new CellClickEventArgs(Data));
+    }
+
+    protected string AtomClasses(int atom)
+    {
+        return string.Join(" ", 
+            [
+                "atom",
+                $"atom{atom}",
+                Data.Player!.ClassName,
+                $"pos{Data.Atoms - atom + 1}"
+            ]);
     }
 }

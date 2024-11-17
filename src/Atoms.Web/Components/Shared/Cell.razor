@@ -5,4 +5,10 @@
         style="@Style"
         data-atoms="@Data.Atoms"
         data-max-atoms="@Data.MaxAtoms"
-        data-player-id="@(Data.Player?.Number ?? -1)"></button>
+        data-player-id="@(Data.Player?.Number ?? -1)"
+        @onclick="@CellClick">
+    @foreach (var atom in Enumerable.Range(1, Data.Atoms))
+    {
+        <div class="@AtomClasses(atom)"></div>
+    }
+</button>

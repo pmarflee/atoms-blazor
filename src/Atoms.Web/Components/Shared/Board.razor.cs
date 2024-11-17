@@ -1,4 +1,7 @@
-﻿namespace Atoms.Web.Components.Shared;
+﻿using Atoms.Web.CustomEvents;
+using static Atoms.Core.Entities.Game;
+
+namespace Atoms.Web.Components.Shared;
 
 public class BoardComponent : ComponentBase
 {
@@ -7,5 +10,13 @@ public class BoardComponent : ComponentBase
 
     protected override void OnParametersSet()
     {
+    }
+
+    protected void CellClicked(CellClickEventArgs eventArgs)
+    {
+        if (Game.CanPlaceAtom(eventArgs.Cell))
+        {
+            Game.PlaceAtom(eventArgs.Cell);
+        }
     }
 }
