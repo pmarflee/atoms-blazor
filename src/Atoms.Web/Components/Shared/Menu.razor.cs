@@ -1,16 +1,12 @@
 ﻿using Atoms.Core.Enums;
 using Atoms.UseCases.CreateNewGame;
-using MediatR;
 
 namespace Atoms.Web.Components.Shared;
 
-public partial class MenuComponent : ComponentBase
+public partial class MenuComponent : Component2Base
 {
     [Parameter]
     public EventCallback<Game> OnCreateGame { get; set; }
-
-    [Inject]
-    public IMediator Mediator { get; set; } = default!;
 
     protected MenuState State { get; set; }
     protected GameMenuOptions Options { get; set; } = default!;

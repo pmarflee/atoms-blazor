@@ -1,9 +1,8 @@
 ﻿using Atoms.Web.CustomEvents;
-using System.Text;
 
 namespace Atoms.Web.Components.Shared;
 
-public partial class CellComponent : ComponentBase
+public partial class CellComponent : Component2Base
 {
     protected string Id = default!;
     protected string Style = default!;
