@@ -2,7 +2,7 @@
 
 using static Atoms.Core.Enums.EnumExtensions;
 
-public class GameMenu
+public class GameMenuOptions
 {
     public const int MinPlayers = 2;
     public const int MaxPlayers = 4;
@@ -21,7 +21,7 @@ public class GameMenu
     public ColourScheme ColourScheme { get; set; } = ColourScheme.Original;
     public AtomShape AtomShape { get; set; } = AtomShape.Round;
 
-    public GameMenu(int numberOfPlayers, int maxPlayers)
+    public GameMenuOptions(int numberOfPlayers, int maxPlayers)
     {
         NumberOfPlayers = numberOfPlayers;
         Players = new List<Player>(maxPlayers);

@@ -1,10 +1,15 @@
+using Atoms.UseCases.CreateNewGame;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<IGameFactory, GameFactory>();
+builder.Services.AddTransient<IGameFactory, GameFactory>();
+
+builder.Services.AddMediatR(cfg => 
+    cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>());
 
 var app = builder.Build();
 

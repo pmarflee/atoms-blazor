@@ -1,4 +1,6 @@
 ﻿using Atoms.Core.Enums;
+using Atoms.UseCases.CreateNewGame;
+using MediatR;
 
 namespace Atoms.Web.Components.Shared;
 
@@ -8,22 +10,22 @@ public partial class MenuComponent : ComponentBase
     public EventCallback<Game> OnCreateGame { get; set; }
 
     [Inject]
-    public IGameFactory GameFactory { get; set; } = default!;
+    public IMediator Mediator { get; set; } = default!;
 
     protected MenuState State { get; set; }
-    protected GameMenu GameMenu { get; set; } = default!;
+    protected GameMenuOptions Options { get; set; } = default!;
 
     protected override void OnInitialized()
     {
-        GameMenu = new(GameMenu.MinPlayers, GameMenu.MaxPlayers);
+        Options = new(GameMenuOptions.MinPlayers, GameMenuOptions.MaxPlayers);
         State = MenuState.Menu;
     }
 
     protected async Task SubmitAsync()
     {
-        var game = GameFactory.Create(GameMenu);
+        var response = await Mediator.Send(new CreateNewGameRequest(Options));
 
-        await OnCreateGame.InvokeAsync(game);
+        await OnCreateGame.InvokeAsync(response.Game);
     }
 
     protected void ShowAbout()

@@ -9,7 +9,7 @@ public class GameFactory : IGameFactory
     const int Rows = 6;
     const int Columns = 10;
 
-    public Game Create(GameMenu menuDto)
+    public Game Create(GameMenuOptions menuDto)
     {
         var players = menuDto.Players
             .Take(menuDto.NumberOfPlayers)

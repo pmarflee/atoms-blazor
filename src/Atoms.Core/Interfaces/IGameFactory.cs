@@ -5,5 +5,5 @@ namespace Atoms.Core.Interfaces;
 
 public interface IGameFactory
 {
-    Game Create(GameMenu menuDto);
+    Game Create(GameMenuOptions menuDto);
 }
