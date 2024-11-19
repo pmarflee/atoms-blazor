@@ -1,6 +1,6 @@
 ﻿global using MediatR;
 global using TUnit.Core;
 global using Rocks;
-
-[assembly: Rock(typeof(IMediator), BuildType.Create)]
+global using Atoms.Core.Entities;
+global using Atoms.Core.Enums;
 

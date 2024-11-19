@@ -2,7 +2,7 @@
 
 namespace Atoms.UnitTests.UseCases.PlaceAtom;
 
-public class ReturnFailureResponseWhenAtomCannotBePlaced
+public class ReturnSuccessResponseWhenAtomCanBePlaced
 {
     IMediator _mediator = default!;
     PlaceAtomRequestHandler _handler = default!;
@@ -30,25 +30,16 @@ public class ReturnFailureResponseWhenAtomCannotBePlaced
                 new Game.State.Player 
                 { 
                     Number = 1, 
-                    Type = PlayerType.Human
+                    Type = PlayerType.Human,
+                    IsActive = true
                 },
                 new Game.State.Player
                 {
                     Number = 2,
-                    Type = PlayerType.Human,
-                    IsActive = true
+                    Type = PlayerType.Human
                 }
             ],
-            Cells =
-            [
-                new Game.State.Cell
-                {
-                    Row = 1,
-                    Column = 1,
-                    Player = 1,
-                    Atoms = 1
-                }
-            ]
+            Cells = [] 
         };
 
         var game = new Game(state);
@@ -57,6 +48,6 @@ public class ReturnFailureResponseWhenAtomCannotBePlaced
             new PlaceAtomRequest(game, game.Board[1, 1]), 
             CancellationToken.None);
 
-        await Assert.That(response.IsSuccessful).IsFalse();
+        await Assert.That(response.IsSuccessful).IsTrue();
     }
 }
