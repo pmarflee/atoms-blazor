@@ -23,7 +23,7 @@ public class Game
         Players = new List<Player>(players);
         ColourScheme = colourScheme;
         AtomShape = atomShape;
-        Board = new GameBoard(rows, columns, cellState, players);
+        Board = new GameBoard(rows, columns, cellState, Players);
     }
 
     internal Game(State state)
@@ -179,7 +179,7 @@ public class Game
         }
     }
 
-    public class State
+    public record State
     {
         public required int Rows { get; init; }
         public required int Columns { get; init; }
@@ -188,14 +188,14 @@ public class Game
         public ColourScheme ColourScheme { get; init; } = ColourScheme.Original;
         public AtomShape AtomShape { get; init; } = AtomShape.Round;
 
-        public class Player
+        public record Player
         {
             public required int Number { get; init; }
             public required PlayerType Type { get; init; }
             public bool IsActive { get; init; }
         }
 
-        public class Cell
+        public record Cell
         {
             public required int Row { get; init; }
             public required int Column { get; init; }
