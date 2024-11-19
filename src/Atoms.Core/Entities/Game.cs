@@ -1,4 +1,6 @@
 ﻿
+
+
 namespace Atoms.Core.Entities;
 
 public class Game
@@ -13,16 +15,24 @@ public class Game
 
     internal Game(int rows,
                   int columns,
-                  IReadOnlyList<Player> players,
+                  IEnumerable<Player> players,
                   ColourScheme colourScheme,
-                  AtomShape atomShape)
+                  AtomShape atomShape,
+                  IEnumerable<State.Cell>? cellState = null)
     {
-        Players = players;
+        Players = new List<Player>(players);
         ColourScheme = colourScheme;
         AtomShape = atomShape;
-        Board = new GameBoard(rows, columns);
-        Players[0].IsActive = true;
+        Board = new GameBoard(rows, columns, cellState, players);
     }
+
+    internal Game(State state)
+        : this(state.Rows, state.Columns, 
+               state.Players.Select(p => new Player(p.Number, p.Type, p.IsActive)),
+               state.ColourScheme,
+               state.AtomShape,
+               state.Cells)
+    { }
 
     public bool CanPlaceAtom(GameBoard.Cell cell)
     {
@@ -63,10 +73,11 @@ public class Game
         public string ClassName => $"player{Number - 1}";
         public string ActiveClassName => $"{(IsActive ? "active" : "")}";
 
-        internal Player(int number, PlayerType type)
+        internal Player(int number, PlayerType type, bool isActive = false)
         {
             Number = number;
             Type = type;
+            IsActive = isActive;
         }
     }
 
@@ -77,9 +88,28 @@ public class Game
         public int Rows => _cells.GetLength(0);
         public int Columns => _cells.GetLength(1);
 
-        internal GameBoard(int rows, int columns)
+        internal GameBoard(int rows,
+                           int columns,
+                           IEnumerable<State.Cell>? cellState,
+                           IEnumerable<Player> players)
         {
             _cells = CreateCells(rows, columns);
+
+            if (cellState != null)
+            {
+                AddCellState(cellState, players);
+            }
+        }
+
+        private void AddCellState(IEnumerable<State.Cell> cellState, IEnumerable<Player> players)
+        {
+            foreach (var item in cellState)
+            {
+                var cell = this[item.Row, item.Column];
+                var player = players.First(p => p.Number == item.Player);
+
+                cell.LoadState(player, item.Atoms);
+            }
         }
 
         public IEnumerable<Cell> Cells =>
@@ -130,9 +160,47 @@ public class Game
 
             internal void AddAtom(Player player)
             {
+                if (Player != null && Player != player)
+                {
+                    Atoms = 0;
+                }
+
                 Atoms++;
                 Player = player;
             }
+
+            internal void LoadState(Player player, int atoms)
+            {
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(atoms, MaxAtoms);
+
+                Player = player;
+                Atoms = atoms;
+            }
+        }
+    }
+
+    public class State
+    {
+        public required int Rows { get; init; }
+        public required int Columns { get; init; }
+        public required List<Cell> Cells { get; init; }
+        public required List<Player> Players { get; init; }
+        public ColourScheme ColourScheme { get; init; } = ColourScheme.Original;
+        public AtomShape AtomShape { get; init; } = AtomShape.Round;
+
+        public class Player
+        {
+            public required int Number { get; init; }
+            public required PlayerType Type { get; init; }
+            public bool IsActive { get; init; }
+        }
+
+        public class Cell
+        {
+            public required int Row { get; init; }
+            public required int Column { get; init; }
+            public required int Player { get; init; }
+            public required int Atoms { get; init; }
         }
     }
 }

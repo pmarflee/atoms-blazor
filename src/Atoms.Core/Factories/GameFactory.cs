@@ -13,7 +13,7 @@ public class GameFactory : IGameFactory
     {
         var players = menuDto.Players
             .Take(menuDto.NumberOfPlayers)
-            .Select(p => new Game.Player(p.Number, p.Type))
+            .Select((p, i) => new Game.Player(p.Number, p.Type, i == 0))
             .ToList();
 
         return new Game(Rows,
@@ -21,5 +21,10 @@ public class GameFactory : IGameFactory
                         players,
                         menuDto.ColourScheme,
                         menuDto.AtomShape);
+    }
+
+    public Game Create(Game.State state)
+    {
+        throw new NotImplementedException();
     }
 }
