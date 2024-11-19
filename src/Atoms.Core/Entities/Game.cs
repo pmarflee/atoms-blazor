@@ -13,6 +13,8 @@ public class Game
     public GameBoard Board { get; }
     public Player ActivePlayer => Players.First(p => p.IsActive);
 
+    Stack<GameBoard.Cell> Overloaded { get; } = new();
+
     internal Game(int rows,
                   int columns,
                   IEnumerable<Player> players,
@@ -34,6 +36,30 @@ public class Game
                state.Cells)
     { }
 
+    public static Game Load(State state) => new(state);
+
+    public State Save() =>
+        new(Rows,
+            Columns,
+            Players
+                .Select(player => new State.Player(
+                    player.Number,
+                    player.Type,
+                    player.IsActive)
+                )
+                .ToList(),
+            Board.Cells
+                .Where(cell => cell.Player is not null)
+                .Select(cell => new State.Cell(
+                    cell.Row,
+                    cell.Column,
+                    cell.Player!.Number,
+                    cell.Atoms)
+                )
+                .ToList(),
+            ColourScheme,
+            AtomShape);
+
     public bool CanPlaceAtom(GameBoard.Cell cell)
     {
         return cell.Player is null || cell.Player == ActivePlayer;
@@ -43,9 +69,10 @@ public class Game
     {
         cell.AddAtom(ActivePlayer);
 
-        if (cell.Atoms > cell.MaxAtoms)
+        if (cell.IsOverloaded)
         {
-            ChainReaction([cell]);
+            Overloaded.Push(cell);
+            DoChainReaction();
         }
 
         SetActivePlayer();
@@ -60,9 +87,24 @@ public class Game
         nextPlayer.IsActive = true;
     }
 
-    void ChainReaction(List<GameBoard.Cell> overloaded)
+    void DoChainReaction()
     {
+        do
+        {
+            var cell = Overloaded.Pop();
 
+            cell.Explode();
+
+            foreach (var neighbour in Board.GetNeighbours(cell))
+            {
+                neighbour.AddAtom(ActivePlayer);
+
+                if (neighbour.IsOverloaded)
+                {
+                    Overloaded.Push(neighbour);
+                }
+            }
+        } while (Overloaded.Count > 0);
     }
 
     public class Player
@@ -83,6 +125,14 @@ public class Game
 
     public class GameBoard
     {
+        static readonly (int, int)[] _offsets =
+            [
+                (0, -1),
+                (0, 1),
+                (-1, 0),
+                (1, 0),
+            ];
+
         readonly Cell[,] _cells;
 
         public int Rows => _cells.GetLength(0);
@@ -101,7 +151,22 @@ public class Game
             }
         }
 
-        private void AddCellState(IEnumerable<State.Cell> cellState, IEnumerable<Player> players)
+        public IEnumerable<Cell> Cells =>
+            from row in Enumerable.Range(1, Rows)
+            from column in Enumerable.Range(1, Columns)
+            select this[row, column];
+
+        public Cell this[int row, int column] => _cells[row - 1, column - 1];
+
+        public IEnumerable<Cell> GetNeighbours(Cell cell) =>
+            (from offset in _offsets
+            let row = cell.Row + offset.Item1
+            let column = cell.Column + offset.Item2
+            let found = TryGetCell(row, column)
+            where found != null
+            select found).ToList();
+
+        void AddCellState(IEnumerable<State.Cell> cellState, IEnumerable<Player> players)
         {
             foreach (var item in cellState)
             {
@@ -112,14 +177,14 @@ public class Game
             }
         }
 
-        public IEnumerable<Cell> Cells =>
-            from row in Enumerable.Range(1, Rows)
-            from column in Enumerable.Range(1, Columns)
-            select this[row, column];
+        Cell? TryGetCell(int row, int column) =>
+            CellExistsAt(row, column)
+                ? this[row, column] : null;
 
-        public Cell this[int row, int column] => _cells[row - 1, column - 1];
+        bool CellExistsAt(int row, int column) =>
+            row > 0 && row <= Rows && column > 0 && column <= Columns;
 
-        private static Cell[,] CreateCells(int rows, int columns)
+        static Cell[,] CreateCells(int rows, int columns)
         {
             int CalculateMaxAtoms(int row, int column) =>
                 (row, column) switch
@@ -157,16 +222,19 @@ public class Game
             public int MaxAtoms { get; } = maxAtoms;
             public Player? Player { get; private set; }
             public int Atoms { get; private set; }
+            public bool IsOverloaded => Atoms > MaxAtoms;
 
             internal void AddAtom(Player player)
             {
-                if (Player != null && Player != player)
-                {
-                    Atoms = 0;
-                }
-
                 Atoms++;
                 Player = player;
+            }
+
+            internal void Explode()
+            {
+                Atoms -= MaxAtoms + 1;
+
+                if (Atoms == 0) Player = null;
             }
 
             internal void LoadState(Player player, int atoms)
@@ -179,28 +247,20 @@ public class Game
         }
     }
 
-    public record State
+    public record State(int Rows,
+                        int Columns,
+                        List<State.Player> Players,
+                        List<State.Cell> Cells,
+                        ColourScheme ColourScheme = ColourScheme.Original,
+                        AtomShape AtomShape = AtomShape.Round)
     {
-        public required int Rows { get; init; }
-        public required int Columns { get; init; }
-        public required List<Cell> Cells { get; init; }
-        public required List<Player> Players { get; init; }
-        public ColourScheme ColourScheme { get; init; } = ColourScheme.Original;
-        public AtomShape AtomShape { get; init; } = AtomShape.Round;
+        public record Player(int Number,
+                             PlayerType Type,
+                             bool IsActive = false);
 
-        public record Player
-        {
-            public required int Number { get; init; }
-            public required PlayerType Type { get; init; }
-            public bool IsActive { get; init; }
-        }
-
-        public record Cell
-        {
-            public required int Row { get; init; }
-            public required int Column { get; init; }
-            public required int Player { get; init; }
-            public required int Atoms { get; init; }
-        }
+        public record Cell(int Row,
+                           int Column,
+                           int Player,
+                           int Atoms);
     }
 }

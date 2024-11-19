@@ -21,34 +21,14 @@ public class ReturnFailureResponseWhenAtomCannotBePlaced
     [Test]
     public async Task Test()
     {
-        var state = new Game.State
+        var state = ObjectMother.NewGameState with
         {
-            Rows = 10,
-            Columns = 6,
             Players = 
             [ 
-                new Game.State.Player 
-                { 
-                    Number = 1, 
-                    Type = PlayerType.Human
-                },
-                new Game.State.Player
-                {
-                    Number = 2,
-                    Type = PlayerType.Human,
-                    IsActive = true
-                }
+                new(1, PlayerType.Human),
+                new(2, PlayerType.Human, true)
             ],
-            Cells =
-            [
-                new Game.State.Cell
-                {
-                    Row = 1,
-                    Column = 1,
-                    Player = 1,
-                    Atoms = 1
-                }
-            ]
+            Cells = [ new(1, 1, 1, 1) ]
         };
 
         var game = new Game(state);

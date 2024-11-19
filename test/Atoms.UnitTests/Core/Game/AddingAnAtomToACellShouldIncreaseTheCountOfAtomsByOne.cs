@@ -22,26 +22,14 @@ public class AddingAnAtomToACellShouldIncreaseTheCountOfAtomsByOne
         yield return (
             ObjectMother.NewGameState with 
             {
-                Cells = 
-                [
-                    new State.Cell 
-                    {
-                        Row = 2, Column = 1, Atoms = 1, Player = 1 
-                    }
-                ]
+                Cells = [ new(2, 1, 1, 1) ]
             },
             2, 1
         );
         yield return (
             ObjectMother.NewGameState with 
             {
-                Cells = 
-                [
-                    new State.Cell 
-                    {
-                        Row = 2, Column = 2, Atoms = 2, Player = 1 
-                    }
-                ]
+                Cells = [ new(2, 2, 1, 1) ]
             },
             2, 2
         );

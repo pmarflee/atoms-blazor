@@ -4,27 +4,10 @@ namespace Atoms.UnitTests;
 
 internal static class ObjectMother
 {
-    public static State NewGameState
-    {
-        get
-        {
-            return new State
-            {
-                Rows = 6,
-                Columns = 10,
-                Players =
-                [
-                    new State.Player 
-                    {
-                        Number = 1, Type = PlayerType.Human, IsActive = true 
-                    },
-                    new State.Player 
-                    { 
-                        Number = 2, Type = PlayerType.Human, IsActive = false 
-                    }
-                ],
-                Cells = []
-            };
-        }
-    }
+    public static State NewGameState { get; } =
+        new(6,
+            10,
+            [ new(1, PlayerType.Human, true),
+              new(2, PlayerType.Human, false) ],
+            []);
 }
