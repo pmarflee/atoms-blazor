@@ -64,7 +64,7 @@ public class OverloadingACellShouldCauseItToExplode
                 Cells = 
                 [
                     new(1, 2, 1, 1), new(2, 1, 1, 1),
-                    new(3, 2, 1, 1), new(2, 3, 1, 1) 
+                    new(2, 3, 1, 1), new(3, 2, 1, 1) 
                 ],
                 Players =
                 [
