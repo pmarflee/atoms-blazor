@@ -11,13 +11,14 @@ public class Game
     public int Rows => Board.Rows;
     public int Columns => Board.Columns;
     public GameBoard Board { get; }
-    public Player ActivePlayer => Players.First(p => p.IsActive);
+    public Player ActivePlayer { get; private set; }
 
     Stack<GameBoard.Cell> Overloaded { get; } = new();
 
     internal Game(int rows,
                   int columns,
                   IEnumerable<Player> players,
+                  Player activePlayer,
                   ColourScheme colourScheme,
                   AtomShape atomShape,
                   IEnumerable<State.Cell>? cellState = null)
@@ -26,17 +27,32 @@ public class Game
         ColourScheme = colourScheme;
         AtomShape = atomShape;
         Board = new GameBoard(rows, columns, cellState, Players);
+
+        if (!Players.Contains(activePlayer))
+        {
+            throw new ArgumentException(
+                "Player not found", nameof(activePlayer));
+        }
+
+        ActivePlayer = activePlayer;
     }
 
-    internal Game(State state)
-        : this(state.Rows, state.Columns, 
-               state.Players.Select(p => new Player(p.Number, p.Type, p.IsActive)),
-               state.ColourScheme,
-               state.AtomShape,
-               state.Cells)
-    { }
+    public static Game Load(State state)
+    {
+        var players = state.Players
+            .Select(p => new Player(p.Number, p.Type))
+            .ToList();
 
-    public static Game Load(State state) => new(state);
+        var activePlayer = players.First(p => p.Number == state.ActivePlayer);
+
+        return new(state.Rows,
+                   state.Columns,
+                   players,
+                   activePlayer,
+                   state.ColourScheme,
+                   state.AtomShape,
+                   state.Cells);
+    }
 
     public State Save() =>
         new(Rows,
@@ -44,8 +60,7 @@ public class Game
             Players
                 .Select(player => new State.Player(
                     player.Number,
-                    player.Type,
-                    player.IsActive)
+                    player.Type)
                 )
                 .ToList(),
             Board.Cells
@@ -57,6 +72,7 @@ public class Game
                     cell.Atoms)
                 )
                 .ToList(),
+            ActivePlayer.Number,
             ColourScheme,
             AtomShape);
 
@@ -80,11 +96,7 @@ public class Game
 
     void SetActivePlayer()
     {
-        var currentPlayer = ActivePlayer;
-        currentPlayer.IsActive = false;
-
-        var nextPlayer = Players[currentPlayer.Number % Players.Count];
-        nextPlayer.IsActive = true;
+        ActivePlayer = Players[ActivePlayer.Number % Players.Count];
     }
 
     void DoChainReaction()
@@ -111,15 +123,11 @@ public class Game
     {
         public int Number { get; }
         public PlayerType Type { get; }
-        public bool IsActive { get; set; }
-        public string ClassName => $"player{Number - 1}";
-        public string ActiveClassName => $"{(IsActive ? "active" : "")}";
 
-        internal Player(int number, PlayerType type, bool isActive = false)
+        internal Player(int number, PlayerType type)
         {
             Number = number;
             Type = type;
-            IsActive = isActive;
         }
     }
 
@@ -251,16 +259,12 @@ public class Game
                         int Columns,
                         List<State.Player> Players,
                         List<State.Cell> Cells,
+                        int ActivePlayer,
                         ColourScheme ColourScheme = ColourScheme.Original,
                         AtomShape AtomShape = AtomShape.Round)
     {
-        public record Player(int Number,
-                             PlayerType Type,
-                             bool IsActive = false);
+        public record Player(int Number, PlayerType Type);
 
-        public record Cell(int Row,
-                           int Column,
-                           int Player,
-                           int Atoms);
+        public record Cell(int Row, int Column, int Player, int Atoms);
     }
 }

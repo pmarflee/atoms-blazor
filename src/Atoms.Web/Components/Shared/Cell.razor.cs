@@ -11,6 +11,9 @@ public partial class CellComponent : Component2Base
     public Game.GameBoard.Cell Data { get; set; } = default!;
 
     [Parameter]
+    public string PlayerClassName { get; set; } = default!;
+
+    [Parameter]
     public EventCallback<CellClickEventArgs> OnCellClicked { get; set; }
 
     protected override void OnParametersSet()
@@ -32,7 +35,7 @@ public partial class CellComponent : Component2Base
             [
                 "atom",
                 $"atom{atom}",
-                Data.Player!.ClassName,
+                PlayerClassName,
                 $"pos{Data.Atoms - atom + 1}"
             ]);
     }

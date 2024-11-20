@@ -13,12 +13,13 @@ public class GameFactory : IGameFactory
     {
         var players = menuDto.Players
             .Take(menuDto.NumberOfPlayers)
-            .Select((p, i) => new Game.Player(p.Number, p.Type, i == 0))
+            .Select(p => new Game.Player(p.Number, p.Type))
             .ToList();
 
         return new Game(Rows,
                         Columns,
                         players,
+                        players[0],
                         menuDto.ColourScheme,
                         menuDto.AtomShape);
     }

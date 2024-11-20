@@ -7,10 +7,6 @@ public class BoardComponent : Component2Base
     [Parameter]
     public Game Game { get; set; } = default!;
 
-    protected override void OnParametersSet()
-    {
-    }
-
     protected void CellClicked(CellClickEventArgs eventArgs)
     {
         if (Game.CanPlaceAtom(eventArgs.Cell))
@@ -18,4 +14,10 @@ public class BoardComponent : Component2Base
             Game.PlaceAtom(eventArgs.Cell);
         }
     }
+
+    protected string GetPlayerClassName(Game.Player? player) =>
+        player == null ? "" : $"player{player.Number - 1}";
+
+    protected string GetPlayerActiveClassName(Game.Player player) =>
+        $"{(player == Game.ActivePlayer ? "active" : "")}";
 }

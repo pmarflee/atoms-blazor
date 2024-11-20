@@ -7,7 +7,7 @@ public class ShouldAddAtomToCellWhenCellIsEmpty
     [Test, MethodDataSource(nameof(GetGameStates))]
     public async Task Test(State state)
     {
-        var game = new Atoms.Core.Entities.Game(state);
+        var game = Load(state);
         var cell = game.Board[1, 1];
 
         game.PlaceAtom(cell);

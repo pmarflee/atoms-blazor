@@ -30,9 +30,10 @@ public class OverloadingACellShouldCauseItToExplode
                 Cells = [ new(1, 2, 1, 1), new(2, 1, 1, 1) ],
                 Players =
                 [
-                    new(1, PlayerType.Human, false),
-                    new(2, PlayerType.Human, true)
-                ]
+                    new(1, PlayerType.Human),
+                    new(2, PlayerType.Human)
+                ],
+                ActivePlayer = 2
             }
         );
 
@@ -47,9 +48,10 @@ public class OverloadingACellShouldCauseItToExplode
                 Cells = [ new(1, 1, 1, 1), new(1, 3, 1, 1), new(2, 2, 1, 1) ],
                 Players =
                 [
-                    new(1, PlayerType.Human, false),
-                    new(2, PlayerType.Human, true)
-                ]
+                    new(1, PlayerType.Human),
+                    new(2, PlayerType.Human)
+                ],
+                ActivePlayer = 2
             }
         );
 
@@ -68,9 +70,10 @@ public class OverloadingACellShouldCauseItToExplode
                 ],
                 Players =
                 [
-                    new(1, PlayerType.Human, false),
-                    new(2, PlayerType.Human, true)
-                ]
+                    new(1, PlayerType.Human),
+                    new(2, PlayerType.Human)
+                ],
+                ActivePlayer = 2
             }
         );
     }

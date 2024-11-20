@@ -23,15 +23,12 @@ public class ReturnFailureResponseWhenAtomCannotBePlaced
     {
         var state = ObjectMother.NewGameState with
         {
-            Players = 
-            [ 
-                new(1, PlayerType.Human),
-                new(2, PlayerType.Human, true)
-            ],
+            Players = [ new(1, PlayerType.Human), new(2, PlayerType.Human) ],
+            ActivePlayer = 2,
             Cells = [ new(1, 1, 1, 1) ]
         };
 
-        var game = new Game(state);
+        var game = Game.Load(state);
 
         var response = await _handler.Handle(
             new PlaceAtomRequest(game, game.Board[1, 1]), 

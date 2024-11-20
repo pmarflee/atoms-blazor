@@ -6,12 +6,14 @@
 <div id="board">
     @foreach (var cell in Game.Board.Cells)
     {
-        <Cell Data="@cell" OnCellClicked="@CellClicked" />
+        <Cell Data="@cell"
+              PlayerClassName="@(GetPlayerClassName(cell.Player))"
+              OnCellClicked="@CellClicked" />
     }
 </div>
 <div id="playerList">
     @foreach (var player in Game.Players)
     {
-        <div class="player @($"{player.ClassName} {player.ActiveClassName}")"></div>
+        <div class="player @($"{GetPlayerClassName(player)} {GetPlayerActiveClassName(player)}")"></div>
     }
 </div>

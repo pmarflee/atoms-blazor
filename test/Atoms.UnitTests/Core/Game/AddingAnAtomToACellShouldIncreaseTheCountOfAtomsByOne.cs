@@ -7,7 +7,7 @@ public class AddingAnAtomToACellShouldIncreaseTheCountOfAtomsByOne
     [Test, MethodDataSource(nameof(GetTestData))]
     public async Task Test(State state, int row, int column)
     {
-        var game = new Atoms.Core.Entities.Game(state);
+        var game = Load(state);
         var cell = game.Board[row, column];
         var atoms = cell.Atoms;
 
