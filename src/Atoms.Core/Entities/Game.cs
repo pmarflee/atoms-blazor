@@ -203,6 +203,8 @@ public class Game
                     (var r, var c) when r == rows && c == columns => 1,
                     (1, _) => 2,
                     (var r, _) when r == rows => 2,
+                    (_, 1) => 2,
+                    (_, var c) when c == columns => 2,
                     _ => 3
                 };
 
