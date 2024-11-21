@@ -21,14 +21,9 @@ public class ReturnFailureResponseWhenAtomCannotBePlaced
     [Test]
     public async Task Test()
     {
-        var state = ObjectMother.NewGameState with
-        {
-            Players = [ new(1, PlayerType.Human), new(2, PlayerType.Human) ],
-            ActivePlayer = 2,
-            Cells = [ new(1, 1, 1, 1) ]
-        };
-
-        var game = Game.Load(state);
+        var game = ObjectMother.Game(
+            active: 2,
+            cells: [ new(1, 1, 1, 1) ]);
 
         var response = await _handler.Handle(
             new PlaceAtomRequest(game, game.Board[1, 1]), 

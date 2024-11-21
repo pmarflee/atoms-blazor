@@ -6,8 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddTransient<IGameFactory, GameFactory>();
-
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>());
 

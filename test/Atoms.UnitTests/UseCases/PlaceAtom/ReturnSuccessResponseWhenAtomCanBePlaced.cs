@@ -21,7 +21,7 @@ public class ReturnSuccessResponseWhenAtomCanBePlaced
     [Test]
     public async Task Test()
     {
-        var game = Game.Load(ObjectMother.NewGameState);
+        var game = ObjectMother.Game();
 
         var response = await _handler.Handle(
             new PlaceAtomRequest(game, game.Board[1, 1]), 

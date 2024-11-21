@@ -1,13 +1,10 @@
-﻿using static Atoms.Core.Entities.Game;
-
-namespace Atoms.UnitTests.Core.Game;
+﻿namespace Atoms.UnitTests.Core.Game;
 
 public class ShouldAddAtomToCellWhenCellIsEmpty
 {
     [Test, MethodDataSource(nameof(GetGameStates))]
-    public async Task Test(State state)
+    public async Task Test(Atoms.Core.Entities.Game game)
     {
-        var game = Load(state);
         var cell = game.Board[1, 1];
 
         game.PlaceAtom(cell);
@@ -16,8 +13,8 @@ public class ShouldAddAtomToCellWhenCellIsEmpty
         await Assert.That(cell.Player).IsEqualTo(1);
     }
 
-    public static IEnumerable<State> GetGameStates()
+    public static IEnumerable<Atoms.Core.Entities.Game> GetGameStates()
     {
-        yield return ObjectMother.NewGameState;
+        yield return ObjectMother.Game();
     }
 }
