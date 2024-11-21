@@ -24,7 +24,7 @@ public class PlaceAtomRequestHandler(IMediator mediator)
             await DoChainReaction(game, overloaded);
         }
 
-        game.SetNextPlayerAsActive();
+        game.PostMoveUpdate();
 
         return PlaceAtomResponse.Success;
     }

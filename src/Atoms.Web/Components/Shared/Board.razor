@@ -1,7 +1,14 @@
 ﻿@inherits BoardComponent
 
 <div id="status">
-
+    @if (!Game.IsInProgress)
+    {
+        <span class="@(GetPlayerClassName(Game.Winner!.Number))">
+            Player @Game.Winner!.Number
+        </span>
+        @(" wins!")
+        <button @onclick="@PlayAgainClick">Play again</button>
+    }
 </div>
 <div id="board">
     @foreach (var cell in Game.Board.Cells)
@@ -14,6 +21,6 @@
 <div id="playerList">
     @foreach (var player in Game.Players)
     {
-        <div class="player @($"{GetPlayerClassName(player.Number)} {GetPlayerActiveClassName(player)}")"></div>
+        <div class="@(GetPlayerClassNames(player))"></div>
     }
 </div>

@@ -3,9 +3,9 @@
 
 @if (State == GameState.Menu)
 {
-    <Menu OnCreateGame="@OnCreateGameAsync" />
+    <Menu OnCreateGame="@OnCreateGame" />
 }
 else if (State == GameState.Game)
 {
-    <Board Game="@Game" />
+    <Board Game="@Game" OnPlayAgainClicked="@OnShowMenu" />
 }

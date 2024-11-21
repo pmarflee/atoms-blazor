@@ -9,27 +9,33 @@ public class Game
     public int Columns => Board.Columns;
     public GameBoard Board { get; }
     public Player ActivePlayer { get; private set; }
+    public Player? Winner { get; private set; }
+    public bool IsInProgress { get; private set; } = true;
+    public int Round { get; private set; }
 
     public Game(int rows,
                 int columns,
-                IEnumerable<Player> players,
+                IReadOnlyList<Player> players,
                 Player activePlayer,
                 ColourScheme colourScheme,
                 AtomShape atomShape,
-                IEnumerable<GameBoard.CellState>? cells = null)
+                IEnumerable<GameBoard.CellState>? cells = null,
+                int round = 1)
     {
-        Players = new List<Player>(players);
-        ColourScheme = colourScheme;
-        AtomShape = atomShape;
-        Board = new GameBoard(rows, columns, cells, Players);
-
-        if (!Players.Contains(activePlayer))
+        if (!players.Contains(activePlayer))
         {
             throw new ArgumentException(
                 "Player not found", nameof(activePlayer));
         }
 
+        ColourScheme = colourScheme;
+        AtomShape = atomShape;
+        Board = new GameBoard(rows, columns, cells, players);
+        Players = players;
         ActivePlayer = activePlayer;
+        Round = round;
+
+        UpdateGameStatus();
     }
 
     public bool CanPlaceAtom(GameBoard.Cell cell)
@@ -39,18 +45,70 @@ public class Game
 
     public void PlaceAtom(GameBoard.Cell cell)
     {
+        var cellPlayer = Players.FirstOrDefault(p => p.Number == cell.Player);
+
         cell.AddAtom(ActivePlayer);
+
+        if (cellPlayer != null && 
+            cellPlayer != ActivePlayer && 
+            !Board.Cells.Any(c => c.Player == cellPlayer.Number))
+        {
+            cellPlayer.MarkDead();
+        }
     }
 
-    public void SetNextPlayerAsActive()
+    void UpdateGameStatus()
     {
-        ActivePlayer = Players[ActivePlayer.Number % Players.Count];
+        if (Round <= 1) return;
+
+        var playerAtoms = from player in Players
+                          join cell in Board.Cells
+                          on player.Number equals cell.Player into grp
+                          select new { Player = player, Atoms = grp.Sum(g => g.Atoms) };
+
+        if (playerAtoms.Count(pa => pa.Atoms > 0) == 1)
+        {
+            Winner = playerAtoms.First(pa => pa.Atoms > 0).Player;
+            IsInProgress = false;
+        }
+    }
+
+    public void PostMoveUpdate()
+    {
+        var currentActivePlayer = ActivePlayer;
+
+        SetNextActivePlayer();
+
+        if (ActivePlayer == currentActivePlayer)
+        {
+            Winner = ActivePlayer;
+            IsInProgress = false;
+        }
+        else if (ActivePlayer == Players[0])
+        {
+            Round++;
+        }
+    }
+
+    void SetNextActivePlayer()
+    {
+        var player = ActivePlayer;
+
+        do
+        {
+            player = Players[player.Number % Players.Count];
+        } while (player.IsDead);
+
+        ActivePlayer = player;
     }
 
     public class Player(int number, PlayerType type)
     {
         public int Number { get; } = number;
         public PlayerType Type { get; } = type;
+        public bool IsDead { get; private set; }
+
+        public void MarkDead() => IsDead = true;
     }
 
     public class GameBoard

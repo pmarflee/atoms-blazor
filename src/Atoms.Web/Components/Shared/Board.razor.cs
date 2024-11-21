@@ -15,6 +15,9 @@ public class BoardComponent : Component2Base, IDisposable
     [Parameter]
     public Game Game { get; set; } = default!;
 
+    [Parameter]
+    public EventCallback OnPlayAgainClicked { get; set; }
+
     protected override void OnInitialized()
     {
         Courier.Subscribe<GameStateChanged>(HandleNotification);
@@ -22,7 +25,15 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async Task CellClicked(CellClickEventArgs eventArgs)
     {
-        await Mediator.Send(new PlaceAtomRequest(Game, eventArgs.Cell));
+        if (Game.IsInProgress)
+        {
+            await Mediator.Send(new PlaceAtomRequest(Game, eventArgs.Cell));
+        }
+    }
+
+    protected async Task PlayAgainClick()
+    {
+        await OnPlayAgainClicked.InvokeAsync();
     }
 
     protected async Task HandleNotification(GameStateChanged notification)
@@ -38,6 +49,24 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected string GetPlayerActiveClassName(Game.Player player) =>
         $"{(player == Game.ActivePlayer ? "active" : "")}";
+
+    protected string GetPlayerDeadClassName(Game.Player player) =>
+        $"{(player.IsDead ? "dead" : "")}";
+
+    protected string GetPlayerClassNames(Game.Player player)
+    {
+        List<string> classNames = 
+            [
+                "player", 
+                GetPlayerClassName(player.Number),
+                GetPlayerActiveClassName(player),
+                GetPlayerDeadClassName(player)
+            ];
+
+        return string.Join(
+            " ", 
+            classNames.Where(cn => !string.IsNullOrEmpty(cn)));
+    }
 
     public void Dispose()
     {

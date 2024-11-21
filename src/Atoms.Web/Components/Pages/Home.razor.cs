@@ -14,10 +14,18 @@ public partial class HomePageComponent : ComponentBase
         base.OnInitialized();
     }
 
-    protected Task OnCreateGameAsync(Game game)
+    protected Task OnCreateGame(Game game)
     {
         Game = game;
         State = GameState.Game;
+
+        return Task.CompletedTask;
+    }
+
+    protected Task OnShowMenu()
+    {
+        Game = null;
+        State = GameState.Menu;
 
         return Task.CompletedTask;
     }
