@@ -15,8 +15,8 @@ public class BoardComponent : Component2Base
         }
     }
 
-    protected string GetPlayerClassName(Game.Player? player) =>
-        player == null ? "" : $"player{player.Number - 1}";
+    protected string GetPlayerClassName(int? player) =>
+        player.HasValue ? $"player{player - 1}" : "";
 
     protected string GetPlayerActiveClassName(Game.Player player) =>
         $"{(player == Game.ActivePlayer ? "active" : "")}";

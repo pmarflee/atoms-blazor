@@ -5,7 +5,7 @@
         style="@Style"
         data-atoms="@Data.Atoms"
         data-max-atoms="@Data.MaxAtoms"
-        data-player-id="@(Data.Player?.Number ?? -1)"
+        data-player-id="@(Data.Player ?? -1)"
         @onclick="@CellClick">
     @foreach (var atom in Enumerable.Range(1, Data.Atoms))
     {

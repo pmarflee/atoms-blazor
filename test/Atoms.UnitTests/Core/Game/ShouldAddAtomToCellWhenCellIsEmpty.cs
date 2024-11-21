@@ -13,7 +13,7 @@ public class ShouldAddAtomToCellWhenCellIsEmpty
         game.PlaceAtom(cell);
 
         await Assert.That(cell.Atoms).IsEqualTo(1);
-        await Assert.That(cell.Player).IsEqualTo(game.Players[0]);
+        await Assert.That(cell.Player).IsEqualTo(1);
     }
 
     public static IEnumerable<State> GetGameStates()

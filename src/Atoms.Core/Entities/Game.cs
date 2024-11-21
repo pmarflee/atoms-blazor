@@ -68,7 +68,7 @@ public class Game
                 .Select(cell => new State.Cell(
                     cell.Row,
                     cell.Column,
-                    cell.Player!.Number,
+                    cell.Player!.Value,
                     cell.Atoms)
                 )
                 .ToList(),
@@ -78,7 +78,7 @@ public class Game
 
     public bool CanPlaceAtom(GameBoard.Cell cell)
     {
-        return cell.Player is null || cell.Player == ActivePlayer;
+        return cell.Player is null || cell.Player == ActivePlayer.Number;
     }
 
     public void PlaceAtom(GameBoard.Cell cell)
@@ -227,14 +227,14 @@ public class Game
             public int Row { get; } = row;
             public int Column { get; } = column;
             public int MaxAtoms { get; } = maxAtoms;
-            public Player? Player { get; private set; }
+            public int? Player { get; private set; }
             public int Atoms { get; private set; }
             public bool IsOverloaded => Atoms > MaxAtoms;
 
             internal void AddAtom(Player player)
             {
                 Atoms++;
-                Player = player;
+                Player = player.Number;
             }
 
             internal void Explode()
@@ -248,7 +248,7 @@ public class Game
             {
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(atoms, MaxAtoms);
 
-                Player = player;
+                Player = player.Number;
                 Atoms = atoms;
             }
         }
