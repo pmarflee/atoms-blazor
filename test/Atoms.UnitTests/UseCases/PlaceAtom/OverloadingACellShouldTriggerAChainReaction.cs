@@ -1,27 +1,9 @@
 ﻿using Atoms.UseCases.PlaceAtom;
-using Atoms.UseCases.Shared.Notifications;
 
 namespace Atoms.UnitTests.UseCases.PlaceAtom;
 
-public class OverloadingACellShouldTriggerAChainReaction
+public class OverloadingACellShouldTriggerAChainReaction : PlaceAtomTestFixture
 {
-    IMediator _mediator = default!;
-    PlaceAtomRequestHandler _handler = default!;
-
-    [Before(HookType.Test)]
-    public Task Setup()
-    {
-        var mediatorExpectations = new IMediatorCreateExpectations();
-        mediatorExpectations.Methods
-            .Publish(Arg.Any<GameStateChanged>())
-            .ReturnValue(Task.CompletedTask);
-
-        _mediator = mediatorExpectations.Instance();
-        _handler = new PlaceAtomRequestHandler(_mediator);
-
-        return Task.CompletedTask;
-    }
-
     [Test, MethodDataSource(nameof(GetTestData))]
     public async Task Test(Game game,
                            int row,
@@ -30,7 +12,7 @@ public class OverloadingACellShouldTriggerAChainReaction
     {
         var cell = game.Board[row, column];
 
-        await _handler.Handle(
+        await Handler.Handle(
             new PlaceAtomRequest(game, cell), 
             CancellationToken.None);
 
