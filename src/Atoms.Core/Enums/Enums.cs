@@ -41,3 +41,10 @@ public enum AtomShape
     [Description("Varied")]
     Varied
 }
+
+public enum ExplosionState
+{
+    None = 0,
+    Before = 1,
+    After = 2
+}

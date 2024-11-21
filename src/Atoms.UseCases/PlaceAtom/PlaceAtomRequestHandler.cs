@@ -1,23 +1,19 @@
-﻿using Atoms.Core.Entities;
-using static Atoms.Core.Entities.Game.GameBoard;
+﻿using static Atoms.Core.Entities.Game.GameBoard;
 
 namespace Atoms.UseCases.PlaceAtom;
 
-public class PlaceAtomRequestHandler(IMediator mediator) 
+public class PlaceAtomRequestHandler(IMediator mediator)
     : IRequestHandler<PlaceAtomRequest, PlaceAtomResponse>
 {
-    public Task<PlaceAtomResponse> Handle(PlaceAtomRequest request,
-                       CancellationToken cancellationToken)
+    public async Task<PlaceAtomResponse> Handle(PlaceAtomRequest request,
+                                                CancellationToken cancellationToken)
     {
         var game = request.Game;
         var cell = request.Cell;
 
-        if (!game.CanPlaceAtom(cell))
-        {
-            return Task.FromResult(PlaceAtomResponse.Failure);
-        }
+        if (!game.CanPlaceAtom(cell)) return PlaceAtomResponse.Failure;
 
-        game.PlaceAtom(cell);
+        await PlaceAtom(game, cell);
 
         var overloaded = new Stack<Cell>();
 
@@ -25,25 +21,25 @@ public class PlaceAtomRequestHandler(IMediator mediator)
         {
             overloaded.Push(cell);
 
-            DoChainReaction(game, overloaded);
+            await DoChainReaction(game, overloaded);
         }
 
         game.SetNextPlayerAsActive();
 
-        return Task.FromResult(PlaceAtomResponse.Success);
+        return PlaceAtomResponse.Success;
     }
 
-    void DoChainReaction(Game game, Stack<Cell> overloaded)
+    async Task DoChainReaction(Game game, Stack<Cell> overloaded)
     {
         do
         {
             var cell = overloaded.Pop();
 
-            cell.Explode();
+            await DoExplosion(game, cell);
 
             foreach (var neighbour in game.Board.GetNeighbours(cell))
             {
-                game.PlaceAtom(neighbour);
+                await PlaceAtom(game, neighbour);
 
                 if (neighbour.IsOverloaded)
                 {
@@ -51,5 +47,33 @@ public class PlaceAtomRequestHandler(IMediator mediator)
                 }
             }
         } while (overloaded.Count > 0);
+    }
+
+    async Task PlaceAtom(Game game, Cell cell)
+    {
+        game.PlaceAtom(cell);
+
+        await PublishNotification(game);
+    }
+
+    async Task DoExplosion(Game game, Cell cell)
+    {
+        cell.Explosion = ExplosionState.Before;
+        cell.Explode();
+
+        await PublishNotification(game);
+
+        cell.Explosion = ExplosionState.After;
+
+        await PublishNotification(game);
+
+        cell.Explosion = ExplosionState.None;
+
+        await PublishNotification(game);
+    }
+
+    async Task PublishNotification(Game game)
+    {
+        await mediator.Publish(new GameStateChanged(game));
     }
 }

@@ -1,4 +1,5 @@
 using Atoms.UseCases.CreateNewGame;
+using MediatR.Courier;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,8 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>());
+builder.Services
+    .AddMediatR(cfg => 
+        cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>())
+    .AddCourier(typeof(CreateNewGameRequest).Assembly);
 
 var app = builder.Build();
 

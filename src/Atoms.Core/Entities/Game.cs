@@ -139,6 +139,7 @@ public class Game
             public int? Player { get; private set; } = player;
             public int Atoms { get; private set; } = atoms ?? 0;
             public bool IsOverloaded => Atoms > MaxAtoms;
+            public ExplosionState Explosion { get; set; }
 
             internal void AddAtom(Player player)
             {

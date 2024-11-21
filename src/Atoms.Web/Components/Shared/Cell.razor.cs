@@ -39,4 +39,18 @@ public partial class CellComponent : Component2Base
                 $"pos{Data.Atoms - atom + 1}"
             ]);
     }
+
+    protected string ExplosionClasses()
+    {
+        return string.Join(" ",
+            [
+                "explosion",
+                Data.Explosion switch
+                {
+                    ExplosionState.Before => "start",
+                    ExplosionState.After => "end",
+                    _ => ""
+                }
+            ]);
+    }
 }

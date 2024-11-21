@@ -1,18 +1,36 @@
-﻿using Atoms.Web.CustomEvents;
+﻿using Atoms.UseCases.PlaceAtom;
+using Atoms.UseCases.Shared.Notifications;
+using Atoms.Web.CustomEvents;
+using MediatR.Courier;
 
 namespace Atoms.Web.Components.Shared;
 
-public class BoardComponent : Component2Base
+public class BoardComponent : Component2Base, IDisposable
 {
+    const int Delay = 50;
+
+    [Inject]
+    ICourier Courier { get; set; } = default!;
+
     [Parameter]
     public Game Game { get; set; } = default!;
 
-    protected void CellClicked(CellClickEventArgs eventArgs)
+    protected override void OnInitialized()
     {
-        if (Game.CanPlaceAtom(eventArgs.Cell))
-        {
-            Game.PlaceAtom(eventArgs.Cell);
-        }
+        Courier.Subscribe<GameStateChanged>(HandleNotification);
+    }
+
+    protected async Task CellClicked(CellClickEventArgs eventArgs)
+    {
+        await Mediator.Send(new PlaceAtomRequest(Game, eventArgs.Cell));
+    }
+
+    protected async Task HandleNotification(GameStateChanged notification)
+    {
+        Game = notification.Game;
+        StateHasChanged();
+
+        await Task.Delay(Delay);
     }
 
     protected string GetPlayerClassName(int? player) =>
@@ -20,4 +38,18 @@ public class BoardComponent : Component2Base
 
     protected string GetPlayerActiveClassName(Game.Player player) =>
         $"{(player == Game.ActivePlayer ? "active" : "")}";
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Courier.UnSubscribe<GameStateChanged>(HandleNotification);
+        }
+    }
 }

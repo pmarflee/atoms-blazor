@@ -1,4 +1,5 @@
 ﻿using Atoms.UseCases.PlaceAtom;
+using Atoms.UseCases.Shared.Notifications;
 
 namespace Atoms.UnitTests.UseCases.PlaceAtom;
 
@@ -11,6 +12,9 @@ public class ReturnSuccessResponseWhenAtomCanBePlaced
     public Task Setup()
     {
         var mediatorExpectations = new IMediatorCreateExpectations();
+        mediatorExpectations.Methods
+            .Publish(Arg.Any<GameStateChanged>())
+            .ReturnValue(Task.CompletedTask);
 
         _mediator = mediatorExpectations.Instance();
         _handler = new PlaceAtomRequestHandler(_mediator);

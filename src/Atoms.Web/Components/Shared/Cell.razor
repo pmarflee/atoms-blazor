@@ -11,4 +11,8 @@
     {
         <div class="@AtomClasses(atom)"></div>
     }
+    @if (@Data.Explosion != ExplosionState.None)
+    {
+        <div class="@ExplosionClasses()"></div>
+    }
 </button>
