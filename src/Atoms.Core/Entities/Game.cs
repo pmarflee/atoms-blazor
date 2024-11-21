@@ -141,17 +141,19 @@ public class Game
                 (1, 0),
             ];
 
-        readonly Cell[,] _cells;
-
-        public int Rows => _cells.GetLength(0);
-        public int Columns => _cells.GetLength(1);
+        public IReadOnlyList<Cell> Cells { get; }
+        public int Rows { get; }
+        public int Columns { get; }
 
         internal GameBoard(int rows,
                            int columns,
                            IEnumerable<State.Cell>? cellState,
                            IEnumerable<Player> players)
         {
-            _cells = CreateCells(rows, columns);
+            Rows = rows;
+            Columns = columns;
+
+            Cells = CreateCells();
 
             if (cellState != null)
             {
@@ -159,12 +161,7 @@ public class Game
             }
         }
 
-        public IEnumerable<Cell> Cells =>
-            from row in Enumerable.Range(1, Rows)
-            from column in Enumerable.Range(1, Columns)
-            select this[row, column];
-
-        public Cell this[int row, int column] => _cells[row - 1, column - 1];
+        public Cell this[int row, int column] => Cells[GetCellIndex(row, column)];
 
         public IEnumerable<Cell> GetNeighbours(Cell cell) =>
             (from offset in _offsets
@@ -192,38 +189,38 @@ public class Game
         bool CellExistsAt(int row, int column) =>
             row > 0 && row <= Rows && column > 0 && column <= Columns;
 
-        static Cell[,] CreateCells(int rows, int columns)
+        List<Cell> CreateCells()
         {
             int CalculateMaxAtoms(int row, int column) =>
                 (row, column) switch
                 {
                     (1, 1) => 1,
-                    (1, var c) when c == columns => 1,
-                    (var r, 1) when r == rows => 1,
-                    (var r, var c) when r == rows && c == columns => 1,
+                    (1, var c) when c == Columns => 1,
+                    (var r, 1) when r == Rows => 1,
+                    (var r, var c) when r == Rows && c == Columns => 1,
                     (1, _) => 2,
-                    (var r, _) when r == rows => 2,
+                    (var r, _) when r == Rows => 2,
                     (_, 1) => 2,
-                    (_, var c) when c == columns => 2,
+                    (_, var c) when c == Columns => 2,
                     _ => 3
                 };
 
-            var cells = new Cell[rows, columns];
+            var cells = new List<Cell>(Rows * Columns);
 
-            for (var row = 0; row < rows; row++)
+            for (var row = 1; row <= Rows; row++)
             {
-                for (var column = 0; column < columns; column++)
+                for (var column = 1; column <= Columns; column++)
                 {
-                    var cellRow = row + 1;
-                    var cellColumn = column + 1;
-                    var maxAtoms = CalculateMaxAtoms(cellRow, cellColumn);
+                    var maxAtoms = CalculateMaxAtoms(row, column);
 
-                    cells[row, column] = new(cellRow, cellColumn, maxAtoms);
+                    cells.Add(new(row, column, maxAtoms));
                 }
             }
 
             return cells;
         }
+
+        int GetCellIndex(int row, int column) => (row - 1) * Columns + column - 1;
 
         public class Cell(int row, int column, int maxAtoms)
         {
