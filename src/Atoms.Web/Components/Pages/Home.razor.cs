@@ -1,6 +1,4 @@
-﻿using Microsoft.JSInterop;
-
-namespace Atoms.Web.Components.Pages;
+﻿namespace Atoms.Web.Components.Pages;
 
 public partial class HomePageComponent : ComponentBase
 {

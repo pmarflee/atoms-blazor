@@ -105,6 +105,7 @@ public class Game
     public class Player(int number, PlayerType type)
     {
         public int Number { get; } = number;
+        public int Id => Number - 1;
         public PlayerType Type { get; } = type;
         public bool IsDead { get; private set; }
 

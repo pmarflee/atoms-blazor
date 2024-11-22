@@ -12,23 +12,30 @@ public class BoardComponent : Component2Base, IDisposable
     [Inject]
     ICourier Courier { get; set; } = default!;
 
+    [Inject]
+    IJSRuntime JSRuntime { get; set; } = default!;
+
     [Parameter]
     public Game Game { get; set; } = default!;
 
     [Parameter]
     public EventCallback OnPlayAgainClicked { get; set; }
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         Courier.Subscribe<GameStateChanged>(HandleNotification);
+
+        await SetCursor();
     }
 
     protected async Task CellClicked(CellClickEventArgs eventArgs)
     {
-        if (Game.IsInProgress)
-        {
-            await Mediator.Send(new PlaceAtomRequest(Game, eventArgs.Cell));
-        }
+        if (!Game.IsInProgress) return;
+
+        var response = await Mediator.Send(
+            new PlaceAtomRequest(Game, eventArgs.Cell));
+
+        if (response.IsSuccessful) await SetCursor();
     }
 
     protected async Task PlayAgainClick()
@@ -66,6 +73,11 @@ public class BoardComponent : Component2Base, IDisposable
         return string.Join(
             " ", 
             classNames.Where(cn => !string.IsNullOrEmpty(cn)));
+    }
+
+    async Task SetCursor()
+    {
+        await JSRuntime.InvokeVoidAsync("App.setCursor", Game.ActivePlayer.Id);
     }
 
     public void Dispose()
