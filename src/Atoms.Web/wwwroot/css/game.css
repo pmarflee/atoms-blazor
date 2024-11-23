@@ -11,7 +11,7 @@ html.high-contrast {
 	--player3-color: #33aaaa;
 }
 html {
-	cursor: url('cursor.svg') 18 3, default;
+	cursor: url('../images/cursor.svg') 18 3, default;
 }
 html.game {
 	overflow: hidden;
