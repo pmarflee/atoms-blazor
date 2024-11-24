@@ -1,7 +1,7 @@
 ﻿@inherits BoardComponent
 
 <div id="status">
-    @if (!Game.IsInProgress)
+    @if (Game.HasWinner)
     {
         <span class="@(GetPlayerClassName(Game.Winner!.Number))">
             Player @Game.Winner!.Number

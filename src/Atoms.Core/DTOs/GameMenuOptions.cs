@@ -28,13 +28,23 @@ public class GameMenuOptions
 
         for (var i = 0; i < maxPlayers; i++)
         {
-            Players.Add(new Player 
-            { 
+            Players.Add(new Player
+            {
                 Type = PlayerType.Human,
                 Number = i + 1,
             });
         }
     }
+
+    GameMenuOptions(List<Player> players)
+    {
+        NumberOfPlayers = players.Count;
+        Players = players;
+    }
+
+    public static GameMenuOptions Debug => new(
+        [ new Player { Number = 1, Type = PlayerType.Human },
+          new Player { Number = 2, Type = PlayerType.Human } ]);
 
     public class Player
     {

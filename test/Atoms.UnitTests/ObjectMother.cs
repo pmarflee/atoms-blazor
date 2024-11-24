@@ -9,7 +9,9 @@ internal static class ObjectMother
 
     public static Game Game(List<Player>? players = null,
                             int? active = 1,
-                            List<GameBoard.CellState>? cells = null)
+                            List<GameBoard.CellState>? cells = null,
+                            int move = 1,
+                            int round = 1)
     {
         players ??=
             [
@@ -19,12 +21,8 @@ internal static class ObjectMother
 
         var activePlayer = players.First(p => p.Number == active);
 
-        return new Game(Rows,
-                        Columns,
-                        players,
-                        activePlayer,
-                        ColourScheme.Original,
-                        AtomShape.Round,
-                        cells);
+        return new Game(Rows, Columns, players, activePlayer,
+                        ColourScheme.Original, AtomShape.Round,
+                        cells, move, round);
     }
 }

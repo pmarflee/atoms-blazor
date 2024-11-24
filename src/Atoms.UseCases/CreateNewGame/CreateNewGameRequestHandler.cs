@@ -1,6 +1,4 @@
-﻿using Atoms.Core.Entities;
-
-namespace Atoms.UseCases.CreateNewGame;
+﻿namespace Atoms.UseCases.CreateNewGame;
 
 public class CreateNewGameRequestHandler
     : IRequestHandler<CreateNewGameRequest, CreateNewGameResponse>

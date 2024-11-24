@@ -10,7 +10,8 @@ public class Game
     public GameBoard Board { get; }
     public Player ActivePlayer { get; private set; }
     public Player? Winner { get; private set; }
-    public bool IsInProgress { get; private set; } = true;
+    public bool HasWinner => Winner != null;
+    public int Move { get; private set; }
     public int Round { get; private set; }
 
     public Game(int rows,
@@ -20,6 +21,7 @@ public class Game
                 ColourScheme colourScheme,
                 AtomShape atomShape,
                 IEnumerable<GameBoard.CellState>? cells = null,
+                int move = 1,
                 int round = 1)
     {
         if (!players.Contains(activePlayer))
@@ -33,9 +35,10 @@ public class Game
         Board = new GameBoard(rows, columns, cells, players);
         Players = players;
         ActivePlayer = activePlayer;
+        Move = move;
         Round = round;
 
-        UpdateGameStatus();
+        CheckForWinner();
     }
 
     public bool CanPlaceAtom(GameBoard.Cell cell)
@@ -57,7 +60,7 @@ public class Game
         }
     }
 
-    void UpdateGameStatus()
+    public void CheckForWinner()
     {
         if (Round <= 1) return;
 
@@ -69,22 +72,16 @@ public class Game
         if (playerAtoms.Count(pa => pa.Atoms > 0) == 1)
         {
             Winner = playerAtoms.First(pa => pa.Atoms > 0).Player;
-            IsInProgress = false;
         }
     }
 
     public void PostMoveUpdate()
     {
-        var currentActivePlayer = ActivePlayer;
-
         SetNextActivePlayer();
 
-        if (ActivePlayer == currentActivePlayer)
-        {
-            Winner = ActivePlayer;
-            IsInProgress = false;
-        }
-        else if (ActivePlayer == Players[0])
+        Move++;
+
+        if (ActivePlayer == Players[0])
         {
             Round++;
         }

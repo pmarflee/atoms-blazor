@@ -26,7 +26,8 @@ public class OverloadingACellShouldTriggerAChainReaction : PlaceAtomTestFixture
             1, 1,
             ObjectMother.Game(
                 active: 2,
-                cells: [new(1, 2, 1, 1), new(2, 1, 1, 1)])
+                cells: [new(1, 2, 1, 1), new(2, 1, 1, 1)],
+                move: 2)
         );
 
         yield return (
@@ -35,7 +36,8 @@ public class OverloadingACellShouldTriggerAChainReaction : PlaceAtomTestFixture
             ObjectMother.Game(
                 active: 2,
                 cells: [ new(1, 1, 1, 1), new(1, 3, 1, 1),
-                         new(2, 2, 1, 1) ])
+                         new(2, 2, 1, 1) ],
+                move: 2)
         );
 
         yield return (
@@ -44,7 +46,8 @@ public class OverloadingACellShouldTriggerAChainReaction : PlaceAtomTestFixture
             ObjectMother.Game(
                 active: 2,
                 cells: [ new(1, 2, 1, 1), new(2, 1, 1, 1),
-                         new(2, 3, 1, 1), new(3, 2, 1, 1) ])
+                         new(2, 3, 1, 1), new(3, 2, 1, 1) ],
+                move: 2)
         );
     }
 }

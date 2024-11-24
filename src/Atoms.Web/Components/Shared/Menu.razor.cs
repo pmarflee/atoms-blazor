@@ -1,5 +1,4 @@
-﻿using Atoms.Core.Enums;
-using Atoms.UseCases.CreateNewGame;
+﻿using Atoms.UseCases.CreateNewGame;
 
 namespace Atoms.Web.Components.Shared;
 

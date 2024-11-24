@@ -24,7 +24,10 @@ public class PlaceAtomRequestHandler(IMediator mediator)
             await DoChainReaction(game, overloaded);
         }
 
-        game.PostMoveUpdate();
+        if (!game.HasWinner)
+        {
+            game.PostMoveUpdate();
+        }
 
         return PlaceAtomResponse.Success;
     }
@@ -34,6 +37,8 @@ public class PlaceAtomRequestHandler(IMediator mediator)
         do
         {
             var cell = overloaded.Pop();
+
+            if (!cell.IsOverloaded) continue;
 
             await DoExplosion(game, cell);
 
@@ -46,6 +51,10 @@ public class PlaceAtomRequestHandler(IMediator mediator)
                     overloaded.Push(neighbour);
                 }
             }
+
+            game.CheckForWinner();
+
+            if (game.HasWinner) break;
         } while (overloaded.Count > 0);
     }
 
