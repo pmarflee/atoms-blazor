@@ -29,7 +29,8 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async override Task OnInitializedAsync()
     {
-        Courier.Subscribe<GameStateChanged>(HandleNotification);
+        Courier.Subscribe<AtomPlaced>(AtomPlaced);
+        Courier.Subscribe<AtomExploded>(AtomExploded);
 
         if (Debug.HasValue)
         {
@@ -68,12 +69,25 @@ public class BoardComponent : Component2Base, IDisposable
         await OnPlayAgainClicked.InvokeAsync();
     }
 
-    protected async Task HandleNotification(GameStateChanged notification)
+
+    protected Task AtomPlaced(AtomPlaced notification)
+    {
+        UpdateGame(notification);
+
+        return Task.CompletedTask;
+    }
+
+    protected async Task AtomExploded(AtomExploded notification)
+    {
+        UpdateGame(notification);
+
+        await Task.Delay(Delay);
+    }
+
+    void UpdateGame(GameStateChanged notification)
     {
         Game = notification.Game;
         StateHasChanged();
-
-        await Task.Delay(Delay);
     }
 
     protected string GetPlayerClassName(int? player) =>
@@ -123,7 +137,8 @@ public class BoardComponent : Component2Base, IDisposable
     {
         if (disposing)
         {
-            Courier.UnSubscribe<GameStateChanged>(HandleNotification);
+            Courier.UnSubscribe<AtomPlaced>(AtomPlaced);
+            Courier.UnSubscribe<AtomExploded>(AtomExploded);
         }
     }
 }

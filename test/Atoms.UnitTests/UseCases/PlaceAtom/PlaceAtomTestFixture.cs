@@ -13,7 +13,10 @@ public abstract class PlaceAtomTestFixture
     {
         var mediatorExpectations = new IMediatorCreateExpectations();
         mediatorExpectations.Methods
-            .Publish(Arg.Any<GameStateChanged>())
+            .Publish(Arg.Any<AtomPlaced>())
+            .ReturnValue(Task.CompletedTask);
+        mediatorExpectations.Methods
+            .Publish(Arg.Any<AtomExploded>())
             .ReturnValue(Task.CompletedTask);
 
         Mediator = mediatorExpectations.Instance();

@@ -46,7 +46,7 @@ public class PlaceAtomRequestHandler(IMediator mediator)
             {
                 await PlaceAtom(game, neighbour);
 
-                if (neighbour.IsOverloaded)
+                if (neighbour.Atoms == neighbour.MaxAtoms + 1)
                 {
                     overloaded.Push(neighbour);
                 }
@@ -62,7 +62,7 @@ public class PlaceAtomRequestHandler(IMediator mediator)
     {
         game.PlaceAtom(cell);
 
-        await PublishNotification(game);
+        await NotifyAtomPlaced(game);
     }
 
     async Task DoExplosion(Game game, Cell cell)
@@ -70,19 +70,24 @@ public class PlaceAtomRequestHandler(IMediator mediator)
         cell.Explosion = ExplosionState.Before;
         cell.Explode();
 
-        await PublishNotification(game);
+        await NotifyAtomExploded(game);
 
         cell.Explosion = ExplosionState.After;
 
-        await PublishNotification(game);
+        await NotifyAtomExploded(game);
 
         cell.Explosion = ExplosionState.None;
 
-        await PublishNotification(game);
+        await NotifyAtomExploded(game);
     }
 
-    async Task PublishNotification(Game game)
+    async Task NotifyAtomPlaced(Game game)
     {
-        await mediator.Publish(new GameStateChanged(game));
+        await mediator.Publish(new AtomPlaced(game));
+    }
+
+    async Task NotifyAtomExploded(Game game)
+    {
+        await mediator.Publish(new AtomExploded(game));
     }
 }
