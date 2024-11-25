@@ -31,12 +31,19 @@ public partial class CellComponent : Component2Base
 
     protected string AtomClasses(int atom)
     {
+        var pos = atom switch
+        {
+            var x when Data.Atoms < 5 => Data.Atoms - x + 1, 
+            var x when x < 5 => 5 - x,
+            _ => 1
+        };
+
         return string.Join(" ", 
             [
                 "atom",
                 $"atom{atom}",
                 PlayerClassName,
-                $"pos{Data.Atoms - atom + 1}"
+                $"pos{pos}"
             ]);
     }
 
