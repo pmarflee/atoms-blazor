@@ -16,14 +16,14 @@ public class Game
     public int Move { get; private set; }
     public int Round { get; private set; }
 
-    public List<GameBoard.Cell> DangerCells =>
+    public HashSet<GameBoard.Cell> DangerCells =>
         [..from cell in Board.Cells
          where cell.IsFullyLoaded
          && cell.Player != ActivePlayer.Number
          from neighbour in Board.GetNeighbours(cell)
          where CanPlaceAtom(neighbour)
-         && !cell.IsFullyLoaded
-         select cell];
+         && !neighbour.IsFullyLoaded
+         select neighbour];
 
     public Game(int rows,
                 int columns,

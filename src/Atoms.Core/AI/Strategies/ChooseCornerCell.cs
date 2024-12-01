@@ -5,9 +5,11 @@ namespace Atoms.Core.AI.Strategies;
 
 public class ChooseCornerCell(IRandomNumberGenerator rng) : IPlayerStrategy
 {
+    public const double Threshold = 0.8;
+
     public Cell? Choose(Game game)
     {
-        if (rng.NextDouble() >= 0.8) return null;
+        if (rng.NextDouble() >= Threshold) return null;
 
         List<Cell> cornerCells =
             [

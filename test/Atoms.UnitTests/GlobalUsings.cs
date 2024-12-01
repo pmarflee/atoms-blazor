@@ -2,4 +2,5 @@
 global using Rocks;
 global using Atoms.Core.Entities;
 global using Atoms.Core.Enums;
+global using Atoms.Core.Interfaces;
 
