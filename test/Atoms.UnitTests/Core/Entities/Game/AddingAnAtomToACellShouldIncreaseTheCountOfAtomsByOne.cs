@@ -1,4 +1,4 @@
-﻿namespace Atoms.UnitTests.Core.Game;
+﻿namespace Atoms.UnitTests.Core.Entities.Game;
 
 public class AddingAnAtomToACellShouldIncreaseTheCountOfAtomsByOne
 {
@@ -17,11 +17,11 @@ public class AddingAnAtomToACellShouldIncreaseTheCountOfAtomsByOne
     {
         yield return () => (ObjectMother.Game(), 1, 1);
         yield return () => (
-            ObjectMother.Game(cells: [ new(2, 1, 1, 1) ]),
+            ObjectMother.Game(cells: [new(2, 1, 1, 1)]),
             2, 1
         );
         yield return () => (
-            ObjectMother.Game(cells: [ new(2, 2, 1, 1) ]),
+            ObjectMother.Game(cells: [new(2, 2, 1, 1)]),
             2, 2
         );
     }

@@ -1,4 +1,4 @@
-﻿namespace Atoms.UnitTests.Core.Game;
+﻿namespace Atoms.UnitTests.Core.Entities.Game;
 
 public class ShouldAddAtomToCellWhenCellIsEmpty
 {
