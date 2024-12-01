@@ -1,6 +1,9 @@
-﻿namespace Atoms.UseCases.CreateNewGame;
+﻿using Atoms.Core.Interfaces;
 
-public class CreateNewGameRequestHandler
+namespace Atoms.UseCases.CreateNewGame;
+
+public class CreateNewGameRequestHandler(
+    Func<PlayerType, IPlayerStrategy> playerStrategyFactory)
     : IRequestHandler<CreateNewGameRequest, CreateNewGameResponse>
 {
     const int Rows = 6;
@@ -12,7 +15,8 @@ public class CreateNewGameRequestHandler
         var options = request.Options;
         var players = options.Players
             .Take(options.NumberOfPlayers)
-            .Select(p => new Game.Player(p.Number, p.Type))
+            .Select(p => new Game.Player(
+                p.Number, p.Type, playerStrategyFactory.Invoke(p.Type)))
             .ToList();
 
         var game = new Game(Rows,

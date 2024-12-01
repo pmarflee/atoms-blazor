@@ -1,9 +1,9 @@
 ﻿using Atoms.Core.Test;
-using Atoms.UseCases.PlaceAtom;
+using Atoms.UseCases.PlayerMove;
 
-namespace Atoms.UnitTests.UseCases.PlaceAtom;
+namespace Atoms.UnitTests.UseCases.PlayerMove;
 
-public class BoardStateShouldMatchThatOfOriginalGame : PlaceAtomTestFixture
+public class BoardStateShouldMatchThatOfOriginalGame : PlayerMoveAtomTestFixture
 {
     [Test, MethodDataSource(nameof(GetTestData))]
     public async Task Test(int numberOfMoves,
@@ -16,7 +16,7 @@ public class BoardStateShouldMatchThatOfOriginalGame : PlaceAtomTestFixture
         foreach (var (row, column) in moves)
         {
             await Handler.Handle(
-                new PlaceAtomRequest(game, game.Board[row, column]),
+                new PlayerMoveRequest(game, game.Board[row, column]),
                 CancellationToken.None);
         }
 
@@ -24,9 +24,9 @@ public class BoardStateShouldMatchThatOfOriginalGame : PlaceAtomTestFixture
         await Assert.That(game.Winner?.Number).IsEqualTo(winner);
     }
 
-    public static IEnumerable<(int, Game.GameBoard, int?)> GetTestData()
+    public static IEnumerable<Func<(int, Game.GameBoard, int?)>> GetTestData()
     {
-        yield return (
+        yield return () => (
             84,
             ObjectMother.Game(
                 cells:
@@ -79,12 +79,12 @@ public class BoardStateShouldMatchThatOfOriginalGame : PlaceAtomTestFixture
                 ]).Board,
                 null);
 
-            yield return (
-                107,
-                ObjectMother.Game(
-                    cells: 
-                    [
-                        new(1, 1, 1, 1),
+        yield return () => (
+            107,
+            ObjectMother.Game(
+                cells:
+                [
+                    new(1, 1, 1, 1),
                         new(1, 2, 1, 3),
                         new(1, 4, 1, 2),
                         new(1, 5, 1, 2),
@@ -134,7 +134,7 @@ public class BoardStateShouldMatchThatOfOriginalGame : PlaceAtomTestFixture
                         new(6, 7, 1, 2),
                         new(6, 8, 1, 2),
                         new(6, 9, 1, 1)
-                    ]).Board,
-                    1);
+                ]).Board,
+                1);
     }
 }

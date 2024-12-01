@@ -1,3 +1,6 @@
+using Atoms.Core.AI.Strategies;
+using Atoms.Core.Interfaces;
+using Atoms.Core.Services;
 using Atoms.UseCases.CreateNewGame;
 using MediatR.Courier;
 
@@ -6,6 +9,25 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddTransient<Func<PlayerType, IPlayerStrategy?>>(sp =>
+{
+    var rng = new RandomNumberGenerator(new Random());
+
+    return playerType => playerType switch
+    {
+        PlayerType.CPU_Easy => new PlayRandomly(rng),
+        PlayerType.CPU_Medium =>
+            new FullyLoadedCellNextToEnemyFullyLoadedCell()
+            .Or(new PlaySemiRandomlyAvoidingDangerCells(rng)),
+        PlayerType.CPU_Hard =>
+            new FullyLoadedCellNextToEnemyFullyLoadedCell()
+                .Or(new GainAdvantageOverNeighbouringCell(rng))
+                .Or(new ChooseCornerCell(rng))
+                .Or(new PlaySemiRandomlyAvoidingDangerCells(rng)),
+        _ => null
+    };
+});
 
 builder.Services
     .AddMediatR(cfg => 

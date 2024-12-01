@@ -1,4 +1,6 @@
-﻿namespace Atoms.Core.Entities;
+﻿using Atoms.Core.Interfaces;
+
+namespace Atoms.Core.Entities;
 
 public class Game
 {
@@ -13,6 +15,15 @@ public class Game
     public bool HasWinner => Winner != null;
     public int Move { get; private set; }
     public int Round { get; private set; }
+
+    public List<GameBoard.Cell> DangerCells =>
+        [..from cell in Board.Cells
+         where cell.IsFullyLoaded
+         && cell.Player != ActivePlayer.Number
+         from neighbour in Board.GetNeighbours(cell)
+         where CanPlaceAtom(neighbour)
+         && !cell.IsFullyLoaded
+         select cell];
 
     public Game(int rows,
                 int columns,
@@ -32,7 +43,7 @@ public class Game
 
         ColourScheme = colourScheme;
         AtomShape = atomShape;
-        Board = new GameBoard(rows, columns, cells, players);
+        Board = new GameBoard(rows, columns, cells);
         Players = players;
         ActivePlayer = activePlayer;
         Move = move;
@@ -52,8 +63,8 @@ public class Game
 
         cell.AddAtom(ActivePlayer);
 
-        if (cellPlayer != null && 
-            cellPlayer != ActivePlayer && 
+        if (cellPlayer != null &&
+            cellPlayer != ActivePlayer &&
             !Board.Cells.Any(c => c.Player == cellPlayer.Number))
         {
             cellPlayer.MarkDead();
@@ -99,14 +110,34 @@ public class Game
         ActivePlayer = player;
     }
 
-    public class Player(int number, PlayerType type)
+    public class Player
     {
-        public int Number { get; } = number;
-        public int Id => Number - 1;
-        public PlayerType Type { get; } = type;
-        public bool IsDead { get; private set; }
+        private readonly IPlayerStrategy? _strategy;
 
+        public Player(int number, PlayerType type, IPlayerStrategy? strategy = null)
+        {
+            if (type != PlayerType.Human && strategy is null)
+            {
+                throw new ArgumentNullException(nameof(strategy));
+            }
+
+            Number = number;
+            Type = type;
+
+            _strategy = strategy;
+        }
+
+        public int Number { get; }
+        public int Id => Number - 1;
+        public PlayerType Type { get; }
+        public bool IsDead { get; private set; }
+        public bool IsHuman => Type == PlayerType.Human;
         public void MarkDead() => IsDead = true;
+
+        public GameBoard.Cell? ChooseCell(Game game)
+        {
+            return _strategy?.Choose(game);
+        }
     }
 
     public class GameBoard
@@ -125,12 +156,11 @@ public class Game
 
         internal GameBoard(int rows,
                            int columns,
-                           IEnumerable<CellState>? cells,
-                           IEnumerable<Player> players)
+                           IEnumerable<CellState>? cells)
         {
             Rows = rows;
             Columns = columns;
-            Cells = CreateCells(cells, players);
+            Cells = CreateCells(cells);
         }
 
         public Cell this[int row, int column] => Cells[GetCellIndex(row, column)];
@@ -150,7 +180,7 @@ public class Game
         bool CellExistsAt(int row, int column) =>
             row > 0 && row <= Rows && column > 0 && column <= Columns;
 
-        List<Cell> CreateCells(IEnumerable<CellState>? state, IEnumerable<Player> players)
+        List<Cell> CreateCells(IEnumerable<CellState>? state)
         {
             int CalculateMaxAtoms(int row, int column) =>
                 (row, column) switch
@@ -194,7 +224,9 @@ public class Game
             public int MaxAtoms { get; } = maxAtoms;
             public int? Player { get; private set; } = player;
             public int Atoms { get; private set; } = atoms ?? 0;
+            public int FreeSpace => IsOverloaded ? 0 : MaxAtoms - Atoms;
             public bool IsOverloaded => Atoms > MaxAtoms;
+            public bool IsFullyLoaded => Atoms == MaxAtoms;
             public ExplosionState Explosion { get; set; }
 
             internal void AddAtom(Player player)

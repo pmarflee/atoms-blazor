@@ -1,5 +1,5 @@
 ﻿using Atoms.Core.Test;
-using Atoms.UseCases.PlaceAtom;
+using Atoms.UseCases.PlayerMove;
 using Atoms.UseCases.Shared.Notifications;
 using Atoms.Web.CustomEvents;
 using MediatR.Courier;
@@ -34,24 +34,11 @@ public class BoardComponent : Component2Base, IDisposable
 
         if (Debug.HasValue)
         {
-            try
-            {
-                _disableClicks = true;
-
-                var moves = new Moves()
-                    .TakeWhile((move, index) =>
-                        index < Debug.Value && !Game.HasWinner);
-
-                foreach (var (row, column) in moves)
-                {
-                    await PlaceAtom(Game.Board[row, column], false);
-                    await Task.Delay(300);
-                }
-            }
-            finally
-            {
-                _disableClicks = false;
-            }
+            await PlayDebugGame();
+        }
+        else if (!Game.ActivePlayer.IsHuman)
+        {
+            await PlayMove();
         }
 
         await SetCursor();
@@ -61,7 +48,7 @@ public class BoardComponent : Component2Base, IDisposable
     {
         if (Game.HasWinner || _disableClicks) return;
 
-        await PlaceAtom(eventArgs.Cell, true);
+        await PlayMove(eventArgs.Cell, true);
     }
 
     protected async Task PlayAgainClick()
@@ -90,6 +77,28 @@ public class BoardComponent : Component2Base, IDisposable
         StateHasChanged();
     }
 
+    async Task PlayDebugGame()
+    {
+        try
+        {
+            _disableClicks = true;
+
+            var moves = new Moves()
+                .TakeWhile((move, index) =>
+                    index < Debug!.Value && !Game.HasWinner);
+
+            foreach (var (row, column) in moves)
+            {
+                await PlayMove(Game.Board[row, column], false);
+                await DelayBetweenMoves();
+            }
+        }
+        finally
+        {
+            _disableClicks = false;
+        }
+    }
+
     protected string GetPlayerClassName(int? player) =>
         player.HasValue ? $"player{player - 1}" : "";
 
@@ -114,17 +123,33 @@ public class BoardComponent : Component2Base, IDisposable
             classNames.Where(cn => !string.IsNullOrEmpty(cn)));
     }
 
-    async Task PlaceAtom(Game.GameBoard.Cell cell, bool updateCursor)
+    async Task PlayMove(Game.GameBoard.Cell? cell = null, bool updateCursor = true)
     {
         var response = await Mediator.Send(
-            new PlaceAtomRequest(Game, cell));
+            new PlayerMoveRequest(Game, cell));
 
-        if (response.IsSuccessful && updateCursor) await SetCursor();
+        if (response.IsSuccessful)
+        {
+            if (updateCursor) await SetCursor();
+
+            if (Game.HasWinner) return;
+
+            if (!Game.ActivePlayer.IsHuman)
+            {
+                await DelayBetweenMoves();
+                await PlayMove();
+            }
+        }
     }
 
     async Task SetCursor()
     {
         await JSRuntime.InvokeVoidAsync("App.setCursor", Game.ActivePlayer.Id);
+    }
+
+    static async Task DelayBetweenMoves()
+    {
+        await Task.Delay(300);
     }
 
     public void Dispose()

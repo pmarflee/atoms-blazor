@@ -14,10 +14,10 @@ internal static class ObjectMother
                             int round = 1)
     {
         players ??=
-            [
-                new (1, PlayerType.Human),
-                new (2, PlayerType.Human),
-            ];
+        [
+            new (1, PlayerType.Human),
+            new (2, PlayerType.Human),
+        ];
 
         var activePlayer = players.First(p => p.Number == active);
 

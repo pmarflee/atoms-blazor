@@ -13,8 +13,8 @@ public class ShouldAddAtomToCellWhenCellIsEmpty
         await Assert.That(cell.Player).IsEqualTo(1);
     }
 
-    public static IEnumerable<Atoms.Core.Entities.Game> GetGameStates()
+    public static IEnumerable<Func<Atoms.Core.Entities.Game>> GetGameStates()
     {
-        yield return ObjectMother.Game();
+        yield return () => ObjectMother.Game();
     }
 }

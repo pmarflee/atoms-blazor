@@ -1,12 +1,12 @@
-﻿using Atoms.UseCases.PlaceAtom;
+﻿using Atoms.UseCases.PlayerMove;
 using Atoms.UseCases.Shared.Notifications;
 
-namespace Atoms.UnitTests.UseCases.PlaceAtom;
+namespace Atoms.UnitTests.UseCases.PlayerMove;
 
-public abstract class PlaceAtomTestFixture
+public abstract class PlayerMoveAtomTestFixture
 {
     protected IMediator Mediator { get; private set; } = default!;
-    protected PlaceAtomRequestHandler Handler { get; private set; } = default!;
+    protected PlayerMoveRequestHandler Handler { get; private set; } = default!;
 
     [Before(Test)]
     public Task Setup()
@@ -20,7 +20,7 @@ public abstract class PlaceAtomTestFixture
             .ReturnValue(Task.CompletedTask);
 
         Mediator = mediatorExpectations.Instance();
-        Handler = new PlaceAtomRequestHandler(Mediator);
+        Handler = new PlayerMoveRequestHandler(Mediator);
 
         return Task.CompletedTask;
     }

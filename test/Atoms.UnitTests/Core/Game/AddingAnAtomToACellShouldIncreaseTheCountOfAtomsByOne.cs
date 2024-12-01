@@ -13,14 +13,14 @@ public class AddingAnAtomToACellShouldIncreaseTheCountOfAtomsByOne
         await Assert.That(cell.Atoms).IsEqualTo(atoms + 1);
     }
 
-    public static IEnumerable<(Atoms.Core.Entities.Game, int, int)> GetTestData()
+    public static IEnumerable<Func<(Atoms.Core.Entities.Game, int, int)>> GetTestData()
     {
-        yield return (ObjectMother.Game(), 1, 1);
-        yield return (
+        yield return () => (ObjectMother.Game(), 1, 1);
+        yield return () => (
             ObjectMother.Game(cells: [ new(2, 1, 1, 1) ]),
             2, 1
         );
-        yield return (
+        yield return () => (
             ObjectMother.Game(cells: [ new(2, 2, 1, 1) ]),
             2, 2
         );

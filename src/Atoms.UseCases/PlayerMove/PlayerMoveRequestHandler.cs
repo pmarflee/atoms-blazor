@@ -1,27 +1,40 @@
 ﻿using static Atoms.Core.Entities.Game.GameBoard;
 
-namespace Atoms.UseCases.PlaceAtom;
+namespace Atoms.UseCases.PlayerMove;
 
-public class PlaceAtomRequestHandler(IMediator mediator)
-    : IRequestHandler<PlaceAtomRequest, PlaceAtomResponse>
+public class PlayerMoveRequestHandler(IMediator mediator)
+    : IRequestHandler<PlayerMoveRequest, PlayerMoveResponse>
 {
-    public async Task<PlaceAtomResponse> Handle(PlaceAtomRequest request,
+    public async Task<PlayerMoveResponse> Handle(PlayerMoveRequest request,
                                                 CancellationToken cancellationToken)
     {
         var game = request.Game;
         var cell = request.Cell;
 
-        if (!game.CanPlaceAtom(cell)) return PlaceAtomResponse.Failure;
-
-        await PlaceAtom(game, cell);
-
-        var overloaded = new Stack<Cell>();
-
-        if (cell.IsOverloaded)
+        if (game.ActivePlayer.IsHuman)
         {
-            overloaded.Push(cell);
+            if (cell is null || !game.CanPlaceAtom(cell))
+            {
+                return PlayerMoveResponse.Failure;
+            }
+        }
+        else
+        {
+            cell = game.ActivePlayer.ChooseCell(game);
+        }
 
-            await DoChainReaction(game, overloaded);
+        if (cell is not null)
+        {
+            await PlaceAtom(game, cell);
+
+            var overloaded = new Stack<Cell>();
+
+            if (cell.IsOverloaded)
+            {
+                overloaded.Push(cell);
+
+                await DoChainReaction(game, overloaded);
+            }
         }
 
         if (!game.HasWinner)
@@ -29,7 +42,7 @@ public class PlaceAtomRequestHandler(IMediator mediator)
             game.PostMoveUpdate();
         }
 
-        return PlaceAtomResponse.Success;
+        return PlayerMoveResponse.Success;
     }
 
     async Task DoChainReaction(Game game, Stack<Cell> overloaded)

@@ -1,8 +1,8 @@
-﻿using Atoms.UseCases.PlaceAtom;
+﻿using Atoms.UseCases.PlayerMove;
 
-namespace Atoms.UnitTests.UseCases.PlaceAtom;
+namespace Atoms.UnitTests.UseCases.PlayerMove;
 
-public class OverloadingACellShouldTriggerAChainReaction : PlaceAtomTestFixture
+public class OverloadingACellShouldTriggerAChainReaction : PlayerMoveAtomTestFixture
 {
     [Test, MethodDataSource(nameof(GetTestData))]
     public async Task Test(Game game,
@@ -13,15 +13,15 @@ public class OverloadingACellShouldTriggerAChainReaction : PlaceAtomTestFixture
         var cell = game.Board[row, column];
 
         await Handler.Handle(
-            new PlaceAtomRequest(game, cell), 
+            new PlayerMoveRequest(game, cell),
             CancellationToken.None);
 
         await Assert.That(game).IsEquivalentTo(expected);
     }
 
-    public static IEnumerable<(Game, int, int, Game)> GetTestData()
+    public static IEnumerable<Func<(Game, int, int, Game)>> GetTestData()
     {
-        yield return (
+        yield return () => (
             ObjectMother.Game(cells: [new(1, 1, 1, 1)]),
             1, 1,
             ObjectMother.Game(
@@ -30,7 +30,7 @@ public class OverloadingACellShouldTriggerAChainReaction : PlaceAtomTestFixture
                 move: 2)
         );
 
-        yield return (
+        yield return () => (
             ObjectMother.Game(cells: [new(1, 2, 1, 2)]),
             1, 2,
             ObjectMother.Game(
@@ -40,7 +40,7 @@ public class OverloadingACellShouldTriggerAChainReaction : PlaceAtomTestFixture
                 move: 2)
         );
 
-        yield return (
+        yield return () => (
             ObjectMother.Game(cells: [new(2, 2, 1, 3)]),
             2, 2,
             ObjectMother.Game(
