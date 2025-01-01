@@ -11,7 +11,7 @@ public class FullyLoadedCellNextToEnemyFullyLoadedCell : IPlayerStrategy
                 from neighbour in game.Board.GetNeighbours(cell)
                 where neighbour.Player == game.ActivePlayer.Number
                 && neighbour.IsFullyLoaded
-                select cell).FirstOrDefault();
+                select neighbour).FirstOrDefault();
     }
 
     static IEnumerable<Cell> EnemyFullyLoadedCells(Game game)
