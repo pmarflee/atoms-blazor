@@ -17,7 +17,7 @@ public class GainAdvantageOverNeighbouringCell(IRandomNumberGenerator rng)
                             && cell.Player != game.ActivePlayer.Number
                             from neighbour in game.Board.GetNeighbours(cell)
                             where game.CanPlaceAtom(neighbour)
-                            && neighbour.FreeSpace < cell.FreeSpace
+                            && neighbour.FreeSpace <= cell.FreeSpace
                             && !dangerCells.Contains(neighbour)
                             select neighbour).ToList();
 

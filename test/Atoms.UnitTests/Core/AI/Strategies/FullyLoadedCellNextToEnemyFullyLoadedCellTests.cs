@@ -1,7 +1,4 @@
-﻿using Atoms.Core.AI.Strategies;
-using static Atoms.Core.Entities.Game.GameBoard;
-
-namespace Atoms.UnitTests.Core.AI.Strategies;
+﻿namespace Atoms.UnitTests.Core.AI.Strategies;
 
 public class FullyLoadedCellNextToEnemyFullyLoadedCellTests : AIStrategyTestFixture
 {
@@ -15,19 +12,6 @@ public class FullyLoadedCellNextToEnemyFullyLoadedCellTests : AIStrategyTestFixt
 
     public static IEnumerable<Func<(Game, Cell?)>> TestCases()
     {
-        static Func<(Game, Cell?)> CreateTestCase(
-            List<CellState> cells, 
-            (int Row, int Column)? choose,
-            int? active = 1)
-        {
-            var game = ObjectMother.Game(active: active, cells: cells);
-            var expected = choose.HasValue
-                ? game.Board[choose.Value.Row, choose.Value.Column]
-                : null;
-
-            return () => (game, expected);
-        }
-
         yield return CreateTestCase([], null);
 
         yield return CreateTestCase(
