@@ -132,7 +132,12 @@ public class BoardComponent : Component2Base, IDisposable
         {
             if (updateCursor) await SetCursor();
 
-            if (Game.HasWinner) return;
+            if (Game.HasWinner)
+            {
+                await JSRuntime.InvokeVoidAsync("App.stopMusic");
+
+                return;
+            }
 
             if (!Game.ActivePlayer.IsHuman)
             {

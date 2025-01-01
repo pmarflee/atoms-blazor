@@ -3,6 +3,7 @@ using Atoms.Core.Interfaces;
 using Atoms.Core.Services;
 using Atoms.UseCases.CreateNewGame;
 using MediatR.Courier;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapGet("/music/{filename}", ([FromRoute]string filename) =>
+{
+    var path = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "audio", filename);
+
+    return Results.File(path, "audio/mpeg");
+});
 
 app.MapStaticAssets();
 app.UseAntiforgery();

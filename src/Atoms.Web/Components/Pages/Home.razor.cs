@@ -63,5 +63,7 @@ public partial class HomePageComponent : Component2Base
         {
             await JSRuntime.InvokeVoidAsync("App.setDefaultAtomShape");
         }
+
+        await JSRuntime.InvokeVoidAsync("App.startMusic");
     }
 }

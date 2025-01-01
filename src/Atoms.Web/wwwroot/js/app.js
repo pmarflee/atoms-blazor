@@ -15,4 +15,24 @@
         const highContrast = document.documentElement.classList.contains('high-contrast') ? '-hc' : '';
         document.documentElement.style.cursor = 'url("images/cursor-player' + playerId + highContrast + '.svg") 18 3, default';
     }
+    static startMusic() {
+        if (document.getElementById('music-intro')) {
+            document.getElementById('music-intro').play();
+            document.getElementById('music-intro').addEventListener('ended', App.#loopMusic);
+        }
+    }
+    static #loopMusic() {
+        if (document.getElementById('music')) {
+            document.getElementById('music').play();
+        }
+    }
+    static stopMusic() {
+        if (document.getElementById('music-intro')) {
+            document.getElementById('music-intro').removeEventListener('ended', App.#loopMusic);
+        }
+        if (document.getElementById('music')) {
+            document.getElementById('music').pause();
+            document.getElementById('music').load();
+        }
+    }
 }
