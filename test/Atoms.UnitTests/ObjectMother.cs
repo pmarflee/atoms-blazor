@@ -21,7 +21,7 @@ internal static class ObjectMother
 
         var activePlayer = players.First(p => p.Number == active);
 
-        return new Game(Rows, Columns, players, activePlayer,
+        return new Game(Guid.Empty, Rows, Columns, players, activePlayer,
                         ColourScheme.Original, AtomShape.Round,
                         cells, move, round);
     }
