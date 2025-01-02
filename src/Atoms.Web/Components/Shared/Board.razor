@@ -14,13 +14,26 @@
     @foreach (var cell in Game.Board.Cells)
     {
         <Cell Data="@cell"
-              PlayerClassName="@(GetPlayerClassName(cell.Player))"
-              OnCellClicked="@CellClicked" />
+        PlayerClassName="@(GetPlayerClassName(cell.Player))"
+        OnCellClicked="@CellClicked" />
     }
 </div>
 <div id="playerList">
     @foreach (var player in Game.Players)
     {
-        <div class="@(GetPlayerClassNames(player))"></div>
+        var (cells, atoms) = Game.GetScore(player);
+        <div>
+            <div class="@(GetPlayerClassNames(player))">
+                @if (!player.IsDead)
+                {
+                    <div class="cells">@(cells)C</div>
+                    <div class="atoms">@(atoms)A</div>
+                }
+            </div>
+        </div>
     }
+</div>
+<div class="progress">
+    <div>@(Game.Round)R</div>
+    <div>@(Game.Move)M</div>
 </div>

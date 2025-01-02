@@ -101,6 +101,20 @@ public class Game
         }
     }
 
+    public (int, int) GetScore(Player player)
+    {
+        var cells = 0;
+        var atoms = 0;
+
+        foreach (var cell in Board.Cells.Where(cell => cell.Player == player.Number))
+        {
+            cells++;
+            atoms += cell.Atoms;
+        }
+
+        return (cells, atoms);
+    }
+
     void SetNextActivePlayer()
     {
         var player = ActivePlayer;

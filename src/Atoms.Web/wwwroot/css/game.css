@@ -275,6 +275,10 @@ html.shaped-atoms .atom.player3, html.shaped-atoms .player.player3:before {
 	margin: auto;
 	width: 500px;
 }
+.player-container {
+    display: flex;
+    align-items: center;
+}
 .player {
 	width: 40px;
 	height: 30px;
@@ -320,6 +324,23 @@ html.shaped-atoms .atom.player3, html.shaped-atoms .player.player3:before {
 }
 .player.player3, .player.player3:before {
 	background-color: var(--player3-color);
+}
+.player > .cells {
+    margin-top: 32px;
+    text-align: center;
+    margin-right: 2px;
+    font-size: 10pt;
+}
+.player > .atoms {
+    text-align: center;
+    margin-right: 2px;
+    font-size: 10pt;
+}
+.progress {
+    float: right;
+}
+.progress > * {
+    text-align: right;
 }
 div#instructions {
 	position: fixed;
