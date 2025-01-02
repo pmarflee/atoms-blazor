@@ -30,6 +30,8 @@ builder.Services.AddTransient<Func<PlayerType, IPlayerStrategy?>>(sp =>
     };
 });
 
+builder.Services.AddScoped<GameStateContainer>();
+
 builder.Services
     .AddMediatR(cfg => 
         cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>())

@@ -4,6 +4,7 @@ namespace Atoms.Core.Entities;
 
 public class Game
 {
+    public Guid Id { get; }
     public IReadOnlyList<Player> Players { get; }
     public ColourScheme ColourScheme { get; }
     public AtomShape AtomShape { get; }
@@ -25,7 +26,8 @@ public class Game
          && !neighbour.IsFullyLoaded
          select neighbour];
 
-    public Game(int rows,
+    public Game(Guid id,
+                int rows,
                 int columns,
                 IReadOnlyList<Player> players,
                 Player activePlayer,
@@ -44,6 +46,7 @@ public class Game
         ColourScheme = colourScheme;
         AtomShape = atomShape;
         Board = new GameBoard(rows, columns, cells);
+        Id = id;
         Players = players;
         ActivePlayer = activePlayer;
         Move = move;

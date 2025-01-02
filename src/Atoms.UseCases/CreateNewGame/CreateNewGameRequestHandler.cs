@@ -19,7 +19,9 @@ public class CreateNewGameRequestHandler(
                 p.Number, p.Type, playerStrategyFactory.Invoke(p.Type)))
             .ToList();
 
-        var game = new Game(Rows,
+        var game = new Game(
+                        Guid.NewGuid(),
+                        Rows,
                         Columns,
                         players,
                         players[0],

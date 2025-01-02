@@ -4,4 +4,5 @@ global using MediatR;
 global using Atoms.Core.DTOs;
 global using Atoms.Core.Entities;
 global using Atoms.Core.Enums;
+global using Atoms.Core.State;
 global using Atoms.Web.Components;

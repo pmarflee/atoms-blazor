@@ -16,8 +16,8 @@ public class BoardComponent : Component2Base, IDisposable
     [Inject]
     IJSRuntime JSRuntime { get; set; } = default!;
 
-    [Parameter]
-    public Game Game { get; set; } = default!;
+    [Inject]
+    GameStateContainer StateContainer { get; set; } = default!;
 
     [Parameter]
     public EventCallback OnPlayAgainClicked { get; set; }
@@ -29,6 +29,8 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async override Task OnInitializedAsync()
     {
+        StateContainer.OnChange += StateHasChangedAsync;
+
         Courier.Subscribe<AtomPlaced>(AtomPlaced);
         Courier.Subscribe<AtomExploded>(AtomExploded);
 
@@ -57,24 +59,25 @@ public class BoardComponent : Component2Base, IDisposable
     }
 
 
-    protected Task AtomPlaced(AtomPlaced notification)
+    protected async Task AtomPlaced(AtomPlaced notification)
     {
-        UpdateGame(notification);
+        if (notification.Game.Id != StateContainer.Game!.Id) return;
 
-        return Task.CompletedTask;
+        await UpdateGame();
     }
 
     protected async Task AtomExploded(AtomExploded notification)
     {
-        UpdateGame(notification);
+        if (notification.Game.Id != StateContainer.Game!.Id) return;
+
+        await UpdateGame();
 
         await Task.Delay(Delay);
     }
 
-    void UpdateGame(GameStateChanged notification)
+    async Task UpdateGame()
     {
-        Game = notification.Game;
-        StateHasChanged();
+        await StateContainer.GameUpdated();
     }
 
     async Task PlayDebugGame()
@@ -123,6 +126,8 @@ public class BoardComponent : Component2Base, IDisposable
             classNames.Where(cn => !string.IsNullOrEmpty(cn)));
     }
 
+    protected Game Game => StateContainer.Game!;
+
     async Task PlayMove(Game.GameBoard.Cell? cell = null, bool updateCursor = true)
     {
         var response = await Mediator.Send(
@@ -169,6 +174,12 @@ public class BoardComponent : Component2Base, IDisposable
         {
             Courier.UnSubscribe<AtomPlaced>(AtomPlaced);
             Courier.UnSubscribe<AtomExploded>(AtomExploded);
+            StateContainer.OnChange -= StateHasChangedAsync;
         }
+    }
+
+    async Task StateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 }

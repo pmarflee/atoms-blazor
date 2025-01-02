@@ -2,19 +2,21 @@
 
 namespace Atoms.Web.Components.Pages;
 
-public partial class HomePageComponent : Component2Base
+public partial class HomePageComponent : Component2Base, IDisposable
 {
     [Inject]
     IJSRuntime JSRuntime { get; set; } = default!;
 
+    [Inject]
+    GameStateContainer StateContainer { get; set; } = default!;
+
     [SupplyParameterFromQuery]
     protected int? Debug { get; set; }
 
-    protected GameState State { get; set; }
-    protected Game? Game { get; set; }
-
     protected async override Task OnInitializedAsync()
     {
+        StateContainer.OnChange += StateHasChangedAsync;
+
         if (Debug.HasValue)
         {
             var request = new CreateNewGameRequest(GameMenuOptions.Debug);
@@ -24,7 +26,7 @@ public partial class HomePageComponent : Component2Base
         }
         else
         {
-            State = GameState.Menu;
+            await StateContainer.SetMenu();
         }
     }
 
@@ -33,20 +35,18 @@ public partial class HomePageComponent : Component2Base
         await StartGame(game);
     }
 
-    protected Task OnShowMenu()
+    protected async Task OnShowMenu()
     {
-        Game = null;
-        State = GameState.Menu;
-
-        return Task.CompletedTask;
+        await StateContainer.SetMenu();
     }
+
+    protected GameState State => StateContainer.State;
 
     async Task StartGame(Game game)
     {
-        Game = game;
-        State = GameState.Game;
+        await StateContainer.SetGame(game);
 
-        if (Game.ColourScheme == ColourScheme.Alternate)
+        if (game.ColourScheme == ColourScheme.Alternate)
         {
             await JSRuntime.InvokeVoidAsync("App.setAlternateColourScheme");
         }
@@ -55,7 +55,7 @@ public partial class HomePageComponent : Component2Base
             await JSRuntime.InvokeVoidAsync("App.setDefaultColourScheme");
         }
 
-        if (Game.AtomShape == AtomShape.Varied)
+        if (game.AtomShape == AtomShape.Varied)
         {
             await JSRuntime.InvokeVoidAsync("App.setVariedAtomShape");
         }
@@ -65,5 +65,24 @@ public partial class HomePageComponent : Component2Base
         }
 
         await JSRuntime.InvokeVoidAsync("App.startMusic");
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            StateContainer.OnChange -= StateHasChangedAsync;
+        }
+    }
+
+    async Task StateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 }
