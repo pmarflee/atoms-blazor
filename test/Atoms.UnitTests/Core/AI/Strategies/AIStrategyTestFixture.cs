@@ -33,4 +33,13 @@ public abstract class AIStrategyTestFixture
 
         return (game, expected);
     }
+
+    protected void SetNextMinMaxExpectations(params int[] values)
+    {
+        int i = 0;
+
+        RandomNumberGeneratorExpectations.Methods.Next(
+            Arg.Any<int>(), Arg.Any<int>())
+            .Callback((_, _) => values[i++]);
+    }
 }
