@@ -1,0 +1,23 @@
+﻿@inherits NavMenuComponent
+
+<div>
+    <AuthorizeView>
+        <Authorized>
+            <div id="auth-container">
+                <span>
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="@CurrentUrl" />
+                        <button type="submit" class="logout-button">Logout</button>
+                    </form>
+                </span>
+                <span class="push"></span>
+                <span>@context.User.Identity?.Name</span>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <NavLink href="Account/Register">Register</NavLink>
+            <NavLink href="Account/Login">Login</NavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>

@@ -1,0 +1,32 @@
+﻿@inherits RegisterComponent
+
+@page "/Account/Register"
+
+<PageTitle>Register</PageTitle>
+
+<h2>Register</h2>
+
+<div class="account">
+    <section>
+        <StatusMessage Message="@ErrorMessage" />
+        <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="input-group">
+                <label for="Input.Email">Email</label>
+                <InputText @bind-Value="Input.Email" id="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+            </div>
+            <div class="input-group">
+                <label for="Input.Password">Password</label>
+                <InputText type="password" @bind-Value="Input.Password" id="Input.Password" autocomplete="new-password" aria-required="true" placeholder="password" />
+            </div>
+            <div class="input-group">
+                <label for="Input.ConfirmPassword">Confirm Password</label>
+                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="password" />
+            </div>
+            <div class="submit-group">
+                <button type="submit">Register</button>
+            </div>
+        </EditForm>
+    </section>
+</div>

@@ -361,4 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
 /src/Atoms.Web/wwwroot/styles.css
+/src/Atoms.Web/Database/Atoms.db*

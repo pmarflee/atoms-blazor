@@ -1,8 +1,15 @@
-﻿global using Microsoft.JSInterop;
+﻿global using System.ComponentModel.DataAnnotations;
+global using System.Text.Encodings.Web;
+global using System.Text;
+global using Microsoft.JSInterop;
 global using Microsoft.AspNetCore.Components;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.WebUtilities;
 global using MediatR;
 global using Atoms.Core.DTOs;
 global using Atoms.Core.Entities;
 global using Atoms.Core.Enums;
+global using Atoms.Core.Identity;
 global using Atoms.Core.State;
+global using Atoms.Infrastructure.Identity;
 global using Atoms.Web.Components;

@@ -1,0 +1,26 @@
+﻿@inherits ResendEmailConfirmationComponent
+
+@page "/Account/ResendEmailConfirmation"
+
+<PageTitle>Reset password</PageTitle>
+
+<h2>Resend email confirmation</h2>
+<h3>Enter your email.</h3>
+<hr />
+
+<div class="account">
+    <section>
+        <StatusMessage Message="@Message" />
+        <EditForm Model="Input" method="post" OnValidSubmit="OnValidSubmit" FormName="resend-email-confirmation">
+            <DataAnnotationsValidator />
+            <ValidationSummary role="alert" />
+            <div class="input-group">
+                <label for="Input.Email">Email</label>
+                <InputText @bind-Value="Input.Email" id="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+            </div>
+            <div class="submit-group">
+                <button type="submit">Resend</button>
+            </div>
+        </EditForm>
+    </section>
+</div>

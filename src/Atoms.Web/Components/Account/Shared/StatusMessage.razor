@@ -1,0 +1,8 @@
+﻿@inherits StatusMessageComponent
+
+@if (!string.IsNullOrEmpty(DisplayMessage))
+{
+    <div role="alert">
+        @DisplayMessage
+    </div>
+}

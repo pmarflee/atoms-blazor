@@ -5,9 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=520, height=620">
     <base href="/" />
-    <link rel="stylesheet" href="./css/game.css" />
+    <link rel="stylesheet" href="@Assets["css/game.css"]" />
+    <link rel="stylesheet" href="@Assets["css/account.css"]" />
     <link rel="stylesheet" href="Atoms.Web.styles.css" />
-    <link rel="shortcut icon" href="./images/favicon.png">
+    <link rel="shortcut icon" href="@Assets["images/favicon.png"]">
     <title>Atoms</title>
     <HeadOutlet @rendermode="RenderMode" />
 </head>
@@ -15,18 +16,17 @@
 <body>
     <Routes @rendermode="RenderMode" />
     <script src="_framework/blazor.web.js"></script>
-    <script src="./js/app.js"></script> 
+    <script src="@Assets["js/app.js"]"></script> 
 </body>
 
 </html>
 
 @code {
-    InteractiveServerRenderMode RenderMode { get; set; } = default!;
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
 
-    protected override void OnInitialized()
-    {
-        RenderMode = new InteractiveServerRenderMode(prerender: false);
-
-        base.OnInitialized();
-    }
+    private IComponentRenderMode? RenderMode =>
+        HttpContext.AcceptsInteractiveRouting() 
+            ? new InteractiveServerRenderMode(prerender: false) 
+            : null;
 }

@@ -1,9 +1,20 @@
 using Atoms.Core.AI.Strategies;
+using Atoms.Core.Entities.Configuration;
+using Atoms.Core.Identity;
 using Atoms.Core.Interfaces;
 using Atoms.Core.Services;
+using Atoms.Infrastructure;
+using Atoms.Infrastructure.Data.Identity;
+using Atoms.Infrastructure.Email;
+using Atoms.Infrastructure.Identity;
 using Atoms.UseCases.CreateNewGame;
 using MediatR.Courier;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +48,37 @@ builder.Services
         cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>())
     .AddCourier(typeof(CreateNewGameRequest).Assembly);
 
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<IdentityUserAccessor>();
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    })
+    .AddIdentityCookies();
+
+builder.AddAtomsDatabase();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+}
+
+builder.Services.AddIdentityCore<ApplicationUser>(
+    options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
+builder.Services.AddSingleton<IEmailSender, MailgunApiEmailSender>();
+
+builder.Services.AddOptions<EmailSettings>()
+                .BindConfiguration("Email");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -61,5 +103,14 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapAdditionalIdentityEndpoints();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
+
+    db.Database.Migrate();
+}
 
 app.Run();
