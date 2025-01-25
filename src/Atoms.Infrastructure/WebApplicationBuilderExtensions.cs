@@ -1,8 +1,8 @@
-﻿using Atoms.Infrastructure.Data.Identity;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Atoms.Infrastructure.Data;
+using Atoms.Infrastructure.Data.Identity;
 
 namespace Atoms.Infrastructure;
 
@@ -10,8 +10,13 @@ public static class WebApplicationBuilderExtensions
 {
     public static void AddAtomsDatabase(this WebApplicationBuilder builder)
     {
+        var connectionString = BuildConnectionString(builder);
+
         builder.Services.AddDbContext<ApplicationIdentityDbContext>(
-            options => options.UseSqlite(BuildConnectionString(builder)));
+            options => options.UseSqlite(connectionString));
+
+        builder.Services.AddDbContextFactory<ApplicationDbContext>(
+            options => options.UseSqlite(connectionString));
     }
 
     static string BuildConnectionString(WebApplicationBuilder builder)

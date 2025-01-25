@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 /src/Atoms.Web/wwwroot/styles.css
 /src/Atoms.Web/Database/Atoms.db*
+/Notes.txt
