@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -16,7 +15,7 @@ namespace Atoms.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    SessionId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    LocalStorageId = table.Column<Guid>(type: "TEXT", nullable: false),
                     ColourScheme = table.Column<int>(type: "INTEGER", nullable: false),
                     AtomShape = table.Column<int>(type: "INTEGER", nullable: false),
                     Move = table.Column<int>(type: "INTEGER", nullable: false),
@@ -51,9 +50,9 @@ namespace Atoms.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_SessionId",
+                name: "IX_Games_LocalStorageId",
                 table: "Games",
-                column: "SessionId");
+                column: "LocalStorageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Players_GameId",

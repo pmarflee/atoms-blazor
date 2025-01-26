@@ -10,11 +10,16 @@ public partial class HomePageComponent : Component2Base, IDisposable
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
+    [Inject]
+    ProtectedLocalStorage ProtectedLocalStore { get; set; } = default!;
+
     [SupplyParameterFromQuery]
     protected int? Debug { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
+        await InitializeLocalStorageId();
+
         StateContainer.OnChange += StateHasChangedAsync;
 
         if (Debug.HasValue)
@@ -84,5 +89,21 @@ public partial class HomePageComponent : Component2Base, IDisposable
     async Task StateHasChangedAsync()
     {
         await InvokeAsync(StateHasChanged);
+    }
+
+    async Task InitializeLocalStorageId()
+    {
+        var localStorageIdResult = 
+            await ProtectedLocalStore.GetAsync<Guid>(
+                Constants.StorageKeys.LocalStorageId);
+
+        if (!localStorageIdResult.Success)
+        {
+            var localStorageId = Guid.CreateVersion7();
+
+            await ProtectedLocalStore.SetAsync(
+                Constants.StorageKeys.LocalStorageId,
+                localStorageId);
+        }
     }
 }

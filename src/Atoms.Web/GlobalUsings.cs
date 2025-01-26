@@ -5,6 +5,7 @@ global using Microsoft.JSInterop;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.WebUtilities;
+global using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 global using MediatR;
 global using Atoms.Core.DTOs;
 global using Atoms.Core.Entities;

@@ -13,7 +13,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
             .HasKey(x => x.Id);
 
         modelBuilder.Entity<GameDTO>()
-            .HasIndex(x => x.SessionId);
+            .HasIndex(x => x.LocalStorageId);
 
         modelBuilder.Entity<GameDTO>()
             .ComplexProperty(x => x.Board);

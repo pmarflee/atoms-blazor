@@ -3,7 +3,7 @@
 public class GameDTO
 {
     public Guid Id { get; set; }
-    public Guid? SessionId { get; set; }
+    public Guid LocalStorageId { get; set; }
     public ColourScheme ColourScheme { get; set; }
     public AtomShape AtomShape { get; set; }
     public ICollection<PlayerDTO> Players { get; } = [];

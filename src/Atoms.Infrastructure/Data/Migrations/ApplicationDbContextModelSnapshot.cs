@@ -33,11 +33,11 @@ namespace Atoms.Infrastructure.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("LocalStorageId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Move")
                         .HasColumnType("INTEGER");
-
-                    b.Property<Guid?>("SessionId")
-                        .HasColumnType("TEXT");
 
                     b.ComplexProperty<Dictionary<string, object>>("Board", "Atoms.Core.DTOs.GameDTO.Board#BoardDTO", b1 =>
                         {
@@ -50,7 +50,7 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SessionId");
+                    b.HasIndex("LocalStorageId");
 
                     b.ToTable("Games");
                 });

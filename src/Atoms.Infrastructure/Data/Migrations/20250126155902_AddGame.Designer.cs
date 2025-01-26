@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Atoms.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250122222013_AddGame")]
+    [Migration("20250126155902_AddGame")]
     partial class AddGame
     {
         /// <inheritdoc />
@@ -36,11 +36,11 @@ namespace Atoms.Infrastructure.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("LocalStorageId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Move")
                         .HasColumnType("INTEGER");
-
-                    b.Property<Guid?>("SessionId")
-                        .HasColumnType("TEXT");
 
                     b.ComplexProperty<Dictionary<string, object>>("Board", "Atoms.Core.DTOs.GameDTO.Board#BoardDTO", b1 =>
                         {
@@ -53,7 +53,7 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SessionId");
+                    b.HasIndex("LocalStorageId");
 
                     b.ToTable("Games");
                 });
