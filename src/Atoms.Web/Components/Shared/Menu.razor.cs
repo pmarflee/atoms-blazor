@@ -4,6 +4,9 @@ namespace Atoms.Web.Components.Shared;
 
 public partial class MenuComponent : Component2Base
 {
+    [Inject]
+    BrowserStorageService BrowserStorageService { get; set; } = default!;
+
     [Parameter]
     public EventCallback<Game> OnCreateGame { get; set; }
 
@@ -18,7 +21,9 @@ public partial class MenuComponent : Component2Base
 
     protected async Task SubmitAsync()
     {
-        var response = await Mediator.Send(new CreateNewGameRequest(Options));
+        var response = await Mediator.Send(
+            new CreateNewGameRequest(
+                Options, await BrowserStorageService.GetOrAddStorageId()));
 
         await OnCreateGame.InvokeAsync(response.Game);
     }

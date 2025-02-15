@@ -12,6 +12,7 @@ public class ChooseCornerCellTests : AIStrategyTestFixture
     }
 
     [Test]
+    [MatrixDataSource]
     public async Task ShouldNotChooseCornerCellWhenRngIsAboveThreshold(
         [Matrix(0.8, 0.9, 0.99)] double rnd)
     {

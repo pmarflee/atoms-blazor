@@ -2,11 +2,14 @@
 
 namespace Atoms.UseCases.PlayerMove;
 
-public class PlayerMoveRequestHandler(IMediator mediator)
+public class PlayerMoveRequestHandler(
+    IMediator mediator,
+    IDbContextFactory<ApplicationDbContext> dbContextFactory)
     : IRequestHandler<PlayerMoveRequest, PlayerMoveResponse>
 {
-    public async Task<PlayerMoveResponse> Handle(PlayerMoveRequest request,
-                                                CancellationToken cancellationToken)
+    public async Task<PlayerMoveResponse> Handle(
+        PlayerMoveRequest request,
+        CancellationToken cancellationToken)
     {
         var game = request.Game;
         var cell = request.Cell;
@@ -41,6 +44,8 @@ public class PlayerMoveRequestHandler(IMediator mediator)
         {
             game.PostMoveUpdate();
         }
+
+        await SaveGame(game, cancellationToken);
 
         return PlayerMoveResponse.Success;
     }
@@ -102,5 +107,20 @@ public class PlayerMoveRequestHandler(IMediator mediator)
     async Task NotifyAtomExploded(Game game)
     {
         await mediator.Publish(new AtomExploded(game));
+    }
+
+    async Task SaveGame(Game game,
+                        CancellationToken cancellationToken)
+    {
+        using var dbContext = await dbContextFactory.CreateDbContextAsync(
+            cancellationToken);
+
+        var gameDto = await dbContext.GetGameById(game.Id,
+                                                  cancellationToken) 
+            ?? throw new Exception("Game not found");
+
+        gameDto.UpdateFromEntity(game);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

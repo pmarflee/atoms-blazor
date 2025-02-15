@@ -50,5 +50,6 @@ public class GameMenuOptions
     {
         public required int Number { get; init; }
         public required PlayerType Type { get; set; }
+        public string? UserId { get; set; }
     }
 }

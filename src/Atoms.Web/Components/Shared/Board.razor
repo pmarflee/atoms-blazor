@@ -1,39 +1,42 @@
 ﻿@inherits BoardComponent
 
-<div id="status">
-    @if (Game.HasWinner)
-    {
-        <span class="@(GetPlayerClassName(Game.Winner!.Number))">
-            Player @Game.Winner!.Number
-        </span>
-        @(" wins! ")
-        <button @onclick="@PlayAgainClick">Play again</button>
-    }
-</div>
-<div id="board">
-    @foreach (var cell in Game.Board.Cells)
-    {
-        <Cell Data="@cell"
-        PlayerClassName="@(GetPlayerClassName(cell.Player))"
-        OnCellClicked="@CellClicked" />
-    }
-</div>
-<div id="playerList">
-    @foreach (var player in Game.Players)
-    {
-        var (cells, atoms) = Game.GetScore(player);
-        <div>
-            <div class="@(GetPlayerClassNames(player))">
-                @if (!player.IsDead)
-                {
-                    <div class="cells">@(cells)C</div>
-                    <div class="atoms">@(atoms)A</div>
-                }
+@if (Game is not null)
+{
+    <div id="status">
+        @if (Game.HasWinner)
+        {
+            <span class="@(GetPlayerClassName(Game.Winner!.Number))">
+                Player @Game.Winner!.Number
+            </span>
+            @(" wins! ")
+            <button @onclick="@PlayAgainClick">Play again</button>
+        }
+    </div>
+    <div id="board">
+        @foreach (var cell in Game.Board.Cells)
+        {
+            <Cell Data="@cell"
+                  PlayerClassName="@(GetPlayerClassName(cell.Player))"
+                  OnCellClicked="@CellClicked" />
+        }
+    </div>
+    <div id="playerList">
+        @foreach (var player in Game.Players)
+        {
+            var (cells, atoms) = Game.GetScore(player);
+            <div>
+                <div class="@(GetPlayerClassNames(player))">
+                    @if (!player.IsDead)
+                    {
+                        <div class="cells">@(cells)C</div>
+                        <div class="atoms">@(atoms)A</div>
+                    }
+                </div>
             </div>
-        </div>
-    }
-</div>
-<div class="progress">
-    <div>@(Game.Round)R</div>
-    <div>@(Game.Move)M</div>
-</div>
+        }
+    </div>
+    <div class="progress">
+        <div>@(Game.Round)R</div>
+        <div>@(Game.Move)M</div>
+    </div>
+}

@@ -27,28 +27,18 @@ public class BoardComponent : Component2Base, IDisposable
 
     bool _disableClicks;
 
-    protected async override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        StateContainer.OnChange += StateHasChangedAsync;
+        StateContainer.OnChange += OnStateHasChanged;
+        StateContainer.OnGameSet += OnGameSet;
 
         Courier.Subscribe<AtomPlaced>(AtomPlaced);
         Courier.Subscribe<AtomExploded>(AtomExploded);
-
-        if (Debug.HasValue)
-        {
-            await PlayDebugGame();
-        }
-        else if (!Game.ActivePlayer.IsHuman)
-        {
-            await PlayMove();
-        }
-
-        await SetCursor();
     }
 
     protected async Task CellClicked(CellClickEventArgs eventArgs)
     {
-        if (Game.HasWinner || _disableClicks) return;
+        if (Game!.HasWinner || _disableClicks) return;
 
         await PlayMove(eventArgs.Cell, true);
     }
@@ -88,11 +78,11 @@ public class BoardComponent : Component2Base, IDisposable
 
             var moves = new Moves()
                 .TakeWhile((move, index) =>
-                    index < Debug!.Value && !Game.HasWinner);
+                    index < Debug!.Value && !Game!.HasWinner);
 
             foreach (var (row, column) in moves)
             {
-                await PlayMove(Game.Board[row, column], false);
+                await PlayMove(Game!.Board[row, column], false);
                 await DelayBetweenMoves();
             }
         }
@@ -106,7 +96,7 @@ public class BoardComponent : Component2Base, IDisposable
         player.HasValue ? $"player{player - 1}" : "";
 
     protected string GetPlayerActiveClassName(Game.Player player) =>
-        $"{(player == Game.ActivePlayer ? "active" : "")}";
+        $"{(player == Game!.ActivePlayer ? "active" : "")}";
 
     protected string GetPlayerDeadClassName(Game.Player player) =>
         $"{(player.IsDead ? "dead" : "")}";
@@ -126,25 +116,24 @@ public class BoardComponent : Component2Base, IDisposable
             classNames.Where(cn => !string.IsNullOrEmpty(cn)));
     }
 
-    protected Game Game => StateContainer.Game!;
+    protected Game? Game => StateContainer.Game;
 
     async Task PlayMove(Game.GameBoard.Cell? cell = null, bool updateCursor = true)
     {
-        var response = await Mediator.Send(
-            new PlayerMoveRequest(Game, cell));
+        var response = await Mediator.Send(new PlayerMoveRequest(Game!, cell));
 
         if (response.IsSuccessful)
         {
             if (updateCursor) await SetCursor();
 
-            if (Game.HasWinner)
+            if (Game!.HasWinner)
             {
                 await JSRuntime.InvokeVoidAsync("App.stopMusic");
 
                 return;
             }
 
-            if (!Game.ActivePlayer.IsHuman)
+            if (!Game!.ActivePlayer.IsHuman)
             {
                 await DelayBetweenMoves();
                 await PlayMove();
@@ -154,7 +143,9 @@ public class BoardComponent : Component2Base, IDisposable
 
     async Task SetCursor()
     {
-        await JSRuntime.InvokeVoidAsync("App.setCursor", Game.ActivePlayer.Id);
+        await JSRuntime.InvokeVoidAsync(
+            "App.setCursor", 
+            Game!.ActivePlayer.Number - 1);
     }
 
     static async Task DelayBetweenMoves()
@@ -174,12 +165,28 @@ public class BoardComponent : Component2Base, IDisposable
         {
             Courier.UnSubscribe<AtomPlaced>(AtomPlaced);
             Courier.UnSubscribe<AtomExploded>(AtomExploded);
-            StateContainer.OnChange -= StateHasChangedAsync;
+
+            StateContainer.OnChange -= OnStateHasChanged;
+            StateContainer.OnGameSet -= OnGameSet;
         }
     }
 
-    async Task StateHasChangedAsync()
+    async Task OnStateHasChanged()
     {
         await InvokeAsync(StateHasChanged);
+    }
+
+    async Task OnGameSet()
+    {
+        if (Debug.HasValue)
+        {
+            await PlayDebugGame();
+        }
+        else if (!Game!.ActivePlayer.IsHuman)
+        {
+            await PlayMove();
+        }
+
+        await SetCursor();
     }
 }

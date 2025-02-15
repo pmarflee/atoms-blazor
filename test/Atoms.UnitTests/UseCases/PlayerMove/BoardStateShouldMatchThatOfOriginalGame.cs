@@ -20,6 +20,8 @@ public class BoardStateShouldMatchThatOfOriginalGame : PlayerMoveAtomTestFixture
                 CancellationToken.None);
         }
 
+        using var _ = Assert.Multiple();
+
         await Assert.That(game.Board).IsEquivalentTo(expected);
         await Assert.That(game.Winner?.Number).IsEqualTo(winner);
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -19,8 +20,11 @@ namespace Atoms.Infrastructure.Data.Migrations
                     ColourScheme = table.Column<int>(type: "INTEGER", nullable: false),
                     AtomShape = table.Column<int>(type: "INTEGER", nullable: false),
                     Move = table.Column<int>(type: "INTEGER", nullable: false),
+                    Round = table.Column<int>(type: "INTEGER", nullable: false),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Board_Data = table.Column<string>(type: "TEXT", nullable: false)
+                    Board_Data = table.Column<string>(type: "TEXT", nullable: false),
+                    Rng_Iterations = table.Column<int>(type: "INTEGER", nullable: false),
+                    Rng_Seed = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

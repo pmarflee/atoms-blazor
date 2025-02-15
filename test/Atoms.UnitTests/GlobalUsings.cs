@@ -1,5 +1,8 @@
-﻿global using MediatR;
+﻿global using Microsoft.Data.Sqlite;
+global using Microsoft.EntityFrameworkCore;
+global using MediatR;
 global using Rocks;
+global using Atoms.Core.Data;
 global using Atoms.Core.Entities;
 global using Atoms.Core.Enums;
 global using Atoms.Core.Interfaces;

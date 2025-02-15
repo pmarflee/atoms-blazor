@@ -3,6 +3,7 @@
 public class GainAdvantageOverNeighbouringCellTests : AIStrategyTestFixture
 {
     [Test]
+    [MatrixDataSource]
     public async Task ShouldNotChooseCornerCellWhenRngIsAboveThreshold(
         [Matrix(0.9, 0.95, 0.99)] double rnd)
     {

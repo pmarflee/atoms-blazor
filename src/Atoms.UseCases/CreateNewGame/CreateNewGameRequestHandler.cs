@@ -1,33 +1,32 @@
-﻿using Atoms.Core.Interfaces;
-
-namespace Atoms.UseCases.CreateNewGame;
+﻿namespace Atoms.UseCases.CreateNewGame;
 
 public class CreateNewGameRequestHandler(
-    Func<PlayerType, IPlayerStrategy> playerStrategyFactory)
+    Func<GameMenuOptions, Game> gameFactory,
+    IDbContextFactory<ApplicationDbContext> dbContextFactory)
     : IRequestHandler<CreateNewGameRequest, CreateNewGameResponse>
 {
-    const int Rows = 6;
-    const int Columns = 10;
-
-    public Task<CreateNewGameResponse> Handle(CreateNewGameRequest request,
-                                              CancellationToken cancellationToken)
+    public async Task<CreateNewGameResponse> Handle(
+        CreateNewGameRequest request,
+        CancellationToken cancellationToken)
     {
-        var options = request.Options;
-        var players = options.Players
-            .Take(options.NumberOfPlayers)
-            .Select(p => new Game.Player(
-                p.Number, p.Type, playerStrategyFactory.Invoke(p.Type)))
-            .ToList();
+        var game = gameFactory.Invoke(request.Options);
 
-        var game = new Game(
-                        Guid.NewGuid(),
-                        Rows,
-                        Columns,
-                        players,
-                        players[0],
-                        options.ColourScheme,
-                        options.AtomShape);
-        
-        return Task.FromResult(new CreateNewGameResponse(game));
+        await SaveGame(game, request.StorageId, cancellationToken);
+
+        return new CreateNewGameResponse(game);
+    }
+
+    async Task SaveGame(Game game,
+                        StorageId storageId,
+                        CancellationToken cancellationToken)
+    {
+        using var dbContext = await dbContextFactory.CreateDbContextAsync(
+            cancellationToken);
+
+        var gameDto = GameDTO.FromEntity(game, storageId);
+
+        await dbContext.Games.AddAsync(gameDto, cancellationToken);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

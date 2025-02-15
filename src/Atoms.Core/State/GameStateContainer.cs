@@ -20,6 +20,7 @@ public class GameStateContainer
         _game = game;
         _state = GameState.Game;
 
+        await NotifyGameSet();
         await NotifyStateChanged();
     }
 
@@ -37,5 +38,14 @@ public class GameStateContainer
     }
 
     public event Func<Task> OnChange = default!;
+    public event Func<Task>? OnGameSet;
+
     private async Task NotifyStateChanged() => await OnChange.Invoke();
+    private async Task NotifyGameSet()
+    {
+        if (OnGameSet is not null)
+        {
+            await OnGameSet.Invoke();
+        }
+    }
 }

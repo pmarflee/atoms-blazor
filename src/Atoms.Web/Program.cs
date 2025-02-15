@@ -1,5 +1,6 @@
 using Atoms.Core.AI.Strategies;
 using Atoms.Core.Entities.Configuration;
+using Atoms.Core.Factories;
 using Atoms.Core.Interfaces;
 using Atoms.Core.Services;
 using Atoms.Infrastructure;
@@ -7,7 +8,6 @@ using Atoms.Infrastructure.Data.Identity;
 using Atoms.Infrastructure.Email;
 using Atoms.UseCases.CreateNewGame;
 using MediatR.Courier;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +17,25 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddTransient<Func<PlayerType, IPlayerStrategy?>>(sp =>
+builder.Services.AddSingleton<Func<int, int, IRandomNumberGenerator>>(sp =>
 {
-    var rng = new RandomNumberGenerator(new Random());
+    return (seed, iterations) =>
+    {
+        var random = new Random(seed);
+        var i = 0;
 
-    return playerType => playerType switch
+        while (i++ < iterations)
+        {
+            random.Next();
+        }
+
+        return new RandomNumberGenerator(random, seed, iterations);
+    };
+});
+
+builder.Services.AddSingleton<Func<PlayerType, IRandomNumberGenerator, IPlayerStrategy?>>(sp =>
+{
+    return (playerType, rng) => playerType switch
     {
         PlayerType.CPU_Easy => new PlayRandomly(rng),
         PlayerType.CPU_Medium =>
@@ -36,10 +50,24 @@ builder.Services.AddTransient<Func<PlayerType, IPlayerStrategy?>>(sp =>
     };
 });
 
+builder.Services.AddSingleton<Func<GameMenuOptions, Game>>(sp =>
+{
+    return options =>
+    {
+        var rngFactory = sp.GetRequiredService<Func<int, int, IRandomNumberGenerator>>();
+        var playerStrategyFactory = sp.GetRequiredService<Func<PlayerType, IRandomNumberGenerator, IPlayerStrategy>>();
+
+        return GameFactory.Create(rngFactory,
+                                  playerStrategyFactory,
+                                  Guid.NewGuid(),
+                                  options);
+    };
+});
+
 builder.Services.AddScoped<GameStateContainer>();
 
 builder.Services
-    .AddMediatR(cfg => 
+    .AddMediatR(cfg =>
         cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>())
     .AddCourier(typeof(CreateNewGameRequest).Assembly);
 
@@ -74,6 +102,8 @@ builder.Services.AddSingleton<IEmailSender, MailgunApiEmailSender>();
 builder.Services.AddOptions<EmailSettings>()
                 .BindConfiguration("Email");
 
+builder.Services.AddScoped<BrowserStorageService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -86,7 +116,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/music/{filename}", ([FromRoute]string filename) =>
+app.MapGet("/music/{filename}", ([FromRoute] string filename) =>
 {
     var path = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "audio", filename);
 

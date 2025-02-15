@@ -16,6 +16,7 @@ public class Game
     public bool HasWinner => Winner != null;
     public int Move { get; private set; }
     public int Round { get; private set; }
+    public IRandomNumberGenerator Rng { get; }
 
     public HashSet<GameBoard.Cell> DangerCells =>
         [..from cell in Board.Cells
@@ -33,6 +34,7 @@ public class Game
                 Player activePlayer,
                 ColourScheme colourScheme,
                 AtomShape atomShape,
+                IRandomNumberGenerator rng,
                 IEnumerable<GameBoard.CellState>? cells = null,
                 int move = 1,
                 int round = 1)
@@ -51,6 +53,7 @@ public class Game
         ActivePlayer = activePlayer;
         Move = move;
         Round = round;
+        Rng = rng;
 
         CheckForWinner();
     }
@@ -131,22 +134,25 @@ public class Game
     {
         private readonly IPlayerStrategy? _strategy;
 
-        public Player(int number, PlayerType type, IPlayerStrategy? strategy = null)
+        public Player(Guid id, int number, PlayerType type, string? userId = null, IPlayerStrategy? strategy = null)
         {
             if (type != PlayerType.Human && strategy is null)
             {
                 throw new ArgumentNullException(nameof(strategy));
             }
 
+            Id = id;
             Number = number;
             Type = type;
+            UserId = userId;
 
             _strategy = strategy;
         }
 
+        public Guid Id { get; }
         public int Number { get; }
-        public int Id => Number - 1;
         public PlayerType Type { get; }
+        public string? UserId { get; }
         public bool IsDead { get; private set; }
         public bool IsHuman => Type == PlayerType.Human;
         public void MarkDead() => IsDead = true;
@@ -183,12 +189,12 @@ public class Game
         public Cell this[int row, int column] => Cells[GetCellIndex(row, column)];
 
         public IEnumerable<Cell> GetNeighbours(Cell cell) =>
-            (from offset in _offsets
+            [.. from offset in _offsets
              let row = cell.Row + offset.Item1
              let column = cell.Column + offset.Item2
              let found = TryGetCell(row, column)
              where found != null
-             select found).ToList();
+             select found];
 
         Cell? TryGetCell(int row, int column) =>
             CellExistsAt(row, column)
