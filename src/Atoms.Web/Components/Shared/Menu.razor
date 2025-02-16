@@ -25,17 +25,32 @@
                             <th class="@playerIdClass">Player @(playerId + 1)</th>
                             <td>
                                 <InputRadioGroup Name="@playerIdClass"
-                                                 @bind-Value="@player.Type">
+                                @bind-Value="@player.Type">
                                     @foreach (var type in Options.PlayerTypes)
                                     {
                                         var radioId = $"player_{playerId}_{type.Key}";
                                         <td>
                                             <InputRadio id="@radioId"
-                                                        Value="@type.Key" />
+                                            Value="@type.Key" />
                                             <label for="@radioId">@type.Value</label>
                                         </td>
                                     }
                                 </InputRadioGroup>
+                            </td>
+                            <td>
+                                @if (player.Type == PlayerType.Human)
+                                {
+                                    var whatsAppLink = player.InviteLink!.ToWhatsAppLink();
+
+                                    <div class="image-row">
+                                        <a href="" @onclick="() => CopyInviteToClipboard(player.InviteLink)" @onclick:preventDefault>
+                                            <img src="images/copy.png" title="Copy invite to clipboard" alt="Copy invite to clipboard" />
+                                        </a>
+                                        <a href="@whatsAppLink.Url" target="_blank">
+                                            <img src="images/whatsapp.png" title="Send invite to WhatsApp" alt="Send invite to WhatsApp" />
+                                        </a>
+                                    </div>
+                                }
                             </td>
                         </tr>
                     }

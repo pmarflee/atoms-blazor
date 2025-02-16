@@ -7,6 +7,7 @@
     <base href="/" />
     <link rel="stylesheet" href="@Assets["css/game.css"]" />
     <link rel="stylesheet" href="@Assets["css/account.css"]" />
+    <link rel="stylesheet" href="@Assets["css/vanilla-notify.css"]" />
     <link rel="stylesheet" href="Atoms.Web.styles.css" />
     <link rel="shortcut icon" href="@Assets["images/favicon.png"]">
     <title>Atoms</title>
@@ -16,7 +17,8 @@
 <body>
     <Routes @rendermode="RenderMode" />
     <script src="_framework/blazor.web.js"></script>
-    <script src="@Assets["js/app.js"]"></script> 
+    <script src="@Assets["js/app.js"]"></script>
+    <script src="@Assets["js/vanilla-notify.min.js"]"></script>
 </body>
 
 </html>
@@ -26,7 +28,7 @@
     private HttpContext HttpContext { get; set; } = default!;
 
     private IComponentRenderMode? RenderMode =>
-        HttpContext.AcceptsInteractiveRouting() 
-            ? new InteractiveServerRenderMode(prerender: false) 
+        HttpContext.AcceptsInteractiveRouting()
+            ? new InteractiveServerRenderMode(prerender: false)
             : null;
 }

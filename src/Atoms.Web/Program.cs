@@ -1,6 +1,8 @@
+using Atoms.Core.Delegates;
 using Atoms.Core.Entities.Configuration;
 using Atoms.Core.Factories;
 using Atoms.Core.Interfaces;
+using Atoms.Core.Services;
 using Atoms.Infrastructure;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Data.Identity;
@@ -28,6 +30,13 @@ builder.Services.AddSingleton<Func<GameMenuOptions, Game>>(sp =>
     return options => GameFactory.Create(rngFactory,
                                          playerStrategyFactory,
                                          options);
+});
+builder.Services.AddSingleton<CreateInviteLink>(sp =>
+{
+    var dataProtectionProvider = sp.GetRequiredService<IDataProtectionProvider>();
+
+    return (gameId, playerId, baseUrl) => InviteLinkFactory.Create(
+        gameId, playerId, baseUrl, dataProtectionProvider);
 });
 
 builder.Services.AddScoped<GameStateContainer>();

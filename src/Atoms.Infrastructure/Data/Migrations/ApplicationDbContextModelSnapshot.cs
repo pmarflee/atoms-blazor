@@ -16,7 +16,7 @@ namespace Atoms.Infrastructure.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
 
             modelBuilder.Entity("Atoms.Core.DTOs.GameDTO", b =>
                 {
@@ -80,6 +80,9 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.Property<bool>("IsWinner")
                         .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("LocalStorageId")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Number")
                         .HasColumnType("INTEGER");

@@ -38,6 +38,7 @@ namespace Atoms.Infrastructure.Data.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Number = table.Column<int>(type: "INTEGER", nullable: false),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocalStorageId = table.Column<Guid>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", nullable: true),
                     IsWinner = table.Column<bool>(type: "INTEGER", nullable: false),
                     GameId = table.Column<Guid>(type: "TEXT", nullable: false)

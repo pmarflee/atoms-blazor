@@ -102,6 +102,7 @@ public class PlayerDTO
     public required Guid Id { get; init; }
     public required int Number { get; init; }
     public required PlayerType Type { get; init; }
+    public Guid? LocalStorageId { get; set; }
     public string? UserId { get; init; }
     public bool IsWinner { get; set; }
     public Guid GameId { get; init; }

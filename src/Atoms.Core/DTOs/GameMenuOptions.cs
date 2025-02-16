@@ -1,5 +1,6 @@
 ﻿namespace Atoms.Core.DTOs;
 
+using Atoms.Core.Factories;
 using static Atoms.Core.Enums.EnumExtensions;
 
 public class GameMenuOptions
@@ -22,7 +23,11 @@ public class GameMenuOptions
     public ColourScheme ColourScheme { get; set; } = ColourScheme.Original;
     public AtomShape AtomShape { get; set; } = AtomShape.Round;
 
-    public GameMenuOptions(int numberOfPlayers, int maxPlayers, Guid? gameId = null)
+    public GameMenuOptions(int numberOfPlayers,
+                           int maxPlayers,
+                           string baseUrl,
+                           CreateInviteLink inviteLinkFactory,
+                           Guid? gameId = null)
     {
         GameId = gameId ?? Guid.NewGuid();
         NumberOfPlayers = numberOfPlayers;
@@ -30,10 +35,14 @@ public class GameMenuOptions
 
         for (var i = 0; i < maxPlayers; i++)
         {
+            var playerId = Guid.NewGuid();
+
             Players.Add(new Player
             {
+                Id = playerId,
                 Type = PlayerType.Human,
                 Number = i + 1,
+                InviteLink = inviteLinkFactory.Invoke(GameId, playerId, baseUrl)
             });
         }
     }
@@ -50,9 +59,10 @@ public class GameMenuOptions
 
     public class Player
     {
-        public Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; init; }
         public required int Number { get; init; }
         public required PlayerType Type { get; set; }
         public string? UserId { get; set; }
+        public InviteLink? InviteLink { get; init; }
     }
 }

@@ -352,3 +352,6 @@ div#instructions {
 	background: black;
 	overflow-y: scroll;
 }
+div.image-row {
+	display: flex;
+}
