@@ -27,7 +27,6 @@ builder.Services.AddSingleton<Func<GameMenuOptions, Game>>(sp =>
 
     return options => GameFactory.Create(rngFactory,
                                          playerStrategyFactory,
-                                         Guid.NewGuid(),
                                          options);
 });
 

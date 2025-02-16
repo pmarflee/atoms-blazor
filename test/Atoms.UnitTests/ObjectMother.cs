@@ -16,7 +16,7 @@ internal static class ObjectMother
     public static readonly Guid Player1Id = new("FE0FA471-AC98-4D1B-825B-4DDF64122022");
     public static readonly Guid Player2Id = new("08C5B9A7-0B0C-4E2F-9741-0FE822093901");
 
-    public static readonly GameMenuOptions GameMenuOptions = new(2, 4);
+    public static readonly GameMenuOptions GameMenuOptions = new(2, 4, GameId);
 
     public static Game Game(List<Player>? players = null,
                             int? active = 1,
