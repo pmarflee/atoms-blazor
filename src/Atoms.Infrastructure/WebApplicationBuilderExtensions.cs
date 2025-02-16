@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Atoms.Infrastructure.Data.Identity;
 using Atoms.Core.Data;
 using System.Reflection;
-using Microsoft.AspNetCore.DataProtection;
 using Atoms.Infrastructure.Data.DataProtection;
 
 namespace Atoms.Infrastructure;
@@ -25,10 +24,6 @@ public static class WebApplicationBuilderExtensions
 
         builder.Services.AddDbContext<DataProtectionKeyContext>(
             options => options.UseSqlite(connectionString));
-
-        builder.Services.AddDataProtection()
-            .PersistKeysToDbContext<DataProtectionKeyContext>()
-            .SetDefaultKeyLifetime(TimeSpan.FromDays(7));
     }
 
     static string BuildConnectionString(WebApplicationBuilder builder)

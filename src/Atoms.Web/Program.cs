@@ -4,12 +4,15 @@ using Atoms.Core.Factories;
 using Atoms.Core.Interfaces;
 using Atoms.Core.Services;
 using Atoms.Infrastructure;
+using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Data.Identity;
 using Atoms.Infrastructure.Email;
 using Atoms.UseCases.CreateNewGame;
 using MediatR.Courier;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using NReco.Logging.File;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,10 +102,41 @@ builder.Services.AddIdentityCore<ApplicationUser>(
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
 builder.Services.AddSingleton<IEmailSender, MailgunApiEmailSender>();
 
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<DataProtectionKeyContext>()
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
+
 builder.Services.AddOptions<EmailSettings>()
                 .BindConfiguration("Email");
 
 builder.Services.AddScoped<BrowserStorageService>();
+
+var loggingConfigurationSection = builder.Configuration.GetSection("Logging");
+
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddFile(loggingConfigurationSection,
+        fileLoggerOpts =>
+        {
+            fileLoggerOpts.FormatLogFileName =
+                fName => string.Format(fName, DateTime.UtcNow);
+
+            var logFileRetentionDays = loggingConfigurationSection
+                .GetValue<int>("File:RetentionDays");
+            var lastRetentionDate = DateTime.UtcNow.Date.Subtract(
+                TimeSpan.FromDays(logFileRetentionDays));
+
+            foreach (var filename in Directory.GetFiles("logs", "*.log"))
+            {
+                var file = new FileInfo(filename);
+
+                if (file.CreationTimeUtc.Date < lastRetentionDate)
+                {
+                    file.Delete();
+                }
+            }
+        });
+});
 
 var app = builder.Build();
 
