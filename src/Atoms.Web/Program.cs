@@ -1,8 +1,6 @@
-using Atoms.Core.AI.Strategies;
 using Atoms.Core.Entities.Configuration;
 using Atoms.Core.Factories;
 using Atoms.Core.Interfaces;
-using Atoms.Core.Services;
 using Atoms.Infrastructure;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Data.Identity;
@@ -20,51 +18,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton<Func<int, int, IRandomNumberGenerator>>(sp =>
-{
-    return (seed, iterations) =>
-    {
-        var random = new Random(seed);
-        var i = 0;
-
-        while (i++ < iterations)
-        {
-            random.Next();
-        }
-
-        return new RandomNumberGenerator(random, seed, iterations);
-    };
-});
-
-builder.Services.AddSingleton<Func<PlayerType, IRandomNumberGenerator, IPlayerStrategy?>>(sp =>
-{
-    return (playerType, rng) => playerType switch
-    {
-        PlayerType.CPU_Easy => new PlayRandomly(rng),
-        PlayerType.CPU_Medium =>
-            new FullyLoadedCellNextToEnemyFullyLoadedCell()
-            .Or(new PlaySemiRandomlyAvoidingDangerCells(rng)),
-        PlayerType.CPU_Hard =>
-            new FullyLoadedCellNextToEnemyFullyLoadedCell()
-                .Or(new GainAdvantageOverNeighbouringCell(rng))
-                .Or(new ChooseCornerCell(rng))
-                .Or(new PlaySemiRandomlyAvoidingDangerCells(rng)),
-        _ => null
-    };
-});
-
+builder.Services.AddSingleton(RngFactory.Create);
+builder.Services.AddSingleton(PlayerStrategyFactory.Create);
 builder.Services.AddSingleton<Func<GameMenuOptions, Game>>(sp =>
 {
-    return options =>
-    {
-        var rngFactory = sp.GetRequiredService<Func<int, int, IRandomNumberGenerator>>();
-        var playerStrategyFactory = sp.GetRequiredService<Func<PlayerType, IRandomNumberGenerator, IPlayerStrategy>>();
+    var rngFactory = sp.GetRequiredService<Func<int, int, IRandomNumberGenerator>>();
+    var playerStrategyFactory = sp.GetRequiredService<Func<PlayerType, IRandomNumberGenerator, IPlayerStrategy>>();
 
-        return GameFactory.Create(rngFactory,
-                                  playerStrategyFactory,
-                                  Guid.NewGuid(),
-                                  options);
-    };
+    return options => GameFactory.Create(rngFactory,
+                                         playerStrategyFactory,
+                                         Guid.NewGuid(),
+                                         options);
 });
 
 builder.Services.AddScoped<GameStateContainer>();
