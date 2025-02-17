@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Flurl;
 
-namespace Atoms.Core.Factories;
+namespace Atoms.Infrastructure.Factories;
 
 public static class InviteLinkFactory
 {

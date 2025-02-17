@@ -1,4 +1,6 @@
-﻿namespace Atoms.Core.Factories;
+﻿using Atoms.Core.Services;
+
+namespace Atoms.Infrastructure.Factories;
 
 public static class RngFactory
 {

@@ -1,7 +1,7 @@
 ﻿namespace Atoms.UseCases.CreateNewGame;
 
 public class CreateNewGameRequestHandler(
-    Func<GameMenuOptions, Game> gameFactory,
+    CreateGame gameFactory,
     IDbContextFactory<ApplicationDbContext> dbContextFactory)
     : IRequestHandler<CreateNewGameRequest, CreateNewGameResponse>
 {

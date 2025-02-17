@@ -1,6 +1,5 @@
 ﻿namespace Atoms.Core.DTOs;
 
-using Atoms.Core.Factories;
 using static Atoms.Core.Enums.EnumExtensions;
 
 public class GameMenuOptions

@@ -49,9 +49,7 @@ public class GameDTO
         return gameDto;
     }
 
-    public Game ToEntity(
-        Func<int, int, IRandomNumberGenerator> rngFactory,
-        Func<PlayerType, IRandomNumberGenerator, IPlayerStrategy?> playerStrategyFactory)
+    public Game ToEntity(CreateRng rngFactory, CreatePlayerStrategy playerStrategyFactory)
     {
         var rng = rngFactory.Invoke(Rng.Seed, Rng.Iterations);
 

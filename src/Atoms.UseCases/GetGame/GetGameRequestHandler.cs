@@ -1,9 +1,8 @@
-﻿
-namespace Atoms.UseCases.GetGame;
+﻿namespace Atoms.UseCases.GetGame;
 
 public class GetGameRequestHandler(
-    Func<int, int, IRandomNumberGenerator> rngFactory,
-    Func<PlayerType, IRandomNumberGenerator, IPlayerStrategy> playerStrategyFactory,
+    CreateRng rngFactory,
+    CreatePlayerStrategy playerStrategyFactory,
     IDbContextFactory<ApplicationDbContext> dbContextFactory)
     : IRequestHandler<GetGameRequest, GetGameResponse>
 {

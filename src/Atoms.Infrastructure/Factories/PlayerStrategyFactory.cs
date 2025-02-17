@@ -1,6 +1,6 @@
 ﻿using Atoms.Core.AI.Strategies;
 
-namespace Atoms.Core.Factories;
+namespace Atoms.Infrastructure.Factories;
 
 public static class PlayerStrategyFactory
 {

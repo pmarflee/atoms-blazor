@@ -1,12 +1,10 @@
 using Atoms.Core.Delegates;
 using Atoms.Core.Entities.Configuration;
-using Atoms.Core.Factories;
-using Atoms.Core.Interfaces;
-using Atoms.Core.Services;
 using Atoms.Infrastructure;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Data.Identity;
 using Atoms.Infrastructure.Email;
+using Atoms.Infrastructure.Factories;
 using Atoms.UseCases.CreateNewGame;
 using MediatR.Courier;
 using Microsoft.AspNetCore.DataProtection;
@@ -20,12 +18,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton(RngFactory.Create);
-builder.Services.AddSingleton(PlayerStrategyFactory.Create);
-builder.Services.AddSingleton<Func<GameMenuOptions, Game>>(sp =>
+builder.Services.AddSingleton<CreateRng>(RngFactory.Create);
+builder.Services.AddSingleton<CreatePlayerStrategy>(PlayerStrategyFactory.Create);
+builder.Services.AddSingleton<CreateGame>(sp =>
 {
-    var rngFactory = sp.GetRequiredService<Func<int, int, IRandomNumberGenerator>>();
-    var playerStrategyFactory = sp.GetRequiredService<Func<PlayerType, IRandomNumberGenerator, IPlayerStrategy>>();
+    var rngFactory = sp.GetRequiredService<CreateRng>();
+    var playerStrategyFactory = sp.GetRequiredService<CreatePlayerStrategy>();
 
     return options => GameFactory.Create(rngFactory,
                                          playerStrategyFactory,
@@ -35,8 +33,9 @@ builder.Services.AddSingleton<CreateInviteLink>(sp =>
 {
     var dataProtectionProvider = sp.GetRequiredService<IDataProtectionProvider>();
 
-    return (gameId, playerId, baseUrl) => InviteLinkFactory.Create(
-        gameId, playerId, baseUrl, dataProtectionProvider);
+    return (Guid gameId, Guid playerId, string baseUrl) => 
+        InviteLinkFactory.Create(
+            gameId, playerId, baseUrl, dataProtectionProvider);
 });
 
 builder.Services.AddScoped<GameStateContainer>();

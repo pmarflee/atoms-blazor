@@ -1,12 +1,12 @@
-﻿using Atoms.Core.Interfaces;
+﻿using Atoms.Core.Delegates;
 
-namespace Atoms.Core.Factories;
+namespace Atoms.Infrastructure.Factories;
 
 public static class GameFactory
 {
     public static Game Create(
-        Func<int, int, IRandomNumberGenerator> rngFactory, 
-        Func<PlayerType, IRandomNumberGenerator, IPlayerStrategy?> playerStrategyFactory,
+        CreateRng rngFactory, 
+        CreatePlayerStrategy playerStrategyFactory,
         GameMenuOptions options)
     {
         var rng = rngFactory.Invoke(options.GameId.GetHashCode(), 0);

@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Atoms.Infrastructure\Atoms.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Atoms.UseCases\Atoms.UseCases.csproj" />
   </ItemGroup>
 

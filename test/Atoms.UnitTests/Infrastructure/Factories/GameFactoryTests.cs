@@ -1,6 +1,6 @@
-﻿using Atoms.Core.Factories;
+﻿using Atoms.Infrastructure.Factories;
 
-namespace Atoms.UnitTests.Core.Factories;
+namespace Atoms.UnitTests.Infrastructure.Factories;
 
 public class GameFactoryTests
 {
