@@ -45,7 +45,10 @@ public class PlayerMoveRequestHandler(
             game.PostMoveUpdate();
         }
 
-        await SaveGame(game, cancellationToken);
+        if (!request.Debug)
+        {
+            await SaveGame(game, cancellationToken);
+        }
 
         return PlayerMoveResponse.Success;
     }

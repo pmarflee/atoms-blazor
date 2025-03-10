@@ -126,7 +126,8 @@ public class BoardComponent : Component2Base, IDisposable
 
     async Task PlayMove(Game.GameBoard.Cell? cell = null, bool updateCursor = true)
     {
-        var response = await Mediator.Send(new PlayerMoveRequest(Game!, cell));
+        var response = await Mediator.Send(
+            new PlayerMoveRequest(Game!, cell, Debug.HasValue));
 
         if (response.IsSuccessful)
         {

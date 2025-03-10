@@ -1,4 +1,5 @@
-﻿using Atoms.UseCases.GetGame;
+﻿using Atoms.UseCases.CreateDebugGame;
+using Atoms.UseCases.GetGame;
 
 namespace Atoms.Web.Components.Pages;
 
@@ -20,7 +21,7 @@ public partial class GameComponent : Component2Base, IDisposable
     ClaimsPrincipal? AuthenticatedUser { get; set; }
 
     [Parameter]
-    public Guid GameId { get; set; }
+    public Guid? GameId { get; set; }
 
     [SupplyParameterFromQuery]
     protected int? Debug { get; set; }
@@ -29,20 +30,36 @@ public partial class GameComponent : Component2Base, IDisposable
     {
         StateContainer.OnChange += StateHasChangedAsync;
 
-        var userId = AuthenticatedUser.GetUserId();
-        var storageId = await BrowserStorageService.GetOrAddStorageId();
-        var response = await Mediator.Send(
-            new GetGameRequest(GameId, storageId, userId));
-
-        if (response.Success)
+        if (GameId.HasValue)
         {
-            await Initialize(response.Game!);
+            var userId = AuthenticatedUser.GetUserId();
+            var storageId = await BrowserStorageService.GetOrAddStorageId();
+            var response = await Mediator.Send(
+                new GetGameRequest(GameId.Value, storageId, userId));
+
+            if (response.Success)
+            {
+                Debug = null;
+
+                await Initialize(response.Game!);
+            }
+            else
+            {
+                Navigation.NavigateTo("/");
+            }
+        }
+        else if (Debug.HasValue)
+        {
+            var response = await Mediator.Send(
+                new CreateDebugGameRequest(Debug.Value));
+
+            await Task.Delay(10);
+            await Initialize(response.Game);
         }
         else
         {
             Navigation.NavigateTo("/");
         }
-
     }
 
     async Task Initialize(Game game)

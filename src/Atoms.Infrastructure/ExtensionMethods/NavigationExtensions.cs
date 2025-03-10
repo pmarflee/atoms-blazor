@@ -6,10 +6,9 @@ namespace Atoms.Infrastructure.ExtensionMethods;
 public static class NavigationExtensions
 {
     public static void NavigateToGame(this NavigationManager navigation,
-                                      Game game,
-                                      int? debug = null)
+                                      Game game)
     {
-        navigation.NavigateToGame(game.Id, debug);
+        navigation.NavigateToGame(game.Id);
     }
 
     public static void NavigateToGame(this NavigationManager navigation,
@@ -18,13 +17,27 @@ public static class NavigationExtensions
         navigation.NavigateToGame(invite.GameId);
     }
 
+    public static void NavigateToDebugGame(this NavigationManager navigation,
+                                           int debug)
+    {
+        navigation.NavigateToGame(debug: debug);
+    }
+
     static void NavigateToGame(this NavigationManager navigation,
-                               Guid gameId,
+                               Guid? gameId = null,
                                int? debug = null)
     {
-        var url = "/games/"
-            .AppendPathSegment(gameId)
-            .AppendQueryParam("debug", debug);
+        var url = "/games/";
+
+        if (gameId.HasValue)
+        {
+            url = url.AppendPathSegment(gameId);
+        }
+
+        if (debug.HasValue)
+        {
+            url = url.AppendQueryParam("debug", debug);
+        }
 
         navigation.NavigateTo(url);
     }

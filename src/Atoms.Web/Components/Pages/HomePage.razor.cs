@@ -27,15 +27,7 @@ public partial class HomePageComponent : Component2Base, IDisposable
 
         if (Debug.HasValue)
         {
-            var storageId = await BrowserStorageService.GetOrAddStorageId();
-            var request = new CreateNewGameRequest(
-                GameMenuOptions.CreateForDebug(
-                Guid.NewGuid(),
-                storageId,
-                AuthenticatedUser.GetUserId()));
-            var response = await Mediator.Send(request);
-
-            StartGame(response.Game);
+            Navigation.NavigateToDebugGame(Debug.Value);
         }
         else
         {
@@ -45,12 +37,7 @@ public partial class HomePageComponent : Component2Base, IDisposable
 
     protected void OnCreateGame(Game game)
     {
-        StartGame(game);
-    }
-
-    void StartGame(Game game)
-    {
-        Navigation.NavigateToGame(game, Debug);
+        Navigation.NavigateToGame(game);
     }
 
     async Task StateHasChangedAsync()
