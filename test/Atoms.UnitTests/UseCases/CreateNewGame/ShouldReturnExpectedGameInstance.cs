@@ -12,10 +12,7 @@ public class ShouldReturnExpectedGameInstance : BaseTestFixture
             options => game, 
             DbContextFactory);
 
-        var request = new CreateNewGameRequest(
-            ObjectMother.GameMenuOptions,
-            ObjectMother.LocalStorageId);
-
+        var request = new CreateNewGameRequest(ObjectMother.GameMenuOptions);
         var response = await handler.Handle(request, CancellationToken.None);
 
         using var _ = Assert.Multiple();

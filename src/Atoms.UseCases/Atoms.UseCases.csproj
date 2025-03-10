@@ -15,8 +15,4 @@
     <ProjectReference Include="..\Atoms.Core\Atoms.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Invites\" />
-  </ItemGroup>
-
 </Project>

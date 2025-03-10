@@ -16,12 +16,15 @@ namespace Atoms.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: true),
                     LocalStorageId = table.Column<Guid>(type: "TEXT", nullable: false),
                     ColourScheme = table.Column<int>(type: "INTEGER", nullable: false),
                     AtomShape = table.Column<int>(type: "INTEGER", nullable: false),
                     Move = table.Column<int>(type: "INTEGER", nullable: false),
                     Round = table.Column<int>(type: "INTEGER", nullable: false),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedDateUtc = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    LastUpdatedDateUtc = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Board_Data = table.Column<string>(type: "TEXT", nullable: false),
                     Rng_Iterations = table.Column<int>(type: "INTEGER", nullable: false),
                     Rng_Seed = table.Column<int>(type: "INTEGER", nullable: false)
@@ -41,7 +44,8 @@ namespace Atoms.Infrastructure.Data.Migrations
                     LocalStorageId = table.Column<Guid>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", nullable: true),
                     IsWinner = table.Column<bool>(type: "INTEGER", nullable: false),
-                    GameId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    GameId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

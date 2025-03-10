@@ -7,7 +7,7 @@ public class FromEntityTests
     [Test, MethodDataSource(nameof(TestCases))]
     public async Task ShouldMapAllFieldsCorrectly(Game game, DTO expected)
     {
-        var dto = DTO.FromEntity(game, ObjectMother.LocalStorageId);
+        var dto = DTO.FromEntity(game);
 
         await Assert.That(dto).IsEquivalentTo(expected);
     }

@@ -19,6 +19,12 @@ public class BoardComponent : Component2Base, IDisposable
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
+    [Inject]
+    BrowserStorageService BrowserStorageService { get; set; } = default!;
+
+    [CascadingParameter]
+    ClaimsPrincipal? AuthenticatedUser { get; set; }
+
     [Parameter]
     public EventCallback OnPlayAgainClicked { get; set; }
 
@@ -38,7 +44,7 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async Task CellClicked(CellClickEventArgs eventArgs)
     {
-        if (Game!.HasWinner || _disableClicks) return;
+        if (!await CanPlayMove()) return;
 
         await PlayMove(eventArgs.Cell, true);
     }
@@ -188,5 +194,15 @@ public class BoardComponent : Component2Base, IDisposable
         }
 
         await SetCursor();
+    }
+
+    async Task<bool> CanPlayMove()
+    {
+        if (_disableClicks) return false;
+
+        var authenticatedUserId = AuthenticatedUser.GetUserId();
+        var localStorageId = await BrowserStorageService.GetStorageId();
+
+        return Game!.CanPlayMove(authenticatedUserId, localStorageId);
     }
 }

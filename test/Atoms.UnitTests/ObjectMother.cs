@@ -1,4 +1,5 @@
 ﻿using Atoms.Core.DTOs;
+using Atoms.Core.Identity;
 using Atoms.Core.Services;
 using Atoms.Core.ValueObjects;
 using static Atoms.Core.Entities.Game;
@@ -12,19 +13,41 @@ internal static class ObjectMother
 
     public static readonly Guid GameId = new("5BD0E94D-ED21-4679-8B31-E2C70945C8B4");
     public static readonly StorageId LocalStorageId = new(Guid.Parse("22D05F6C-DE9B-4B70-81B0-A54E0E83DA6D"));
+    public static readonly UserId UserId = new("7B452FD8-C32C-497A-BC20-2190C1244B9E");
 
     public static readonly Guid Player1Id = new("FE0FA471-AC98-4D1B-825B-4DDF64122022");
     public static readonly Guid Player2Id = new("08C5B9A7-0B0C-4E2F-9741-0FE822093901");
 
+    public static Invite Invite = new(GameId, Player1Id);
+
     public const string BaseUrl = "https://www.atoms.com";
 
-    public static readonly GameMenuOptions GameMenuOptions = new(2, 4, BaseUrl, CreateInviteLink, GameId);
+    public static readonly GameMenuOptions GameMenuOptions =
+        new(GameId, 
+            [
+                new GameMenuOptions.Player 
+                {
+                    Id = Player1Id,
+                    Number = 1,
+                    Type = PlayerType.Human
+                },
+                new GameMenuOptions.Player
+                {
+                    Id = Player2Id,
+                    Number = 2,
+                    Type = PlayerType.Human
+                }
+            ],
+            LocalStorageId,
+            UserId);
 
     public static Game Game(List<Player>? players = null,
                             int? active = 1,
                             List<CellState>? cells = null,
                             int move = 1,
-                            int round = 1)
+                            int round = 1,
+                            UserId? userId = null,
+                            StorageId? localStorageId = null)
     {
         players ??=
         [
@@ -39,7 +62,28 @@ internal static class ObjectMother
 
         return new Game(GameId, Rows, Columns, players, activePlayer,
                         ColourScheme.Original, AtomShape.Round,
-                        rng, cells, move, round);
+                        rng, 
+                        localStorageId ?? LocalStorageId,
+                        cells, move, round,
+                        userId ?? UserId);
+    }
+
+    public static Player CreateHumanPlayer(
+        Guid id, int number, 
+        ApplicationUser? applicationUser = null, 
+        StorageId? localStorageId = null)
+    {
+        return new(
+            id, number, PlayerType.Human, 
+            user: applicationUser,
+            localStorageId: localStorageId);
+    }
+
+    public static Player CreateCPUPlayer(Guid id, int number, PlayerType type = PlayerType.CPU_Easy)
+    {
+        return new(
+            id, number, type,
+            strategy: CreatePlayerStrategy(type, CreateRng(0, 0)));
     }
 
     public static GameDTO GameDTO(
@@ -51,6 +95,7 @@ internal static class ObjectMother
         var gameDto = new GameDTO
         {
             Id = GameId,
+            UserId = UserId.Id,
             LocalStorageId = LocalStorageId.Value,
             ColourScheme = ColourScheme.Original,
             AtomShape = AtomShape.Round,
@@ -109,10 +154,8 @@ internal static class ObjectMother
         };
     }
 
-    static InviteLink CreateInviteLink(Guid gameId,
-                                       Guid playerId,
-                                       string baseUrl)
+    public static ApplicationUser CreateApplicationUser(UserId userId)
     {
-        return new InviteLink("https://www.atoms.com/invite/xxx");
+        return new ApplicationUser { Id = userId.Id };
     }
 }

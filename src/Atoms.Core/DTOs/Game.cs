@@ -1,13 +1,11 @@
-﻿using Atoms.Core.ExtensionMethods;
-using Atoms.Core.Interfaces;
-using Atoms.Core.ValueObjects;
-using static Atoms.Core.Entities.Game;
+﻿using static Atoms.Core.Entities.Game;
 
 namespace Atoms.Core.DTOs;
 
-public class GameDTO
+public class GameDTO : IAuditable
 {
     public required Guid Id { get; init; }
+    public string? UserId { get; init; }
     public required Guid LocalStorageId { get; init; }
     public required ColourScheme ColourScheme { get; init; }
     public required AtomShape AtomShape { get; init; }
@@ -17,13 +15,16 @@ public class GameDTO
     public required int Round { get; set; }
     public required bool IsActive { get; set; }
     public required RngDTO Rng { get; set; }
+    public DateTime CreatedDateUtc { get; set; }
+    public DateTime LastUpdatedDateUtc { get; set; }
 
-    public static GameDTO FromEntity(Game game, StorageId storageId)
+    public static GameDTO FromEntity(Game game)
     {
         var gameDto = new GameDTO
         {
             Id = game.Id,
-            LocalStorageId = storageId.Value,
+            UserId = game.UserId?.Id,
+            LocalStorageId = game.LocalStorageId.Value,
             ColourScheme = game.ColourScheme,
             AtomShape = game.AtomShape,
             Board = BoardDTO.FromEntity(game.Board),
@@ -42,28 +43,46 @@ public class GameDTO
                 Game = gameDto,
                 Type = player.Type,
                 IsWinner = game.Winner == player,
-                UserId = player.UserId
+                UserId = player.User?.Id,
+                LocalStorageId = player.LocalStorageId?.Value
             });
         }
 
         return gameDto;
     }
 
-    public Game ToEntity(CreateRng rngFactory, CreatePlayerStrategy playerStrategyFactory)
+    public async Task<Game> ToEntity(CreateRng rngFactory,
+                                     CreatePlayerStrategy playerStrategyFactory,
+                                     GetUserById getUserById)
     {
         var rng = rngFactory.Invoke(Rng.Seed, Rng.Iterations);
 
-        List<Player> players =
-        [.. Players
-                .OrderBy(dto => dto.Number)
-                .Select(dto =>
-                        new Player(
-                            dto.Id,
-                            dto.Number,
-                            dto.Type,
-                            dto.UserId,
-                            playerStrategyFactory.Invoke(dto.Type, rng)))
-        ];
+        List<Player> players = [];
+
+        foreach (var playerDto in Players.OrderBy(dto => dto.Number))
+        {
+            var user = playerDto.UserId != null
+                ? (await getUserById.Invoke(playerDto.UserId!))
+                : null;
+
+            var localStorageId = playerDto.LocalStorageId.HasValue
+                ? new StorageId(playerDto.LocalStorageId.Value)
+                : null;
+
+            var player = new Player(playerDto.Id,
+                                    playerDto.Number,
+                                    playerDto.Type,
+                                    user,
+                                    user?.Name ?? playerDto.Name,
+                                    playerStrategyFactory.Invoke(playerDto.Type, rng),
+                                    localStorageId);
+
+            players.Add(player);
+        }
+
+        var userId = UserId is not null
+            ? new UserId(UserId)
+            : null;
 
         return new Game(
             Id,
@@ -73,9 +92,11 @@ public class GameDTO
             ColourScheme,
             AtomShape,
             rng,
+            new(LocalStorageId),
             Board.ToEntity(),
             Move,
-            Round);
+            Round,
+            userId);
     }
 
     public void UpdateFromEntity(Game game)
@@ -101,9 +122,10 @@ public class PlayerDTO
     public required int Number { get; init; }
     public required PlayerType Type { get; init; }
     public Guid? LocalStorageId { get; set; }
-    public string? UserId { get; init; }
+    public string? UserId { get; set; }
     public bool IsWinner { get; set; }
     public Guid GameId { get; init; }
+    public string? Name { get; set; }
     public GameDTO Game { get; set; } = default!;
 }
 

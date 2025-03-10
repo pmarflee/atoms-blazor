@@ -13,6 +13,10 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="input-group">
+                <label for="Input.Name">Name</label>
+                <InputText @bind-Value="Input.Name" id="Input.Name" autocomplete="username" aria-required="true" placeholder="Name" />
+            </div>
+            <div class="input-group">
                 <label for="Input.Email">Email</label>
                 <InputText @bind-Value="Input.Email" id="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
             </div>

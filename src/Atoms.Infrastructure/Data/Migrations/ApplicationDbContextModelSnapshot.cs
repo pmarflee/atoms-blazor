@@ -30,8 +30,14 @@ namespace Atoms.Infrastructure.Data.Migrations
                     b.Property<int>("ColourScheme")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdatedDateUtc")
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("LocalStorageId")
                         .HasColumnType("TEXT");
@@ -41,6 +47,9 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.Property<int>("Round")
                         .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("TEXT");
 
                     b.ComplexProperty<Dictionary<string, object>>("Board", "Atoms.Core.DTOs.GameDTO.Board#BoardDTO", b1 =>
                         {
@@ -82,6 +91,9 @@ namespace Atoms.Infrastructure.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid?>("LocalStorageId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Number")

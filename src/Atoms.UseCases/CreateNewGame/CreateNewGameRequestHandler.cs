@@ -11,19 +11,18 @@ public class CreateNewGameRequestHandler(
     {
         var game = gameFactory.Invoke(request.Options);
 
-        await SaveGame(game, request.StorageId, cancellationToken);
+        await SaveGame(game, cancellationToken);
 
         return new CreateNewGameResponse(game);
     }
 
     async Task SaveGame(Game game,
-                        StorageId storageId,
                         CancellationToken cancellationToken)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync(
             cancellationToken);
 
-        var gameDto = GameDTO.FromEntity(game, storageId);
+        var gameDto = GameDTO.FromEntity(game);
 
         await dbContext.Games.AddAsync(gameDto, cancellationToken);
 

@@ -15,6 +15,9 @@ public partial class HomePageComponent : Component2Base, IDisposable
     [Inject]
     BrowserStorageService BrowserStorageService { get; set; } = default!;
 
+    [CascadingParameter]
+    ClaimsPrincipal? AuthenticatedUser { get; set; }
+
     [SupplyParameterFromQuery]
     protected int? Debug { get; set; }
 
@@ -25,7 +28,11 @@ public partial class HomePageComponent : Component2Base, IDisposable
         if (Debug.HasValue)
         {
             var storageId = await BrowserStorageService.GetOrAddStorageId();
-            var request = new CreateNewGameRequest(GameMenuOptions.Debug, storageId);
+            var request = new CreateNewGameRequest(
+                GameMenuOptions.CreateForDebug(
+                Guid.NewGuid(),
+                storageId,
+                AuthenticatedUser.GetUserId()));
             var response = await Mediator.Send(request);
 
             StartGame(response.Game);
@@ -43,7 +50,7 @@ public partial class HomePageComponent : Component2Base, IDisposable
 
     void StartGame(Game game)
     {
-        Navigation.NavigateTo($"/game/{game.Id}");
+        Navigation.NavigateToGame(game, Debug);
     }
 
     async Task StateHasChangedAsync()

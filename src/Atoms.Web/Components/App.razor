@@ -25,10 +25,10 @@
 
 @code {
     [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext _httpContext { get; set; } = default!;
 
     private IComponentRenderMode? RenderMode =>
-        HttpContext.AcceptsInteractiveRouting()
+        _httpContext.AcceptsInteractiveRouting()
             ? new InteractiveServerRenderMode(prerender: false)
             : null;
 }

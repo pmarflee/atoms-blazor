@@ -1,6 +1,32 @@
-﻿<Router AppAssembly="typeof(Program).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
-    </Found>
-</Router>
+﻿@using System.Security.Claims
+
+<CascadingAuthenticationState>
+    <CascadingValue Value="AuthenticatedUser">
+        <Router AppAssembly="typeof(Program).Assembly">
+            <Found Context="routeData">
+                <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+                <FocusOnNavigate RouteData="routeData" Selector="h1" />
+            </Found>
+        </Router>
+    </CascadingValue>
+</CascadingAuthenticationState>
+
+@code {
+    [CascadingParameter]
+    Task<AuthenticationState>? _authenticationState { get; set; }
+
+    ClaimsPrincipal? AuthenticatedUser;
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (_authenticationState is not null)
+        {
+            var state = await _authenticationState;
+
+            if (state?.User?.Identity?.IsAuthenticated == true)
+            {
+                AuthenticatedUser = state.User;
+            }
+        }
+    }
+}

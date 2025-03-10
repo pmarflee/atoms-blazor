@@ -1,6 +1,6 @@
 ﻿using Atoms.Core.Data;
+using Atoms.Core.Data.Identity;
 using Atoms.Infrastructure.Data.DataProtection;
-using Atoms.Infrastructure.Data.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 

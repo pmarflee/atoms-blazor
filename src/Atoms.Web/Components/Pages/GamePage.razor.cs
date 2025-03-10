@@ -1,5 +1,4 @@
 ﻿using Atoms.UseCases.GetGame;
-using System.Security.Claims;
 
 namespace Atoms.Web.Components.Pages;
 
@@ -9,9 +8,6 @@ public partial class GameComponent : Component2Base, IDisposable
     NavigationManager Navigation { get; set; } = default!;
 
     [Inject]
-    AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-
-    [Inject]
     BrowserStorageService BrowserStorageService { get; set; } = default!;
 
     [Inject]
@@ -19,6 +15,9 @@ public partial class GameComponent : Component2Base, IDisposable
 
     [Inject]
     IJSRuntime JSRuntime { get; set; } = default!;
+
+    [CascadingParameter]
+    ClaimsPrincipal? AuthenticatedUser { get; set; }
 
     [Parameter]
     public Guid GameId { get; set; }
@@ -30,11 +29,7 @@ public partial class GameComponent : Component2Base, IDisposable
     {
         StateContainer.OnChange += StateHasChangedAsync;
 
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        var userId = user.Identity?.IsAuthenticated ?? false
-            ? user.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            : null;
+        var userId = AuthenticatedUser.GetUserId();
         var storageId = await BrowserStorageService.GetOrAddStorageId();
         var response = await Mediator.Send(
             new GetGameRequest(GameId, storageId, userId));

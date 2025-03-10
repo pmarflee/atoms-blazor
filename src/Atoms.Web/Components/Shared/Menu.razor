@@ -7,7 +7,7 @@
             <p>
                 Number of players:
                 <InputRadioGroup @bind-Value="Options.NumberOfPlayers">
-                    @for (var players = GameMenuOptions.MinPlayers; players <= GameMenuOptions.MaxPlayers; players++)
+                    @for (var players = MinPlayers; players <= MaxPlayers; players++)
                     {
                         <InputRadio id="@($"players_{players}")" Value="@players" />
                         <label for="@($"players_{players}")">@players</label>
@@ -40,13 +40,13 @@
                             <td>
                                 @if (player.Type == PlayerType.Human)
                                 {
-                                    var whatsAppLink = player.InviteLink!.ToWhatsAppLink();
+                                    var inviteLink = Options.CreateInviteLink(player, InviteSerializer, NavigationManager.BaseUri);
 
                                     <div class="image-row">
-                                        <a href="" @onclick="() => CopyInviteToClipboard(player.InviteLink)" @onclick:preventDefault>
+                                        <a href="" @onclick="() => CopyInviteToClipboard(inviteLink.Url)" @onclick:preventDefault>
                                             <img src="images/copy.png" title="Copy invite to clipboard" alt="Copy invite to clipboard" />
                                         </a>
-                                        <a href="@whatsAppLink.Url" target="_blank">
+                                        <a href="@inviteLink.WhatsAppUrl" target="_blank">
                                             <img src="images/whatsapp.png" title="Send invite to WhatsApp" alt="Send invite to WhatsApp" />
                                         </a>
                                     </div>

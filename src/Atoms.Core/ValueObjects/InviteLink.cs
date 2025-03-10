@@ -2,9 +2,14 @@
 
 namespace Atoms.Core.ValueObjects;
 
-public record InviteLink(string Url)
+public class InviteLink
 {
-    public InviteLink ToWhatsAppLink() => 
-        new("https://wa.me/".SetQueryParam("text", Url));
+    public Uri Url { get; }
+    public Uri WhatsAppUrl { get; }
 
+    public InviteLink(string code, string baseUrl)
+    {
+        Url = new(baseUrl.AppendPathSegments("invites", code));
+        WhatsAppUrl = new("https://wa.me/".SetQueryParam("text", Url.ToString()));
+    }
 }

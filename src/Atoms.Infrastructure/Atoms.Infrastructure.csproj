@@ -28,4 +28,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Atoms.Core\Atoms.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Atoms\Infrastructure\Data\Migrations\" />
+  </ItemGroup>
 </Project>

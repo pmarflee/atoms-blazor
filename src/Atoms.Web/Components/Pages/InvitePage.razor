@@ -1,0 +1,30 @@
+﻿@inherits InvitePageComponent
+
+@page "/invites/{code}"
+
+<PageTitle>Invite</PageTitle>
+
+<h2>Invite</h2>
+
+@if (InviteCodeRead)
+{
+    <div class="invite">
+        <section>
+            <EditForm Model="Input" OnValidSubmit="AcceptInvite">
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert" />
+                <div class="input-group">
+                    <label for="Input.Name">Name</label>
+                    <InputText @bind-Value="Input.Name" autocomplete="name" aria-required="true" placeholder="Please enter your name" />
+                </div>
+                <div class="submit-group">
+                    <button type="submit">Submit</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+}
+else
+{
+    <div>@ErrorMessage</div>
+}

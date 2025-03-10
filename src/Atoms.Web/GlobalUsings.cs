@@ -1,4 +1,5 @@
 ﻿global using System.ComponentModel.DataAnnotations;
+global using System.Security.Claims;
 global using System.Text.Encodings.Web;
 global using System.Text;
 global using Microsoft.JSInterop;
@@ -11,9 +12,12 @@ global using MediatR;
 global using Atoms.Core.DTOs;
 global using Atoms.Core.Entities;
 global using Atoms.Core.Enums;
+global using Atoms.Core.ExtensionMethods;
 global using Atoms.Core.Identity;
+global using Atoms.Core.Interfaces;
 global using Atoms.Core.State;
 global using Atoms.Core.ValueObjects;
 global using Atoms.Infrastructure.Identity;
+global using Atoms.Infrastructure.ExtensionMethods;
 global using Atoms.Web.Components;
 global using Atoms.Web.Services;

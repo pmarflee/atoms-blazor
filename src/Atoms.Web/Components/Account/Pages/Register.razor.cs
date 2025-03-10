@@ -40,8 +40,12 @@ public partial class RegisterComponent : ComponentBase
         var user = CreateUser();
 
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+        user.Name = Input.Name;
+
         var result = await UserManager.CreateAsync(user, Input.Password);
 
         if (!result.Succeeded)
@@ -99,6 +103,10 @@ public partial class RegisterComponent : ComponentBase
 
     protected sealed class InputModel
     {
+        [Required]
+        [Display(Name = "Name")]
+        public string Name { get; set; } = "";
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]

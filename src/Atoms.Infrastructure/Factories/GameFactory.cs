@@ -13,7 +13,7 @@ public static class GameFactory
         var players = options.Players
             .Take(options.NumberOfPlayers)
             .Select(p => new Game.Player(
-                p.Id, p.Number, p.Type, p.UserId,
+                p.Id, p.Number, p.Type, p.User, p.User?.Name,
                 playerStrategyFactory.Invoke(p.Type, rng)))
             .ToList();
 
@@ -24,6 +24,8 @@ public static class GameFactory
                         players[0],
                         options.ColourScheme,
                         options.AtomShape,
-                        rng);
+                        rng,
+                        options.LocalStorageId,
+                        userId: options.UserId);
     }
 }

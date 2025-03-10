@@ -5,14 +5,23 @@ namespace Atoms.Web.Components.Shared;
 
 public partial class MenuComponent : Component2Base
 {
+    protected const int MinPlayers = 2;
+    protected const int MaxPlayers = 4;
+
     [Inject]
     BrowserStorageService BrowserStorageService { get; set; } = default!;
 
     [Inject]
-    NavigationManager NavigationManager { get; set; } = default!;
+    protected NavigationManager NavigationManager { get; set; } = default!;
 
     [Inject]
     IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Inject]
+    protected IInviteSerializer InviteSerializer { get; set; } = default!;
+
+    [CascadingParameter]
+    ClaimsPrincipal? AuthenticatedUser { get; set; }
 
     [Parameter]
     public EventCallback<Game> OnCreateGame { get; set; }
@@ -23,7 +32,11 @@ public partial class MenuComponent : Component2Base
     protected override async Task OnInitializedAsync()
     {
         var response = await Mediator.Send(
-            new CreateGameOptionsRequest(NavigationManager.BaseUri));
+            new CreateGameOptionsRequest(
+                Guid.NewGuid(),
+                MaxPlayers,
+                await BrowserStorageService.GetOrAddStorageId(),
+                AuthenticatedUser.GetUserId()));
 
         Options = response.Options;
         State = MenuState.Menu;
@@ -31,9 +44,7 @@ public partial class MenuComponent : Component2Base
 
     protected async Task SubmitAsync()
     {
-        var response = await Mediator.Send(
-            new CreateNewGameRequest(
-                Options, await BrowserStorageService.GetOrAddStorageId()));
+        var response = await Mediator.Send(new CreateNewGameRequest(Options));
 
         await OnCreateGame.InvokeAsync(response.Game);
     }
@@ -48,8 +59,8 @@ public partial class MenuComponent : Component2Base
         State = MenuState.Menu;
     }
 
-    protected async Task CopyInviteToClipboard(InviteLink link)
+    protected async Task CopyInviteToClipboard(Uri url)
     {
-        await JSRuntime.InvokeVoidAsync("App.copyToClipboard", link.Url);
+        await JSRuntime.InvokeVoidAsync("App.copyToClipboard", url.ToString());
     }
 }

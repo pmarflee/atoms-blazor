@@ -1,36 +1,55 @@
-﻿namespace Atoms.UseCases.GetGame;
+﻿using Atoms.Core.Data.Identity;
+using Atoms.Core.Identity;
+
+namespace Atoms.UseCases.GetGame;
 
 public class GetGameRequestHandler(
     CreateRng rngFactory,
     CreatePlayerStrategy playerStrategyFactory,
-    IDbContextFactory<ApplicationDbContext> dbContextFactory)
+    IDbContextFactory<ApplicationDbContext> applicationDbContextFactory,
+    IDbContextFactory<ApplicationIdentityDbContext> applicationIdentityDbContextFactory)
     : IRequestHandler<GetGameRequest, GetGameResponse>
 {
     public async Task<GetGameResponse> Handle(
         GetGameRequest request,
         CancellationToken cancellationToken)
     {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync(
-            cancellationToken);
+        using var applicationDbContext = 
+            await applicationDbContextFactory.CreateDbContextAsync(
+                cancellationToken);
 
-        var gameDto = await dbContext.GetGameById(request.GameId,
-                                                  cancellationToken);
+        using var applicationIdentityDbContext =
+            await applicationIdentityDbContextFactory.CreateDbContextAsync(
+                cancellationToken);
+
+        var gameDto = await applicationDbContext.GetGameById(
+            request.GameId, cancellationToken);
 
         if (gameDto is null) return GetGameResponse.NotFound;
 
-        GetGameResponse Found() =>
-            GetGameResponse.Found(
-                gameDto.ToEntity(rngFactory, playerStrategyFactory));
+        ValueTask<ApplicationUser> GetUserById(UserId userId) =>
+            applicationIdentityDbContext.FindAsync<ApplicationUser>(userId.Id)!;
 
-        if (request.UserId is not null)
+        async ValueTask<GetGameResponse> Found()
         {
-            return gameDto.Players.Any(p => p.UserId == request.UserId)
-                ? Found()
-                : GetGameResponse.NotFound;
+            return GetGameResponse.Found(
+                await gameDto.ToEntity(
+                    rngFactory,
+                    playerStrategyFactory,
+                    GetUserById));
         }
 
-        return gameDto.LocalStorageId == request.StorageId.Value
-            ? Found()
+        bool GameMatchesUserId() =>
+            request.UserId is not null &&
+            (gameDto.UserId == request.UserId ||
+            gameDto.Players.Any(p => p.UserId == request.UserId));
+
+        bool GameMatchesLocalStorageId() =>
+            gameDto.LocalStorageId == request.StorageId.Value ||
+            gameDto.Players.Any(p => p.LocalStorageId == request.StorageId.Value);
+
+        return GameMatchesUserId() || GameMatchesLocalStorageId()
+            ? await Found()
             : GetGameResponse.NotFound;
     }
 }

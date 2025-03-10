@@ -1,8 +1,10 @@
+using Atoms.Core.Data.Identity;
 using Atoms.Core.Delegates;
 using Atoms.Core.Entities.Configuration;
+using Atoms.Core.Interfaces;
+using Atoms.Core.Serialization;
 using Atoms.Infrastructure;
 using Atoms.Infrastructure.Data.DataProtection;
-using Atoms.Infrastructure.Data.Identity;
 using Atoms.Infrastructure.Email;
 using Atoms.Infrastructure.Factories;
 using Atoms.UseCases.CreateNewGame;
@@ -10,6 +12,7 @@ using MediatR.Courier;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NReco.Logging.File;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,16 +32,10 @@ builder.Services.AddSingleton<CreateGame>(sp =>
                                          playerStrategyFactory,
                                          options);
 });
-builder.Services.AddSingleton<CreateInviteLink>(sp =>
-{
-    var dataProtectionProvider = sp.GetRequiredService<IDataProtectionProvider>();
-
-    return (Guid gameId, Guid playerId, string baseUrl) => 
-        InviteLinkFactory.Create(
-            gameId, playerId, baseUrl, dataProtectionProvider);
-});
 
 builder.Services.AddScoped<GameStateContainer>();
+
+builder.Services.AddScoped<IInviteSerializer, InviteSerializer>();
 
 builder.Services
     .AddMediatR(cfg =>

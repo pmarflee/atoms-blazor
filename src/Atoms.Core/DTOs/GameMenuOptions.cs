@@ -2,14 +2,16 @@
 
 using static Atoms.Core.Enums.EnumExtensions;
 
-public class GameMenuOptions
+public class GameMenuOptions(Guid gameId,
+                             List<GameMenuOptions.Player> players,
+                             StorageId localStorageId,
+                             UserId? userId)
 {
-    public const int MinPlayers = 2;
-    public const int MaxPlayers = 4;
-
-    public Guid GameId { get; }
-    public int NumberOfPlayers { get; set; }
-    public List<Player> Players { get; }
+    public Guid GameId { get; } = gameId;
+    public int NumberOfPlayers { get; set; } = players.Count;
+    public List<Player> Players { get; } = players;
+    public StorageId LocalStorageId { get; } = localStorageId;
+    public UserId? UserId { get; } = userId;
     public IEnumerable<KeyValuePair<PlayerType, string>> PlayerTypes { get; } =
         GetValuesDescriptions<PlayerType>();
 
@@ -22,46 +24,31 @@ public class GameMenuOptions
     public ColourScheme ColourScheme { get; set; } = ColourScheme.Original;
     public AtomShape AtomShape { get; set; } = AtomShape.Round;
 
-    public GameMenuOptions(int numberOfPlayers,
-                           int maxPlayers,
-                           string baseUrl,
-                           CreateInviteLink inviteLinkFactory,
-                           Guid? gameId = null)
+    public InviteLink CreateInviteLink(Player player,
+                                       IInviteSerializer inviteSerializer,
+                                       string baseUrl)
     {
-        GameId = gameId ?? Guid.NewGuid();
-        NumberOfPlayers = numberOfPlayers;
-        Players = new List<Player>(maxPlayers);
+        var invite = new Invite(GameId, player.Id);
+        var code = inviteSerializer.Serialize(invite);
 
-        for (var i = 0; i < maxPlayers; i++)
-        {
-            var playerId = Guid.NewGuid();
-
-            Players.Add(new Player
-            {
-                Id = playerId,
-                Type = PlayerType.Human,
-                Number = i + 1,
-                InviteLink = inviteLinkFactory.Invoke(GameId, playerId, baseUrl)
-            });
-        }
+        return new(code, baseUrl);
     }
 
-    GameMenuOptions(List<Player> players)
-    {
-        NumberOfPlayers = players.Count;
-        Players = players;
-    }
-
-    public static GameMenuOptions Debug => new(
-        [ new Player { Number = 1, Type = PlayerType.Human },
-          new Player { Number = 2, Type = PlayerType.Human } ]);
+    public static GameMenuOptions CreateForDebug(
+        Guid gameId, StorageId localStorageId, UserId? userId) =>
+        new(gameId,
+            [
+                new Player { Id = Guid.NewGuid(), Number = 1, Type = PlayerType.Human },
+                new Player { Id = Guid.NewGuid(), Number = 2, Type = PlayerType.Human },
+            ],
+            localStorageId,
+            userId);
 
     public class Player
     {
         public Guid Id { get; init; }
         public required int Number { get; init; }
         public required PlayerType Type { get; set; }
-        public string? UserId { get; set; }
-        public InviteLink? InviteLink { get; init; }
+        public ApplicationUser? User { get; set; }
     }
 }

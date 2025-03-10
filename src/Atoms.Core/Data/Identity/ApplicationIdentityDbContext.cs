@@ -1,7 +1,7 @@
-﻿using Atoms.Core.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-namespace Atoms.Infrastructure.Data.Identity;
+namespace Atoms.Core.Data.Identity;
 
 public class ApplicationIdentityDbContext(
     DbContextOptions<ApplicationIdentityDbContext> options) 

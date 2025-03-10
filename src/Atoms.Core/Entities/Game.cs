@@ -1,6 +1,4 @@
-﻿using Atoms.Core.Interfaces;
-
-namespace Atoms.Core.Entities;
+﻿namespace Atoms.Core.Entities;
 
 public class Game
 {
@@ -17,6 +15,8 @@ public class Game
     public int Move { get; private set; }
     public int Round { get; private set; }
     public IRandomNumberGenerator Rng { get; }
+    public UserId? UserId { get; }
+    public StorageId LocalStorageId { get; }
 
     public HashSet<GameBoard.Cell> DangerCells =>
         [..from cell in Board.Cells
@@ -35,9 +35,11 @@ public class Game
                 ColourScheme colourScheme,
                 AtomShape atomShape,
                 IRandomNumberGenerator rng,
+                StorageId localStorageId,
                 IEnumerable<GameBoard.CellState>? cells = null,
                 int move = 1,
-                int round = 1)
+                int round = 1,
+                UserId? userId = null)
     {
         if (!players.Contains(activePlayer))
         {
@@ -54,8 +56,26 @@ public class Game
         Move = move;
         Round = round;
         Rng = rng;
+        UserId = userId;
+        LocalStorageId = localStorageId;
 
         CheckForWinner();
+    }
+
+    public bool CanPlayMove(UserId? userId, StorageId? localStorageId)
+    {
+        if (HasWinner || !ActivePlayer.IsHuman) return false;
+
+        if (userId is not null &&
+            userId.Id == ActivePlayer.User?.Id) return true;
+
+        if (localStorageId is not null &&
+            localStorageId == ActivePlayer.LocalStorageId) return true;
+
+        if (userId is not null &&
+            userId.Id == UserId?.Id) return true;
+
+        return LocalStorageId == localStorageId;
     }
 
     public bool CanPlaceAtom(GameBoard.Cell cell)
@@ -134,7 +154,13 @@ public class Game
     {
         private readonly IPlayerStrategy? _strategy;
 
-        public Player(Guid id, int number, PlayerType type, string? userId = null, IPlayerStrategy? strategy = null)
+        public Player(Guid id,
+                      int number,
+                      PlayerType type,
+                      ApplicationUser? user = null,
+                      string? name = null,
+                      IPlayerStrategy? strategy = null,
+                      StorageId? localStorageId = null)
         {
             if (type != PlayerType.Human && strategy is null)
             {
@@ -144,7 +170,9 @@ public class Game
             Id = id;
             Number = number;
             Type = type;
-            UserId = userId;
+            User = user;
+            Name = name;
+            LocalStorageId = localStorageId;
 
             _strategy = strategy;
         }
@@ -152,7 +180,9 @@ public class Game
         public Guid Id { get; }
         public int Number { get; }
         public PlayerType Type { get; }
-        public string? UserId { get; }
+        public ApplicationUser? User { get; }
+        public string? Name { get; }
+        public StorageId? LocalStorageId { get; }
         public bool IsDead { get; private set; }
         public bool IsHuman => Type == PlayerType.Human;
         public void MarkDead() => IsDead = true;
