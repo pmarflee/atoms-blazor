@@ -15,7 +15,7 @@ public class InvitePageComponent : Component2Base
     ClaimsPrincipal? AuthenticatedUser { get; set; }
 
     [Inject]
-    BrowserStorageService BrowserStorageService { get; set; } = default!;
+    IBrowserStorageService BrowserStorageService { get; set; } = default!;
 
     [Inject]
     NavigationManager Navigation { get; set; } = default!;
@@ -39,7 +39,14 @@ public class InvitePageComponent : Component2Base
             if (_userId is not null)
             {
                 await AcceptInvite();
-            }    
+            }
+
+            var userName = await BrowserStorageService.GetUserName();
+
+            if (!string.IsNullOrEmpty(userName))
+            {
+                Input.Name = userName;
+            }
         }
         else
         {
@@ -49,10 +56,8 @@ public class InvitePageComponent : Component2Base
 
     public async Task AcceptInvite()
     {
-        var storageId = await BrowserStorageService.GetOrAddStorageId();
         var response = await Mediator.Send(
-            new AcceptInviteRequest(
-                _invite, _userId, storageId, Input.Name));
+            new AcceptInviteRequest(_invite, _userId, Input.Name));
 
         if (response.IsSuccessful)
         {

@@ -9,7 +9,7 @@ public partial class GameComponent : Component2Base, IDisposable
     NavigationManager Navigation { get; set; } = default!;
 
     [Inject]
-    BrowserStorageService BrowserStorageService { get; set; } = default!;
+    IBrowserStorageService BrowserStorageService { get; set; } = default!;
 
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;

@@ -77,7 +77,7 @@ builder.Services.AddDataProtection()
 builder.Services.AddOptions<EmailSettings>()
                 .BindConfiguration("Email");
 
-builder.Services.AddScoped<BrowserStorageService>();
+builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
 
 var loggingConfigurationSection = builder.Configuration.GetSection("Logging");
 

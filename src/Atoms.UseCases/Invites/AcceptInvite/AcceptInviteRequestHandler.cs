@@ -3,6 +3,7 @@
 namespace Atoms.UseCases.Invites.AcceptInvite;
 
 public class AcceptInviteRequestHandler(
+    IBrowserStorageService browserStorageService,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
     ILogger<AcceptInviteRequestHandler> logger) 
     : IRequestHandler<AcceptInviteRequest, AcceptInviteResponse>
@@ -34,10 +35,14 @@ public class AcceptInviteRequestHandler(
             return AcceptInviteResponse.Failure;
         }
 
+        var localStorageId = await browserStorageService.GetOrAddStorageId();
+
         player.UserId = request.UserId?.Id;
-        player.LocalStorageId = request.StorageId.Value;
+        player.LocalStorageId = localStorageId.Value;
 
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        await browserStorageService.SetUserName(request.Name);
 
         return AcceptInviteResponse.Success;
     }

@@ -66,16 +66,18 @@ public class Game
     {
         if (HasWinner || !ActivePlayer.IsHuman) return false;
 
-        if (userId is not null &&
-            userId.Id == ActivePlayer.User?.Id) return true;
+        if (userId is not null && ActivePlayer.User is not null)
+        {
+            return userId.Id == ActivePlayer.User.Id;
+        }
 
-        if (localStorageId is not null &&
-            localStorageId == ActivePlayer.LocalStorageId) return true;
+        if (localStorageId is not null && ActivePlayer.LocalStorageId is not null)
+        {
+            return localStorageId == ActivePlayer.LocalStorageId;
+        }
 
-        if (userId is not null &&
-            userId.Id == UserId?.Id) return true;
-
-        return LocalStorageId == localStorageId;
+        return userId is not null && userId.Id == UserId?.Id 
+            || LocalStorageId == localStorageId;
     }
 
     public bool CanPlaceAtom(GameBoard.Cell cell)

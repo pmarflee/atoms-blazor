@@ -20,7 +20,7 @@ public class BoardComponent : Component2Base, IDisposable
     GameStateContainer StateContainer { get; set; } = default!;
 
     [Inject]
-    BrowserStorageService BrowserStorageService { get; set; } = default!;
+    IBrowserStorageService BrowserStorageService { get; set; } = default!;
 
     [CascadingParameter]
     ClaimsPrincipal? AuthenticatedUser { get; set; }
@@ -150,9 +150,16 @@ public class BoardComponent : Component2Base, IDisposable
 
     async Task SetCursor()
     {
-        await JSRuntime.InvokeVoidAsync(
-            "App.setCursor", 
-            Game!.ActivePlayer.Number - 1);
+        if (await CanPlayMove())
+        {
+            await JSRuntime.InvokeVoidAsync(
+                "App.setCursor",
+                Game!.ActivePlayer.Number - 1);
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("App.setDefaultCursor");
+        }
     }
 
     static async Task DelayBetweenMoves()

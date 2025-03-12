@@ -1,4 +1,5 @@
-﻿using Atoms.Core.ValueObjects;
+﻿using Atoms.Core.Identity;
+using Atoms.Core.ValueObjects;
 
 namespace Atoms.UnitTests.Core.Entities.Game;
 
@@ -106,6 +107,43 @@ public class CanPlayMoveTests
 
         await Assert.That(
             game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            .IsFalse();
+    }
+
+    [Test]
+    public async Task ShouldNotBeAbleToPlayMoveWhenUserIsLoggedInAndActivePlayerIsAUserWhoIsNotTheSameUser()
+    {
+        var player1 = ObjectMother.CreateHumanPlayer(
+            ObjectMother.Player1Id, 1, 
+            new ApplicationUser { Id = ObjectMother.UserId.Id });
+        var player2 = ObjectMother.CreateHumanPlayer(
+            ObjectMother.Player2Id, 2, 
+            new ApplicationUser { Id = Guid.NewGuid().ToString() });
+
+        var game = ObjectMother.Game(
+            [player1, player2], 2,
+            userId: ObjectMother.UserId);
+
+        await Assert.That(
+            game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            .IsFalse();
+    }
+
+    [Test]
+    public async Task ShouldNotBeAbleToPlayMoveWhenUserHasALocalStorageIdAndTheActivePlayerHasALocalStorageIdThatDoesNotMatch()
+    {
+        var player1 = ObjectMother.CreateHumanPlayer(
+            ObjectMother.Player1Id, 1,
+            localStorageId: ObjectMother.LocalStorageId);
+        var player2 = ObjectMother.CreateHumanPlayer(
+            ObjectMother.Player2Id, 2, 
+            localStorageId: new StorageId(Guid.NewGuid()));
+
+        var game = ObjectMother.Game(
+            [player1, player2], 2);
+
+        await Assert.That(
+            game.CanPlayMove(null, ObjectMother.LocalStorageId))
             .IsFalse();
     }
 }

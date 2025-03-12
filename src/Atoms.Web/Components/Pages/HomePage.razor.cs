@@ -1,6 +1,4 @@
-﻿using Atoms.UseCases.CreateNewGame;
-
-using Game = Atoms.Core.Entities.Game;
+﻿using Game = Atoms.Core.Entities.Game;
 
 namespace Atoms.Web.Components.Pages;
 
@@ -11,12 +9,6 @@ public partial class HomePageComponent : Component2Base, IDisposable
 
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
-
-    [Inject]
-    BrowserStorageService BrowserStorageService { get; set; } = default!;
-
-    [CascadingParameter]
-    ClaimsPrincipal? AuthenticatedUser { get; set; }
 
     [SupplyParameterFromQuery]
     protected int? Debug { get; set; }

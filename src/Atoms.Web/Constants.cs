@@ -5,5 +5,6 @@ public static class Constants
     public static class StorageKeys
     {
         public const string LocalStorageId = nameof(LocalStorageId);
+        public const string UserName = nameof(UserName);
     }
 }

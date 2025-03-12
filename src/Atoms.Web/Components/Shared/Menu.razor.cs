@@ -9,7 +9,7 @@ public partial class MenuComponent : Component2Base
     protected const int MaxPlayers = 4;
 
     [Inject]
-    BrowserStorageService BrowserStorageService { get; set; } = default!;
+    IBrowserStorageService BrowserStorageService { get; set; } = default!;
 
     [Inject]
     protected NavigationManager NavigationManager { get; set; } = default!;

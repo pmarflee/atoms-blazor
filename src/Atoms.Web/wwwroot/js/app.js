@@ -15,6 +15,9 @@
         const highContrast = document.documentElement.classList.contains('high-contrast') ? '-hc' : '';
         document.documentElement.style.cursor = 'url("images/cursor-player' + playerId + highContrast + '.svg") 18 3, default';
     }
+    static setDefaultCursor() {
+        document.documentElement.style.cursor = 'url("images/cursor.svg") 18 3, default';
+    }
     static startMusic() {
         if (document.getElementById('music-intro')) {
             document.getElementById('music-intro').play();
