@@ -5,7 +5,8 @@ namespace Atoms.UseCases.Invites.AcceptInvite;
 public class AcceptInviteRequestHandler(
     IBrowserStorageService browserStorageService,
     IValidator<Invite> inviteValidator,
-    IDbContextFactory<ApplicationDbContext> dbContextFactory) 
+    IDbContextFactory<ApplicationDbContext> dbContextFactory,
+    IDateTimeService dateTimeService) 
     : IRequestHandler<AcceptInviteRequest, AcceptInviteResponse>
 {
     public async Task<AcceptInviteResponse> Handle(AcceptInviteRequest request,
@@ -30,7 +31,7 @@ public class AcceptInviteRequestHandler(
         player.UserId = request.UserId?.Id;
         player.LocalStorageId = localStorageId.Value;
 
-        game.LastUpdatedDateUtc = DateTime.UtcNow;
+        game.LastUpdatedDateUtc = dateTimeService.UtcNow;
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
