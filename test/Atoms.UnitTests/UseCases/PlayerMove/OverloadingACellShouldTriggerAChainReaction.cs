@@ -27,7 +27,8 @@ public class OverloadingACellShouldTriggerAChainReaction : PlayerMoveAtomTestFix
             ObjectMother.Game(
                 active: 2,
                 cells: [new(1, 2, 1, 1), new(2, 1, 1, 1)],
-                move: 2)
+                move: 2,
+                lastUpdatedDateUtc: ObjectMother.NewLastUpdatedDateUtc)
         );
 
         yield return () => (
@@ -37,7 +38,8 @@ public class OverloadingACellShouldTriggerAChainReaction : PlayerMoveAtomTestFix
                 active: 2,
                 cells: [ new(1, 1, 1, 1), new(1, 3, 1, 1),
                          new(2, 2, 1, 1) ],
-                move: 2)
+                move: 2,
+                lastUpdatedDateUtc: ObjectMother.NewLastUpdatedDateUtc)
         );
 
         yield return () => (
@@ -47,7 +49,8 @@ public class OverloadingACellShouldTriggerAChainReaction : PlayerMoveAtomTestFix
                 active: 2,
                 cells: [ new(1, 2, 1, 1), new(2, 1, 1, 1),
                          new(2, 3, 1, 1), new(3, 2, 1, 1) ],
-                move: 2)
+                move: 2,
+                lastUpdatedDateUtc: ObjectMother.NewLastUpdatedDateUtc)
         );
     }
 }

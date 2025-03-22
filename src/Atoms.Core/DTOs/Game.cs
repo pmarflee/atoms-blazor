@@ -2,7 +2,7 @@
 
 namespace Atoms.Core.DTOs;
 
-public class GameDTO : IAuditable
+public class GameDTO
 {
     public required Guid Id { get; init; }
     public string? UserId { get; init; }
@@ -31,7 +31,9 @@ public class GameDTO : IAuditable
             IsActive = !game.HasWinner,
             Move = game.Move,
             Round = game.Round,
-            Rng = RngDTO.FromEntity(game.Rng)
+            Rng = RngDTO.FromEntity(game.Rng),
+            CreatedDateUtc = game.CreatedDateUtc,
+            LastUpdatedDateUtc = game.LastUpdatedDateUtc
         };
 
         foreach (var player in game.Players)
@@ -93,19 +95,22 @@ public class GameDTO : IAuditable
             AtomShape,
             rng,
             new(LocalStorageId),
+            CreatedDateUtc,
+            LastUpdatedDateUtc,
             Board.ToEntity(),
             Move,
             Round,
             userId);
     }
 
-    public void UpdateFromEntity(Game game)
+    public void UpdateFromEntity(Game game, DateTime lastUpdatedDateUtc)
     {
         Move = game.Move;
         Round = game.Round;
         Rng = RngDTO.FromEntity(game.Rng);
         Board = BoardDTO.FromEntity(game.Board);
         IsActive = !game.HasWinner;
+        LastUpdatedDateUtc = lastUpdatedDateUtc;
 
         foreach (var player in game.Players)
         {
@@ -113,6 +118,8 @@ public class GameDTO : IAuditable
 
             playerDto.IsWinner = game.HasWinner && !player.IsDead;
         }
+
+        game.MarkUpdated(LastUpdatedDateUtc);
     }
 }
 

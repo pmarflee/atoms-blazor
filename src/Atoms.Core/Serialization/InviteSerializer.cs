@@ -1,6 +1,4 @@
-﻿
-using Microsoft.AspNetCore.DataProtection;
-using System.Diagnostics;
+﻿using Microsoft.AspNetCore.DataProtection;
 using System.Text.Json;
 
 namespace Atoms.Core.Serialization;

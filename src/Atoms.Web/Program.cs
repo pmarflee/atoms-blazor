@@ -3,11 +3,14 @@ using Atoms.Core.Delegates;
 using Atoms.Core.Entities.Configuration;
 using Atoms.Core.Interfaces;
 using Atoms.Core.Serialization;
+using Atoms.Core.Services;
 using Atoms.Infrastructure;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Email;
 using Atoms.Infrastructure.Factories;
+using Atoms.Infrastructure.Validation;
 using Atoms.UseCases.CreateNewGame;
+using FluentValidation;
 using MediatR.Courier;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -78,6 +81,10 @@ builder.Services.AddOptions<EmailSettings>()
                 .BindConfiguration("Email");
 
 builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
+
+builder.Services.AddTransient<IValidator<Invite>, InviteValidator>();
+
+builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
 
 var loggingConfigurationSection = builder.Configuration.GetSection("Logging");
 

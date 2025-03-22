@@ -4,7 +4,8 @@ namespace Atoms.UseCases.PlayerMove;
 
 public class PlayerMoveRequestHandler(
     IMediator mediator,
-    IDbContextFactory<ApplicationDbContext> dbContextFactory)
+    IDbContextFactory<ApplicationDbContext> dbContextFactory,
+    IDateTimeService dateTimeService)
     : IRequestHandler<PlayerMoveRequest, PlayerMoveResponse>
 {
     public async Task<PlayerMoveResponse> Handle(
@@ -18,7 +19,12 @@ public class PlayerMoveRequestHandler(
         {
             if (cell is null || !game.CanPlaceAtom(cell))
             {
-                return PlayerMoveResponse.Failure;
+                return new PlayerMoveResponse(PlayerMoveResult.InvalidMove);
+            }
+
+            if (await GameStateHasChanged(game, cancellationToken))
+            {
+                return new PlayerMoveResponse(PlayerMoveResult.GameStateHasChanged);
             }
         }
         else
@@ -50,7 +56,7 @@ public class PlayerMoveRequestHandler(
             await SaveGame(game, cancellationToken);
         }
 
-        return PlayerMoveResponse.Success;
+        return new PlayerMoveResponse(PlayerMoveResult.Success);
     }
 
     async Task DoChainReaction(Game game, Stack<Cell> overloaded)
@@ -112,18 +118,34 @@ public class PlayerMoveRequestHandler(
         await mediator.Publish(new AtomExploded(game));
     }
 
-    async Task SaveGame(Game game,
-                        CancellationToken cancellationToken)
+    static async Task<GameDTO> GetGameDTO(Game game,
+                                          ApplicationDbContext dbContext,
+                                          CancellationToken cancellationToken)
+    {
+        return await dbContext.GetGameById(game.Id, cancellationToken)
+            ?? throw new Exception("Game not found");
+    }
+
+    async Task SaveGame(Game game, CancellationToken cancellationToken)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync(
             cancellationToken);
 
-        var gameDto = await dbContext.GetGameById(game.Id,
-                                                  cancellationToken) 
-            ?? throw new Exception("Game not found");
+        var gameDto = await GetGameDTO(game, dbContext, cancellationToken);
 
-        gameDto.UpdateFromEntity(game);
+        gameDto.UpdateFromEntity(game, dateTimeService.UtcNow);
 
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    async Task<bool> GameStateHasChanged(Game game,
+                                         CancellationToken cancellationToken)
+    {
+        using var dbContext = await dbContextFactory.CreateDbContextAsync(
+            cancellationToken);
+
+        var gameDto = await GetGameDTO(game, dbContext, cancellationToken);
+
+        return gameDto.LastUpdatedDateUtc != game.LastUpdatedDateUtc;
     }
 }

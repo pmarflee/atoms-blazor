@@ -3,7 +3,7 @@ using Atoms.UseCases.Shared.Notifications;
 
 namespace Atoms.UnitTests.UseCases.PlayerMove;
 
-public abstract class PlayerMoveAtomTestFixture : BaseTestFixture
+public abstract class PlayerMoveAtomTestFixture : BaseDbTestFixture
 {
     protected IMediator Mediator { get; private set; } = default!;
     protected PlayerMoveRequestHandler Handler { get; private set; } = default!;
@@ -19,7 +19,8 @@ public abstract class PlayerMoveAtomTestFixture : BaseTestFixture
         await dbContext.SaveChangesAsync();
 
         Mediator = CreateMediator();
-        Handler = new PlayerMoveRequestHandler(Mediator, DbContextFactory);
+        Handler = new PlayerMoveRequestHandler(
+            Mediator, DbContextFactory, CreateDateTimeService());
     }
 
     private static IMediator CreateMediator()
@@ -34,5 +35,16 @@ public abstract class PlayerMoveAtomTestFixture : BaseTestFixture
             .ReturnValue(Task.CompletedTask);
 
         return mediatorExpectations.Instance();
+    }
+
+    private static IDateTimeService CreateDateTimeService()
+    {
+        var dateTimeServiceExpectations = new IDateTimeServiceCreateExpectations();
+
+        dateTimeServiceExpectations.Properties.Getters.UtcNow()
+            .ReturnValue(ObjectMother.NewLastUpdatedDateUtc);
+
+        return dateTimeServiceExpectations.Instance();
+            
     }
 }

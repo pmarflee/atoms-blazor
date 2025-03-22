@@ -25,7 +25,8 @@ public static class GameFactory
                         options.ColourScheme,
                         options.AtomShape,
                         rng,
-                        options.LocalStorageId,
+                        options.LocalStorageId!,
+                        DateTime.UtcNow,
                         userId: options.UserId);
     }
 }

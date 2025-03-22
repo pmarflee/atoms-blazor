@@ -76,6 +76,11 @@ public class BoardComponent : Component2Base, IDisposable
         await StateContainer.GameUpdated();
     }
 
+    async Task ReloadGame()
+    {
+        await StateContainer.GameReloadRequired();
+    }
+
     async Task PlayDebugGame()
     {
         try
@@ -145,6 +150,10 @@ public class BoardComponent : Component2Base, IDisposable
                 await DelayBetweenMoves();
                 await PlayMove();
             }
+        }
+        else if (response.Result == PlayerMoveResult.GameStateHasChanged)
+        {
+            await ReloadGame();
         }
     }
 

@@ -6,6 +6,11 @@
 
 <h2>Invite</h2>
 
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div>Error: @ErrorMessage</div>
+}
+
 @if (InviteCodeRead)
 {
     <div class="invite">
@@ -23,8 +28,4 @@
             </EditForm>
         </section>
     </div>
-}
-else
-{
-    <div>@ErrorMessage</div>
 }

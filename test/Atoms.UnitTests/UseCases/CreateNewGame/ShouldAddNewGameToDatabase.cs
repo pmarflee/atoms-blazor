@@ -2,7 +2,7 @@
 
 namespace Atoms.UnitTests.UseCases.CreateNewGame;
 
-public class ShouldAddNewGameToDatabase : BaseTestFixture
+public class ShouldAddNewGameToDatabase : BaseDbTestFixture
 {
     [Test]
     public async Task Test()

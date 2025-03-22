@@ -29,6 +29,11 @@ public class GameStateContainer
         await NotifyStateChanged();
     }
 
+    public async Task GameReloadRequired()
+    {
+        await NotifyGameReloadRequired();
+    }
+
     public async Task SetMenu()
     {
         _game = null;
@@ -39,8 +44,10 @@ public class GameStateContainer
 
     public event Func<Task> OnChange = default!;
     public event Func<Task>? OnGameSet;
+    public event Func<Task> OnGameReloadRequired = default!;
 
     private async Task NotifyStateChanged() => await OnChange.Invoke();
+
     private async Task NotifyGameSet()
     {
         if (OnGameSet is not null)
@@ -48,4 +55,7 @@ public class GameStateContainer
             await OnGameSet.Invoke();
         }
     }
+
+    private async Task NotifyGameReloadRequired() => 
+        await OnGameReloadRequired.Invoke();
 }

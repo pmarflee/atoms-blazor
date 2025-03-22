@@ -5,7 +5,6 @@ using Atoms.Core.Data;
 using System.Reflection;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Core.Data.Identity;
-using Atoms.Infrastructure.Data;
 
 namespace Atoms.Infrastructure;
 
@@ -28,8 +27,7 @@ public static class WebApplicationBuilderExtensions
             options => options
                 .UseSqlite(
                     connectionString,
-                    x => x.MigrationsAssembly(Assembly.GetExecutingAssembly()))
-                .AddInterceptors(new AuditingSaveChangesInterceptor()));
+                    x => x.MigrationsAssembly(Assembly.GetExecutingAssembly())));
 
         builder.Services.AddDbContext<DataProtectionKeyContext>(
             options => options.UseSqlite(connectionString));

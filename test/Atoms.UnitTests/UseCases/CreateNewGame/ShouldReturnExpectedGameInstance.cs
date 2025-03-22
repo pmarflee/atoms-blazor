@@ -2,7 +2,7 @@
 
 namespace Atoms.UnitTests.UseCases.CreateNewGame;
 
-public class ShouldReturnExpectedGameInstance : BaseTestFixture
+public class ShouldReturnExpectedGameInstance : BaseDbTestFixture
 {
     [Test]
     public async Task Test()

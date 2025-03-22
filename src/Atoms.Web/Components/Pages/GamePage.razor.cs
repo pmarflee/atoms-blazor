@@ -29,24 +29,11 @@ public partial class GameComponent : Component2Base, IDisposable
     protected async override Task OnInitializedAsync()
     {
         StateContainer.OnChange += StateHasChangedAsync;
+        StateContainer.OnGameReloadRequired += LoadGame;
 
         if (GameId.HasValue)
         {
-            var userId = AuthenticatedUser.GetUserId();
-            var storageId = await BrowserStorageService.GetOrAddStorageId();
-            var response = await Mediator.Send(
-                new GetGameRequest(GameId.Value, storageId, userId));
-
-            if (response.Success)
-            {
-                Debug = null;
-
-                await Initialize(response.Game!);
-            }
-            else
-            {
-                Navigation.NavigateTo("/");
-            }
+            await LoadGame();
         }
         else if (Debug.HasValue)
         {
@@ -55,6 +42,25 @@ public partial class GameComponent : Component2Base, IDisposable
 
             await Task.Delay(10);
             await Initialize(response.Game);
+        }
+        else
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    private async Task LoadGame()
+    {
+        var userId = AuthenticatedUser.GetUserId();
+        var storageId = await BrowserStorageService.GetOrAddStorageId();
+        var response = await Mediator.Send(
+            new GetGameRequest(GameId!.Value, storageId, userId));
+
+        if (response.Success)
+        {
+            Debug = null;
+
+            await Initialize(response.Game!);
         }
         else
         {
@@ -108,6 +114,7 @@ public partial class GameComponent : Component2Base, IDisposable
         if (disposing)
         {
             StateContainer.OnChange -= StateHasChangedAsync;
+            StateContainer.OnGameReloadRequired -= LoadGame;
         }
     }
 }

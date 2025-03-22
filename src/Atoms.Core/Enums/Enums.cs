@@ -48,3 +48,20 @@ public enum ExplosionState
     Before = 1,
     After = 2
 }
+
+public enum PlayerMoveResult
+{
+    None = 0,
+    Success = 1,
+    InvalidMove = 2,
+    GameStateHasChanged = 3
+}
+
+public enum InviteResult
+{
+    None = 0,
+    Success = 1,
+    GameNotFound = 2,
+    PlayerNotFound = 3,
+    InviteAlreadyAccepted = 4
+}

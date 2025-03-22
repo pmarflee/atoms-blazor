@@ -17,6 +17,8 @@ public class Game
     public IRandomNumberGenerator Rng { get; }
     public UserId? UserId { get; }
     public StorageId LocalStorageId { get; }
+    public DateTime CreatedDateUtc { get; private set; }
+    public DateTime LastUpdatedDateUtc { get; private set; }
 
     public HashSet<GameBoard.Cell> DangerCells =>
         [..from cell in Board.Cells
@@ -36,6 +38,8 @@ public class Game
                 AtomShape atomShape,
                 IRandomNumberGenerator rng,
                 StorageId localStorageId,
+                DateTime createdDateUtc,
+                DateTime? lastUpdatedDateUtc = null,
                 IEnumerable<GameBoard.CellState>? cells = null,
                 int move = 1,
                 int round = 1,
@@ -58,6 +62,8 @@ public class Game
         Rng = rng;
         UserId = userId;
         LocalStorageId = localStorageId;
+        CreatedDateUtc = createdDateUtc;
+        LastUpdatedDateUtc = lastUpdatedDateUtc ?? createdDateUtc;
 
         CheckForWinner();
     }
@@ -138,6 +144,16 @@ public class Game
         }
 
         return (cells, atoms);
+    }
+
+    internal void MarkCreated(DateTime createdDate)
+    {
+        LastUpdatedDateUtc = CreatedDateUtc = createdDate;
+    }
+
+    internal void MarkUpdated(DateTime lastUpdatedDate)
+    {
+        LastUpdatedDateUtc = lastUpdatedDate;
     }
 
     void SetNextActivePlayer()

@@ -50,7 +50,7 @@ public class InvitePageComponent : Component2Base
         }
         else
         {
-            ErrorMessage = "Unable to read invite code";
+            ErrorMessage = response.ErrorMessage;
         }
     }
 
@@ -59,9 +59,13 @@ public class InvitePageComponent : Component2Base
         var response = await Mediator.Send(
             new AcceptInviteRequest(_invite, _userId, Input.Name));
 
-        if (response.IsSuccessful)
+        if (response.Success)
         {
             Navigation.NavigateToGame(_invite);
+        }
+        else
+        {
+            ErrorMessage = response.ErrorMessage;
         }
     }
 

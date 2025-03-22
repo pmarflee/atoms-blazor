@@ -1,6 +1,6 @@
-﻿namespace Atoms.UnitTests.UseCases;
+﻿namespace Atoms.UnitTests;
 
-public abstract class BaseTestFixture
+public abstract class BaseDbTestFixture
 {
     private SqliteConnection _connection = default!;
 

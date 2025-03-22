@@ -2,6 +2,8 @@
 using Atoms.Core.Identity;
 using Atoms.Core.Services;
 using Atoms.Core.ValueObjects;
+using Atoms.UseCases.Invites.ReadInviteCode;
+using Microsoft.Extensions.Logging;
 using static Atoms.Core.Entities.Game;
 
 namespace Atoms.UnitTests;
@@ -17,6 +19,10 @@ internal static class ObjectMother
 
     public static readonly Guid Player1Id = new("FE0FA471-AC98-4D1B-825B-4DDF64122022");
     public static readonly Guid Player2Id = new("08C5B9A7-0B0C-4E2F-9741-0FE822093901");
+
+    public static readonly DateTime CreatedDateUtc = new(2025, 3, 12, 23, 14, 0);
+    public static readonly DateTime LastUpdatedDateUtc = new(2025, 3, 12, 23, 30, 0);
+    public static readonly DateTime NewLastUpdatedDateUtc = new(2025, 3, 22, 18, 15, 0);
 
     public static Invite Invite = new(GameId, Player1Id);
 
@@ -47,7 +53,8 @@ internal static class ObjectMother
                             int move = 1,
                             int round = 1,
                             UserId? userId = null,
-                            StorageId? localStorageId = null)
+                            StorageId? localStorageId = null,
+                            DateTime? lastUpdatedDateUtc = null)
     {
         players ??=
         [
@@ -64,6 +71,8 @@ internal static class ObjectMother
                         ColourScheme.Original, AtomShape.Round,
                         rng, 
                         localStorageId ?? LocalStorageId,
+                        CreatedDateUtc,
+                        lastUpdatedDateUtc ?? LastUpdatedDateUtc,
                         cells, move, round,
                         userId ?? UserId);
     }
@@ -103,7 +112,9 @@ internal static class ObjectMother
             Move = move,
             Round = round,
             IsActive = true,
-            Rng = new RngDTO { Seed = 1, Iterations = 0 }
+            Rng = new RngDTO { Seed = 1, Iterations = 0 },
+            CreatedDateUtc = CreatedDateUtc,
+            LastUpdatedDateUtc = LastUpdatedDateUtc
         };
 
         players ??=
@@ -157,5 +168,27 @@ internal static class ObjectMother
     public static ApplicationUser CreateApplicationUser(UserId userId)
     {
         return new ApplicationUser { Id = userId.Id };
+    }
+
+    public static ValueTask<ApplicationUser> GetUserById(UserId userId)
+    {
+        return ValueTask.FromResult(CreateApplicationUser(userId));
+    }
+
+    public sealed class MockReadInviteCodeRequestLogger : ILogger<ReadInviteCodeRequestHandler>
+    {
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+        {
+            return null;
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return true;
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+        }
     }
 }

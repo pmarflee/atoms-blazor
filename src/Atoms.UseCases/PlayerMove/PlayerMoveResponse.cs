@@ -1,14 +1,7 @@
 ﻿namespace Atoms.UseCases.PlayerMove;
 
-public class PlayerMoveResponse
+public class PlayerMoveResponse(PlayerMoveResult result)
 {
-    private PlayerMoveResponse(bool isSuccessful)
-    {
-        IsSuccessful = isSuccessful;
-    }
-
-    public bool IsSuccessful { get; }
-
-    public static readonly PlayerMoveResponse Success = new(true);
-    public static readonly PlayerMoveResponse Failure = new(false);
+    public bool IsSuccessful { get; } = result == PlayerMoveResult.Success;
+    public PlayerMoveResult Result { get; } = result;
 }
