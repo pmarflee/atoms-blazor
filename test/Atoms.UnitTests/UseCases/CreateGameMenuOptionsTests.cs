@@ -7,7 +7,15 @@ public class CreateGameMenuOptionsTests
     [Test]
     public async Task OptionsCreatedShouldMatchSpecification()
     {
-        var handler = new CreateGameOptionsRequestHandler();
+        var browserStorageServiceExpectations = new IBrowserStorageServiceCreateExpectations();
+        browserStorageServiceExpectations.Methods
+            .GetColourScheme()
+            .ReturnValue(ValueTask.FromResult(ColourScheme.Original));
+        browserStorageServiceExpectations.Methods
+            .GetAtomShape()
+            .ReturnValue(ValueTask.FromResult(AtomShape.Round));
+
+        var handler = new CreateGameOptionsRequestHandler(browserStorageServiceExpectations.Instance());
         var request = new CreateGameOptionsRequest(
             ObjectMother.GameId, 4,
             ObjectMother.LocalStorageId, ObjectMother.UserId);

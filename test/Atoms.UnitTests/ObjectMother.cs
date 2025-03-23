@@ -44,6 +44,8 @@ internal static class ObjectMother
                     Type = PlayerType.Human
                 }
             ],
+            ColourScheme.Original,
+            AtomShape.Round,
             LocalStorageId,
             UserId);
 

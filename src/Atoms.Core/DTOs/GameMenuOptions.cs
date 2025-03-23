@@ -4,6 +4,8 @@ using static Atoms.Core.Enums.EnumExtensions;
 
 public class GameMenuOptions(Guid gameId,
                              List<GameMenuOptions.Player> players,
+                             ColourScheme colourScheme = ColourScheme.Original,
+                             AtomShape atomShape = AtomShape.Round,
                              StorageId? localStorageId = null,
                              UserId? userId = null)
 {
@@ -21,8 +23,8 @@ public class GameMenuOptions(Guid gameId,
     public IEnumerable<KeyValuePair<AtomShape, string>> AtomShapes { get; } =
         GetValuesDescriptions<AtomShape>();
 
-    public ColourScheme ColourScheme { get; set; } = ColourScheme.Original;
-    public AtomShape AtomShape { get; set; } = AtomShape.Round;
+    public ColourScheme ColourScheme { get; set; } = colourScheme;
+    public AtomShape AtomShape { get; set; } = atomShape;
 
     public InviteLink CreateInviteLink(Player player,
                                        IInviteSerializer inviteSerializer,

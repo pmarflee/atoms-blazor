@@ -6,5 +6,7 @@ public static class Constants
     {
         public const string LocalStorageId = nameof(LocalStorageId);
         public const string UserName = nameof(UserName);
+        public const string ColourScheme = nameof(ColourScheme);
+        public const string AtomShape = nameof(AtomShape);
     }
 }

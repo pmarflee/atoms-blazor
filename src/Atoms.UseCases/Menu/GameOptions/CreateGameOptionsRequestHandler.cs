@@ -2,12 +2,15 @@
 
 namespace Atoms.UseCases.Menu.GameOptions;
 
-public class CreateGameOptionsRequestHandler 
+public class CreateGameOptionsRequestHandler(
+    IBrowserStorageService browserStorageService) 
     : IRequestHandler<CreateGameOptionsRequest, GameOptionsResponse>
 {
-    public Task<GameOptionsResponse> Handle(CreateGameOptionsRequest request,
-                                            CancellationToken cancellationToken)
+    public async Task<GameOptionsResponse> Handle(
+        CreateGameOptionsRequest request, CancellationToken cancellationToken)
     {
+        var colourScheme = await browserStorageService.GetColourScheme();
+        var atomShape = await browserStorageService.GetAtomShape();
         var players = new List<Player>(request.NumberOfPlayers);
 
         for (var i = 0; i < request.NumberOfPlayers; i++)
@@ -21,9 +24,10 @@ public class CreateGameOptionsRequestHandler
         }
 
         var options = new GameMenuOptions(
-            request.GameId, players, request.StorageId, request.UserId);
-        var response = new GameOptionsResponse(options);
+            request.GameId, players,
+            colourScheme, atomShape,
+            request.StorageId, request.UserId);
 
-        return Task.FromResult(response);
+        return new GameOptionsResponse(options);
     }
 }
