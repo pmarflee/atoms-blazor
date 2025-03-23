@@ -15,12 +15,12 @@ public class GameStateContainer
         get => _state;
     }
 
-    public async Task SetGame(Game game)
+    public async Task SetGame(Game game, bool isReload)
     {
         _game = game;
         _state = GameState.Game;
 
-        await NotifyGameSet();
+        await NotifyGameSet(isReload);
         await NotifyStateChanged();
     }
 
@@ -34,6 +34,11 @@ public class GameStateContainer
         await NotifyGameReloadRequired();
     }
 
+    public async Task PlayerMoved(int playerNumber)
+    {
+        await NotifyPlayerMoved(playerNumber);
+    }
+
     public async Task SetMenu()
     {
         _game = null;
@@ -43,19 +48,23 @@ public class GameStateContainer
     }
 
     public event Func<Task> OnChange = default!;
-    public event Func<Task>? OnGameSet;
+    public event Func<bool, Task>? OnGameSet;
     public event Func<Task> OnGameReloadRequired = default!;
+    public event Func<int, Task> OnPlayerMoved = default!;
 
-    private async Task NotifyStateChanged() => await OnChange.Invoke();
+    async Task NotifyStateChanged() => await OnChange.Invoke();
 
-    private async Task NotifyGameSet()
+    async Task NotifyGameSet(bool isReload)
     {
         if (OnGameSet is not null)
         {
-            await OnGameSet.Invoke();
+            await OnGameSet.Invoke(isReload);
         }
     }
 
-    private async Task NotifyGameReloadRequired() => 
+    async Task NotifyGameReloadRequired() => 
         await OnGameReloadRequired.Invoke();
+
+    async Task NotifyPlayerMoved(int playerNumber) => 
+        await OnPlayerMoved.Invoke(playerNumber);
 }

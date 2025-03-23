@@ -10,12 +10,13 @@ using Atoms.Infrastructure.Email;
 using Atoms.Infrastructure.Factories;
 using Atoms.Infrastructure.Validation;
 using Atoms.UseCases.CreateNewGame;
+using Atoms.Web.Hubs;
 using FluentValidation;
 using MediatR.Courier;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.ResponseCompression;
 using NReco.Logging.File;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -86,6 +87,14 @@ builder.Services.AddTransient<IValidator<Invite>, InviteValidator>();
 
 builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
 
+builder.Services.AddSignalR();
+
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        ["application/octet-stream"]);
+});
+
 var loggingConfigurationSection = builder.Configuration.GetSection("Logging");
 
 builder.Services.AddLogging(loggingBuilder =>
@@ -115,6 +124,11 @@ builder.Services.AddLogging(loggingBuilder =>
 
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseResponseCompression();
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -139,6 +153,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapAdditionalIdentityEndpoints();
+
+app.MapHub<GameHub>("/gamehub");
 
 app.RunDatabaseMigrations();
 

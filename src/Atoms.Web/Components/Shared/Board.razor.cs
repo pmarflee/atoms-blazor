@@ -46,7 +46,7 @@ public class BoardComponent : Component2Base, IDisposable
     {
         if (!await CanPlayMove()) return;
 
-        await PlayMove(eventArgs.Cell, true);
+        await PlayMove(eventArgs.Cell);
     }
 
     protected async Task PlayAgainClick()
@@ -93,7 +93,7 @@ public class BoardComponent : Component2Base, IDisposable
 
             foreach (var (row, column) in moves)
             {
-                await PlayMove(Game!.Board[row, column], false);
+                await PlayMove(Game!.Board[row, column], true);
                 await DelayBetweenMoves();
             }
         }
@@ -129,14 +129,20 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected Game? Game => StateContainer.Game;
 
-    async Task PlayMove(Game.GameBoard.Cell? cell = null, bool updateCursor = true)
+    async Task PlayMove(Game.GameBoard.Cell? cell = null, bool isDebug = false)
     {
+        var game = Game!;
+        var playerNumber = game.ActivePlayer.Number;
         var response = await Mediator.Send(
-            new PlayerMoveRequest(Game!, cell, Debug.HasValue));
+            new PlayerMoveRequest(game, cell, Debug.HasValue));
 
         if (response.IsSuccessful)
         {
-            if (updateCursor) await SetCursor();
+            if (!isDebug)
+            {
+                await StateContainer.PlayerMoved(playerNumber);
+                await SetCursor();
+            }
 
             if (Game!.HasWinner)
             {
@@ -199,13 +205,13 @@ public class BoardComponent : Component2Base, IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
-    async Task OnGameSet()
+    async Task OnGameSet(bool isReload)
     {
         if (Debug.HasValue)
         {
             await PlayDebugGame();
         }
-        else if (!Game!.ActivePlayer.IsHuman)
+        else if (!isReload && !Game!.ActivePlayer.IsHuman)
         {
             await PlayMove();
         }

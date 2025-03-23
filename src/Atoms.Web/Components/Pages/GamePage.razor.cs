@@ -1,10 +1,13 @@
 ﻿using Atoms.UseCases.CreateDebugGame;
 using Atoms.UseCases.GetGame;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Atoms.Web.Components.Pages;
 
-public partial class GameComponent : Component2Base, IDisposable
+public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposable
 {
+    HubConnection? _hubConnection = default!;
+
     [Inject]
     NavigationManager Navigation { get; set; } = default!;
 
@@ -29,10 +32,12 @@ public partial class GameComponent : Component2Base, IDisposable
     protected async override Task OnInitializedAsync()
     {
         StateContainer.OnChange += StateHasChangedAsync;
-        StateContainer.OnGameReloadRequired += LoadGame;
+        StateContainer.OnGameReloadRequired += ReloadGame;
+        StateContainer.OnPlayerMoved += NotifyPlayerMoved;
 
         if (GameId.HasValue)
         {
+            await InitializeHub();
             await LoadGame();
         }
         else if (Debug.HasValue)
@@ -49,7 +54,26 @@ public partial class GameComponent : Component2Base, IDisposable
         }
     }
 
-    private async Task LoadGame()
+    private async Task InitializeHub()
+    {
+        _hubConnection = new HubConnectionBuilder()
+                    .WithUrl(Navigation.ToAbsoluteUri("/gamehub"))
+                    .Build();
+
+        _hubConnection.On<int>("PlayerMoved", 
+            async playerNumber =>
+            {
+                await ReloadGame();
+                await JSRuntime.InvokeVoidAsync("App.notifyPlayerMoved",
+                                                playerNumber);
+            });
+
+        await _hubConnection.StartAsync();
+        await _hubConnection.SendAsync("AddPlayer", GameId);
+
+    }
+
+    async Task LoadGame(bool isReload = false)
     {
         var userId = AuthenticatedUser.GetUserId();
         var storageId = await BrowserStorageService.GetOrAddStorageId();
@@ -60,7 +84,7 @@ public partial class GameComponent : Component2Base, IDisposable
         {
             Debug = null;
 
-            await Initialize(response.Game!);
+            await Initialize(response.Game!, isReload);
         }
         else
         {
@@ -68,9 +92,11 @@ public partial class GameComponent : Component2Base, IDisposable
         }
     }
 
-    async Task Initialize(Game game)
+    async Task ReloadGame() => await LoadGame(true);
+
+    async Task Initialize(Game game, bool isReload = false)
     {
-        await StateContainer.SetGame(game);
+        await StateContainer.SetGame(game, isReload);
 
         if (game.ColourScheme == ColourScheme.Alternate)
         {
@@ -103,6 +129,16 @@ public partial class GameComponent : Component2Base, IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
+    async Task NotifyPlayerMoved(int playerNumber)
+    {
+        if (_hubConnection is not null && StateContainer.Game is not null)
+        {
+            await _hubConnection.SendAsync("SendNotification",
+                                           StateContainer.Game.Id,
+                                           playerNumber);
+        }
+    }
+
     public void Dispose()
     {
         Dispose(true);
@@ -114,7 +150,18 @@ public partial class GameComponent : Component2Base, IDisposable
         if (disposing)
         {
             StateContainer.OnChange -= StateHasChangedAsync;
-            StateContainer.OnGameReloadRequired -= LoadGame;
+            StateContainer.OnGameReloadRequired -= ReloadGame;
+            StateContainer.OnPlayerMoved -= NotifyPlayerMoved;
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
+
+        GC.SuppressFinalize(this);
     }
 }
