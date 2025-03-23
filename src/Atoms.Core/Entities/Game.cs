@@ -65,7 +65,7 @@ public class Game
         CreatedDateUtc = createdDateUtc;
         LastUpdatedDateUtc = lastUpdatedDateUtc ?? createdDateUtc;
 
-        CheckForWinner();
+        UpdatePlayerStates(true);
     }
 
     public bool CanPlayMove(UserId? userId, StorageId? localStorageId)
@@ -82,7 +82,7 @@ public class Game
             return localStorageId == ActivePlayer.LocalStorageId;
         }
 
-        return userId is not null && userId.Id == UserId?.Id 
+        return userId is not null && userId.Id == UserId?.Id
             || LocalStorageId == localStorageId;
     }
 
@@ -105,20 +105,7 @@ public class Game
         }
     }
 
-    public void CheckForWinner()
-    {
-        if (Round <= 1) return;
-
-        var playerAtoms = from player in Players
-                          join cell in Board.Cells
-                          on player.Number equals cell.Player into grp
-                          select new { Player = player, Atoms = grp.Sum(g => g.Atoms) };
-
-        if (playerAtoms.Count(pa => pa.Atoms > 0) == 1)
-        {
-            Winner = playerAtoms.First(pa => pa.Atoms > 0).Player;
-        }
-    }
+    public void CheckForWinner() => UpdatePlayerStates(false);
 
     public void PostMoveUpdate()
     {
@@ -154,6 +141,36 @@ public class Game
     internal void MarkUpdated(DateTime lastUpdatedDate)
     {
         LastUpdatedDateUtc = lastUpdatedDate;
+    }
+
+    void UpdatePlayerStates(bool checkForDeadPlayers)
+    {
+        if (Round <= 1) return;
+
+        var playerAtoms = (from player in Players
+                           join cell in Board.Cells
+                           on player.Number equals cell.Player into grp
+                           select new
+                           {
+                               Player = player,
+                               Atoms = grp.Sum(g => g.Atoms)
+                           }).ToList();
+
+        if (checkForDeadPlayers)
+        {
+            foreach (var item in playerAtoms)
+            {
+                if (item.Atoms == 0)
+                {
+                    item.Player.MarkDead();
+                }
+            }
+        }
+
+        if (playerAtoms.Count(pa => pa.Atoms > 0) == 1)
+        {
+            Winner = playerAtoms.First(pa => pa.Atoms > 0).Player;
+        }
     }
 
     void SetNextActivePlayer()
