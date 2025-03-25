@@ -83,6 +83,17 @@
                             </InputRadioGroup>
                         </td>
                     </tr>
+                    <tr>
+                        <th>Sound</th>
+                        <td>
+                            <InputRadioGroup Value="Options.HasSound" ValueChanged="@(e => SoundChanged(e))" TValue="bool" ValueExpression="() => Options.HasSound">
+                                <InputRadio id="sound_on" Value="@true" />
+                                <label for="sound_on">On</label>
+                                <InputRadio id="sound_off" Value="@false" />
+                                <label for="sound_off">Off</label>
+                            </InputRadioGroup>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <p>

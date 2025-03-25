@@ -77,4 +77,16 @@ public partial class MenuComponent : Component2Base
 
         await BrowserStorageService.SetAtomShape(atomShape);
     }
+
+    protected async Task SoundChanged(bool hasSound)
+    {
+        Options.HasSound = hasSound;
+
+        if (!hasSound)
+        {
+            await JSRuntime.InvokeVoidAsync("App.stopMusic");
+        }
+
+        await BrowserStorageService.SetSound(hasSound);
+    }
 }

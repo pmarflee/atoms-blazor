@@ -116,7 +116,12 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
             await JSRuntime.InvokeVoidAsync("App.setDefaultAtomShape");
         }
 
-        await JSRuntime.InvokeVoidAsync("App.startMusic");
+        var hasSound = await BrowserStorageService.GetSound();
+
+        if (hasSound)
+        {
+            await JSRuntime.InvokeVoidAsync("App.startMusic");
+        }
     }
 
     protected void OnGoToHomePage()

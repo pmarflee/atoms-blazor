@@ -11,6 +11,7 @@ public class CreateGameOptionsRequestHandler(
     {
         var colourScheme = await browserStorageService.GetColourScheme();
         var atomShape = await browserStorageService.GetAtomShape();
+        var hasSound = await browserStorageService.GetSound();
         var players = new List<Player>(request.NumberOfPlayers);
 
         for (var i = 0; i < request.NumberOfPlayers; i++)
@@ -25,7 +26,7 @@ public class CreateGameOptionsRequestHandler(
 
         var options = new GameMenuOptions(
             request.GameId, players,
-            colourScheme, atomShape,
+            colourScheme, atomShape, hasSound,
             request.StorageId, request.UserId);
 
         return new GameOptionsResponse(options);

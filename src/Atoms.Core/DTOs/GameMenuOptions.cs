@@ -6,6 +6,7 @@ public class GameMenuOptions(Guid gameId,
                              List<GameMenuOptions.Player> players,
                              ColourScheme colourScheme = ColourScheme.Original,
                              AtomShape atomShape = AtomShape.Round,
+                             bool hasSound = true,
                              StorageId? localStorageId = null,
                              UserId? userId = null)
 {
@@ -25,6 +26,7 @@ public class GameMenuOptions(Guid gameId,
 
     public ColourScheme ColourScheme { get; set; } = colourScheme;
     public AtomShape AtomShape { get; set; } = atomShape;
+    public bool HasSound { get; set; } = hasSound;
 
     public InviteLink CreateInviteLink(Player player,
                                        IInviteSerializer inviteSerializer,

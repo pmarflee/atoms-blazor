@@ -14,6 +14,9 @@ public class CreateGameMenuOptionsTests
         browserStorageServiceExpectations.Methods
             .GetAtomShape()
             .ReturnValue(ValueTask.FromResult(AtomShape.Round));
+        browserStorageServiceExpectations.Methods
+            .GetSound()
+            .ReturnValue(ValueTask.FromResult(true));
 
         var handler = new CreateGameOptionsRequestHandler(browserStorageServiceExpectations.Instance());
         var request = new CreateGameOptionsRequest(

@@ -46,6 +46,7 @@ internal static class ObjectMother
             ],
             ColourScheme.Original,
             AtomShape.Round,
+            true,
             LocalStorageId,
             UserId);
 

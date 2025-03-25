@@ -120,6 +120,35 @@ public class BrowserStorageService(
             colourScheme);
     }
 
+    public async ValueTask<bool> GetSound()
+    {
+        var returnValue = true;
+
+        try
+        {
+            var result = await protectedLocalStore.GetAsync<bool>(
+                Constants.StorageKeys.Sound);
+
+            if (result.Success)
+            {
+                returnValue = result.Value;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unable to retrieve sound selection from local storage");
+        }
+
+        return returnValue;
+    }
+
+    public async ValueTask SetSound(bool hasSound)
+    {
+        await protectedLocalStore.SetAsync(
+            Constants.StorageKeys.Sound,
+            hasSound);
+    }
+
     async Task<StorageId> CreateStorageId()
     {
         var id = Guid.CreateVersion7();

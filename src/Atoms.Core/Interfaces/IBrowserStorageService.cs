@@ -10,4 +10,6 @@ public interface IBrowserStorageService
     ValueTask SetColourScheme(ColourScheme colourScheme);
     ValueTask<AtomShape> GetAtomShape();
     ValueTask SetAtomShape(AtomShape atomShape);
+    ValueTask<bool> GetSound();
+    ValueTask SetSound(bool hasSound);
 }
