@@ -18,11 +18,11 @@ public enum PlayerType
 {
     [Description("Human")]
     Human = 1,
-    [Description("CPU (Easy)")]
+    [Description("CPU (E)")]
     CPU_Easy,
-    [Description("CPU (Medium)")]
+    [Description("CPU (M)")]
     CPU_Medium,
-    [Description("CPU (Hard)")]
+    [Description("CPU (H)")]
     CPU_Hard
 }
 
