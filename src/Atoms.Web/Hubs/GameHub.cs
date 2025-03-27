@@ -9,11 +9,11 @@ public class GameHub : Hub<IGameClient>
         await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(gameId));
     }
 
-    public async Task SendNotification(Guid gameId, int playerNumber)
+    public async Task Notify(Guid gameId, string message)
     {
         await Clients
             .GroupExcept(GetGroupName(gameId), Context.ConnectionId)
-            .PlayerMoved(playerNumber);
+            .Notification(message);
     }
 
     static string GetGroupName(Guid gameId) => gameId.ToString();

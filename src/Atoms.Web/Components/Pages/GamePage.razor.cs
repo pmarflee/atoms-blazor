@@ -60,12 +60,11 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
                     .WithUrl(Navigation.ToAbsoluteUri("/gamehub"))
                     .Build();
 
-        _hubConnection.On<int>("PlayerMoved", 
-            async playerNumber =>
+        _hubConnection.On<string>("Notification", 
+            async message =>
             {
                 await ReloadGame();
-                await JSRuntime.InvokeVoidAsync("App.notifyPlayerMoved",
-                                                playerNumber);
+                await JSRuntime.InvokeVoidAsync("App.notify", message);
             });
 
         await _hubConnection.StartAsync();
@@ -138,9 +137,9 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
     {
         if (_hubConnection is not null && StateContainer.Game is not null)
         {
-            await _hubConnection.SendAsync("SendNotification",
+            await _hubConnection.SendAsync("Notify",
                                            StateContainer.Game.Id,
-                                           playerNumber);
+                                           $"Player {playerNumber} moved");
         }
     }
 

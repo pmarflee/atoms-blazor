@@ -18,7 +18,9 @@ public class AcceptInviteRequestHandler(
 
         if (!validationResult.IsValid)
         {
-            return new(false, validationResult.Errors.First().ErrorMessage);
+            var errorMessage = validationResult.Errors.First().ErrorMessage;
+
+            return new(false, ErrorMessage: errorMessage);
         }
 
         using var dbContext = await dbContextFactory.CreateDbContextAsync(
@@ -37,6 +39,6 @@ public class AcceptInviteRequestHandler(
 
         await browserStorageService.SetUserName(request.Name);
 
-        return new(true);
+        return new(true, player);
     }
 }

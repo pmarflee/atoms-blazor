@@ -2,5 +2,5 @@
 
 public interface IGameClient
 {
-    Task PlayerMoved(int playerNumber);
+    Task Notification(string message);
 }

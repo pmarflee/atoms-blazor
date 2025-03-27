@@ -47,7 +47,7 @@
                 vNotify.error({ text: error, title: "Send Invite" });
             });
     }
-    static notifyPlayerMoved(playerNumber) {
-        vNotify.info({ text: `Player ${playerNumber} moved`})
+    static notify(message) {
+        vNotify.info({ text: message })
     }
 }

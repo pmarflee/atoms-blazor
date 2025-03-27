@@ -1,10 +1,13 @@
 ﻿using Atoms.UseCases.Invites.AcceptInvite;
 using Atoms.UseCases.Invites.ReadInviteCode;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Atoms.Web.Components.Pages;
 
-public class InvitePageComponent : Component2Base
+public class InvitePageComponent : Component2Base, IAsyncDisposable
 {
+    HubConnection? _hubConnection = default!;
+
     protected string? ErrorMessage;
     protected bool InviteCodeRead;
 
@@ -36,6 +39,12 @@ public class InvitePageComponent : Component2Base
             _invite = response.Invite!;
             _userId = AuthenticatedUser.GetUserId();
 
+            _hubConnection = new HubConnectionBuilder()
+                        .WithUrl(Navigation.ToAbsoluteUri("/gamehub"))
+                        .Build();
+
+            await _hubConnection.StartAsync();
+
             if (_userId is not null)
             {
                 await AcceptInvite();
@@ -61,6 +70,11 @@ public class InvitePageComponent : Component2Base
 
         if (response.Success)
         {
+            await _hubConnection!.SendAsync(
+                "Notify",
+                _invite.GameId,
+                $"Player {response.Player!.Number} joined");
+
             Navigation.NavigateToGame(_invite);
         }
         else
@@ -73,5 +87,15 @@ public class InvitePageComponent : Component2Base
     {
         [Required]
         public string Name { get; set; } = default!;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
+
+        GC.SuppressFinalize(this);
     }
 }
