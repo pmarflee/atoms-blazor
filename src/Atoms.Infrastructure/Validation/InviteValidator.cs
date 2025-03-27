@@ -19,6 +19,13 @@ public class InviteValidator : AbstractValidator<Invite>
                 return;
             }
 
+            if (!game.IsActive)
+            {
+                ctx.AddFailure(nameof(Invite.GameId), "Game over");
+
+                return;
+            }
+
             var player = game.Players.FirstOrDefault(p => p.Id == invite.PlayerId);
 
             if (player is null)
