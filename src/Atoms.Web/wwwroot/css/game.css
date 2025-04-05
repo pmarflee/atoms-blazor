@@ -94,10 +94,10 @@ a:hover {
 	position: absolute;
 	opacity: 0;
 }
-#intro input[type="radio"]:checked + label {
+#intro input[type="radio"]:checked + span > label {
 	background-color: #448;
 }
-#intro input[type="radio"]:checked + label::after {
+#intro input[type="radio"]:checked + span > label::after {
 	content: '\2713';
 	color: white;
 	position: absolute;
@@ -107,7 +107,7 @@ a:hover {
 	font-weight: bold;
 	line-height: 1em;
 }
-#intro input[type="radio"]:focus + label {
+#intro input[type="radio"]:focus + span > label {
 	outline: 1px solid white;
 }
 #intro button {

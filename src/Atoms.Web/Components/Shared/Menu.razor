@@ -25,14 +25,18 @@
                             <th class="@playerIdClass">Player @(playerId + 1)</th>
                             <td>
                                 <InputRadioGroup Name="@playerIdClass"
-                                @bind-Value="@player.Type">
-                                    @foreach (var type in Options.PlayerTypes)
+                                                 TValue="int"
+                                                 Value="@player.Type.Value"
+                                                 ValueExpression="() => player.Type.Value"
+                                                 ValueChanged="@(e => player.Type = PlayerType.FromValue(e))">
+                                    @foreach (var playerType in Options.PlayerTypes)
                                     {
-                                        var radioId = $"player_{playerId}_{type.Key}";
+                                        var radioId = $"player_{playerId}_{playerType.Value}";
                                         <td>
-                                            <InputRadio id="@radioId"
-                                            Value="@type.Key" />
-                                            <label for="@radioId">@type.Value</label>
+                                            <InputRadio id="@radioId" Value="@playerType.Value" />
+                                            <span aria-label="@playerType.Description" class="hint--bottom hint-info">
+                                                <label for="@radioId">@playerType.Name</label>
+                                            </span>
                                         </td>
                                     }
                                 </InputRadioGroup>
@@ -66,7 +70,9 @@
                                 @foreach (var colourScheme in Options.ColourSchemes)
                                 {
                                     <InputRadio id="@($"colours_{colourScheme.Key}")" Value="@colourScheme.Key" />
-                                    <label for="@($"colours_{colourScheme.Key}")">@colourScheme.Value</label>
+                                    <span aria-label="@colourScheme.Value" class="hint--bottom hint-info">
+                                        <label for="@($"colours_{colourScheme.Key}")">@colourScheme.Value</label>
+                                    </span>
                                 }
                             </InputRadioGroup>
                         </td>
@@ -78,7 +84,9 @@
                                 @foreach (var atomShape in Options.AtomShapes)
                                 {
                                     <InputRadio id="@($"shapes_{atomShape.Key}")" Value="@atomShape.Key" />
-                                    <label for="@($"shapes_{atomShape.Key}")">@atomShape.Value</label>
+                                    <span aria-label="@atomShape.Value" class="hint--bottom hint-info">
+                                        <label for="@($"shapes_{atomShape.Key}")">@atomShape.Value</label>
+                                    </span>
                                 }
                             </InputRadioGroup>
                         </td>
@@ -88,9 +96,13 @@
                         <td>
                             <InputRadioGroup Value="Options.HasSound" ValueChanged="@(e => SoundChanged(e))" TValue="bool" ValueExpression="() => Options.HasSound">
                                 <InputRadio id="sound_on" Value="@true" />
-                                <label for="sound_on">On</label>
+                                <span aria-label="Sound On" class="hint--bottom hint-info">
+                                    <label for="sound_on">On</label>
+                                </span>
                                 <InputRadio id="sound_off" Value="@false" />
-                                <label for="sound_off">Off</label>
+                                <span aria-label="Sound Off" class="hint--bottom hint-info">
+                                    <label for="sound_off">Off</label>
+                                </span>
                             </InputRadioGroup>
                         </td>
                     </tr>

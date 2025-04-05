@@ -15,8 +15,7 @@ public class GameMenuOptions(Guid gameId,
     public List<Player> Players { get; } = players;
     public StorageId? LocalStorageId { get; } = localStorageId;
     public UserId? UserId { get; } = userId;
-    public IEnumerable<KeyValuePair<PlayerType, string>> PlayerTypes { get; } =
-        GetValuesDescriptions<PlayerType>();
+    public IEnumerable<PlayerType> PlayerTypes { get; } = PlayerType.List.OrderBy(pt => pt.Value);
 
     public IEnumerable<KeyValuePair<ColourScheme, string>> ColourSchemes { get; } =
         GetValuesDescriptions<ColourScheme>();

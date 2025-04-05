@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartEnum.EFCore;
 
 namespace Atoms.Core.Data;
 
@@ -37,5 +38,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         modelBuilder.Entity<PlayerDTO>()
             .HasKey(x => x.Id);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+
+        configurationBuilder.ConfigureSmartEnum();
     }
 }

@@ -92,8 +92,12 @@ internal static class ObjectMother
             localStorageId: localStorageId);
     }
 
-    public static Player CreateCPUPlayer(Guid id, int number, PlayerType type = PlayerType.CPU_Easy)
+    public static Player CreateCPUPlayer(Guid id,
+                                         int number,
+                                         PlayerType? type = null)
     {
+        type ??= PlayerType.CPU_Easy;
+
         return new(
             id, number, type,
             strategy: CreatePlayerStrategy(type, CreateRng(0, 0)));
@@ -162,11 +166,9 @@ internal static class ObjectMother
     public static IPlayerStrategy? CreatePlayerStrategy(
         PlayerType type, IRandomNumberGenerator _)
     {
-        return type switch
-        {
-            PlayerType.Human => null,
-            _ => new IPlayerStrategyCreateExpectations().Instance()
-        };
+        return type.Name == PlayerType.Human.Name
+            ? null
+            : new IPlayerStrategyCreateExpectations().Instance();
     }
 
     public static ApplicationUser CreateApplicationUser(UserId userId)
