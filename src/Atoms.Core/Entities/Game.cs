@@ -72,9 +72,9 @@ public class Game
     {
         if (HasWinner || !ActivePlayer.IsHuman) return false;
 
-        if (userId is not null && ActivePlayer.User is not null)
+        if (userId is not null && ActivePlayer.UserId is not null)
         {
-            return userId.Id == ActivePlayer.User.Id;
+            return userId.Id == ActivePlayer.UserId.Id;
         }
 
         if (localStorageId is not null && ActivePlayer.LocalStorageId is not null)
@@ -192,7 +192,7 @@ public class Game
         public Player(Guid id,
                       int number,
                       PlayerType type,
-                      ApplicationUser? user = null,
+                      UserId? userId = null,
                       string? name = null,
                       IPlayerStrategy? strategy = null,
                       StorageId? localStorageId = null)
@@ -205,7 +205,7 @@ public class Game
             Id = id;
             Number = number;
             Type = type;
-            User = user;
+            UserId = userId;
             Name = name;
             LocalStorageId = localStorageId;
 
@@ -215,9 +215,9 @@ public class Game
         public Guid Id { get; }
         public int Number { get; }
         public PlayerType Type { get; }
-        public ApplicationUser? User { get; }
-        public string? Name { get; }
-        public StorageId? LocalStorageId { get; }
+        public UserId? UserId { get; private set; }
+        public string? Name { get; private set; }
+        public StorageId? LocalStorageId { get; private set; }
         public bool IsDead { get; private set; }
         public bool IsHuman => Type == PlayerType.Human;
         public void MarkDead() => IsDead = true;
@@ -225,6 +225,15 @@ public class Game
         public GameBoard.Cell? ChooseCell(Game game)
         {
             return _strategy?.Choose(game);
+        }
+
+        public void SetIdentity(UserId? userId,
+                                string? name,
+                                StorageId? localStorageId)
+        {
+            UserId = userId;
+            Name = name;
+            LocalStorageId = localStorageId;
         }
     }
 

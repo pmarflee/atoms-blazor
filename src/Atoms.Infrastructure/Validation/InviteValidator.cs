@@ -37,7 +37,7 @@ public class InviteValidator : AbstractValidator<Invite>
 
             if (player.UserId is not null || player.LocalStorageId is not null)
             {
-                ctx.AddFailure(nameof(Invite.PlayerId), "Invite already accepted");
+                ctx.AddFailure(nameof(Invite.PlayerId), "Invite no longer valid");
             }
         });
     }

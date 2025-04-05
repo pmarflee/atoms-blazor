@@ -133,8 +133,14 @@ public class BoardComponent : Component2Base, IDisposable
     {
         var game = Game!;
         var playerNumber = game.ActivePlayer.Number;
+        var username = AuthenticatedUser?.Identity?.Name ?? await BrowserStorageService.GetUserName();
+
         var response = await Mediator.Send(
-            new PlayerMoveRequest(game, cell, Debug.HasValue));
+            new PlayerMoveRequest(
+                game, cell, Debug.HasValue,
+                AuthenticatedUser.GetUserId(),
+                username,
+                await BrowserStorageService.GetStorageId()));
 
         if (response.IsSuccessful)
         {

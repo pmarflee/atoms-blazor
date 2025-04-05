@@ -31,6 +31,7 @@ public class AcceptInviteRequestHandler(
         var localStorageId = await browserStorageService.GetOrAddStorageId();
 
         player.UserId = request.UserId?.Id;
+        player.Name = request.Name;
         player.LocalStorageId = localStorageId.Value;
 
         game.LastUpdatedDateUtc = dateTimeService.UtcNow;

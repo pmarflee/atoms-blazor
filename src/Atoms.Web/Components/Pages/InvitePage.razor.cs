@@ -47,6 +47,8 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
 
             if (_userId is not null)
             {
+                Input.Name = AuthenticatedUser!.Identity!.Name!;
+
                 await AcceptInvite();
             }
 

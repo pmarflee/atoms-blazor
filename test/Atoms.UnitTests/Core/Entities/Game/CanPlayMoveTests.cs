@@ -1,5 +1,4 @@
-﻿using Atoms.Core.Identity;
-using Atoms.Core.ValueObjects;
+﻿using Atoms.Core.ValueObjects;
 
 namespace Atoms.UnitTests.Core.Entities.Game;
 
@@ -32,8 +31,7 @@ public class CanPlayMoveTests
     public async Task ShouldBeAbleToPlayMoveWhenUserIdMatchesThatOfTheActivePlayer()
     {
         var player1 = ObjectMother.CreateHumanPlayer(
-            ObjectMother.Player1Id, 1,
-            ObjectMother.CreateApplicationUser(ObjectMother.UserId));
+            ObjectMother.Player1Id, 1, ObjectMother.UserId);
         var player2 = ObjectMother.CreateCPUPlayer(ObjectMother.Player2Id, 2);
 
         var game = ObjectMother.Game(
@@ -114,11 +112,9 @@ public class CanPlayMoveTests
     public async Task ShouldNotBeAbleToPlayMoveWhenUserIsLoggedInAndActivePlayerIsAUserWhoIsNotTheSameUser()
     {
         var player1 = ObjectMother.CreateHumanPlayer(
-            ObjectMother.Player1Id, 1, 
-            new ApplicationUser { Id = ObjectMother.UserId.Id });
+            ObjectMother.Player1Id, 1, ObjectMother.UserId.Id);
         var player2 = ObjectMother.CreateHumanPlayer(
-            ObjectMother.Player2Id, 2, 
-            new ApplicationUser { Id = Guid.NewGuid().ToString() });
+            ObjectMother.Player2Id, 2, Guid.NewGuid().ToString());
 
         var game = ObjectMother.Game(
             [player1, player2], 2,

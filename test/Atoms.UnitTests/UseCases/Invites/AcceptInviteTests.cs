@@ -87,6 +87,7 @@ public class AcceptInviteTests : BaseDbTestFixture
             .IsEqualTo(ObjectMother.LocalStorageId.Value);
 
         await Assert.That(player.UserId).IsEqualTo(userId?.Id);
+        await Assert.That(player.Name).IsEqualTo(Player_Name);
 
         _browserStorageServiceCreateExpectations.Verify();
     }

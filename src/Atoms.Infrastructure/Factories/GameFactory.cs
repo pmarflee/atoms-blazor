@@ -13,7 +13,7 @@ public static class GameFactory
         var players = options.Players
             .Take(options.NumberOfPlayers)
             .Select(p => new Game.Player(
-                p.Id, p.Number, p.Type, p.User, p.User?.Name,
+                p.Id, p.Number, p.Type, p.User?.Id, p.User?.Name,
                 playerStrategyFactory.Invoke(p.Type, rng)))
             .ToList();
 

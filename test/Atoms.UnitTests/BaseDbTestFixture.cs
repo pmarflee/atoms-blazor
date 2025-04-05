@@ -9,6 +9,21 @@ public abstract class BaseDbTestFixture
     [Before(Test)]
     public async Task Setup()
     {
+        await SetupApplicationDbContext();
+        await SetupInternal();
+    }
+
+    [After(Test)]
+    public void Teardown()
+    {
+        _connection.Close();
+        _connection.Dispose();
+    }
+
+    protected virtual Task SetupInternal() => Task.CompletedTask;
+
+    async Task SetupApplicationDbContext()
+    {
         _connection = new("Filename=:memory:");
         _connection.Open();
 
@@ -32,16 +47,5 @@ public abstract class BaseDbTestFixture
         {
             throw new Exception("Unable to create test database");
         }
-
-        await SetupInternal();
     }
-
-    [After(Test)]
-    public void Teardown()
-    {
-        _connection.Close();
-        _connection.Dispose();
-    }
-
-    protected virtual Task SetupInternal() => Task.CompletedTask;
 }

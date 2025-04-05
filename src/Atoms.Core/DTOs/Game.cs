@@ -45,7 +45,7 @@ public class GameDTO
                 Game = gameDto,
                 Type = player.Type,
                 IsWinner = game.Winner == player,
-                UserId = player.User?.Id,
+                UserId = player.UserId?.Id,
                 LocalStorageId = player.LocalStorageId?.Value
             });
         }
@@ -74,7 +74,7 @@ public class GameDTO
             var player = new Player(playerDto.Id,
                                     playerDto.Number,
                                     playerDto.Type,
-                                    user,
+                                    playerDto.UserId,
                                     user?.Name ?? playerDto.Name,
                                     playerStrategyFactory.Invoke(playerDto.Type, rng),
                                     localStorageId);
@@ -117,6 +117,9 @@ public class GameDTO
             var playerDto = Players.First(p => p.Number == player.Number);
 
             playerDto.IsWinner = game.HasWinner && !player.IsDead;
+            playerDto.UserId = player.UserId?.Id;
+            playerDto.Name = player.Name;
+            playerDto.LocalStorageId = player.LocalStorageId?.Value;
         }
 
         game.MarkUpdated(LastUpdatedDateUtc);
