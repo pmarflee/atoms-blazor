@@ -68,12 +68,12 @@ public class BrowserStorageService(
 
         try
         {
-            var result = await protectedLocalStore.GetAsync<ColourScheme>(
+            var result = await protectedLocalStore.GetAsync<int>(
                 Constants.StorageKeys.ColourScheme);
 
             if (result.Success)
             {
-                returnValue = result.Value;
+                returnValue = ColourScheme.FromValue(result.Value);
             }
         }
         catch (Exception ex)
@@ -88,7 +88,7 @@ public class BrowserStorageService(
     {
         await protectedLocalStore.SetAsync(
             Constants.StorageKeys.ColourScheme,
-            colourScheme);
+            colourScheme.Value);
     }
 
     public async ValueTask<AtomShape> GetAtomShape()

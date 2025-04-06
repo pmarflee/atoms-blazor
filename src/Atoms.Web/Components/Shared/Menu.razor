@@ -66,12 +66,15 @@
                     <tr>
                         <th>Colour scheme</th>
                         <td>
-                            <InputRadioGroup Value="Options.ColourScheme" ValueChanged="@(e => ColourSchemeChanged(e))" TValue="ColourScheme" ValueExpression="() => Options.ColourScheme">
+                            <InputRadioGroup Value="Options.ColourScheme.Value" 
+                                             ValueChanged="@(e => ColourSchemeChanged(e))" 
+                                             TValue="int" 
+                                             ValueExpression="() => Options.ColourScheme.Value">
                                 @foreach (var colourScheme in Options.ColourSchemes)
                                 {
-                                    <InputRadio id="@($"colours_{colourScheme.Key}")" Value="@colourScheme.Key" />
-                                    <span aria-label="@colourScheme.Value" class="hint--bottom hint-info">
-                                        <label for="@($"colours_{colourScheme.Key}")">@colourScheme.Value</label>
+                                    <InputRadio id="@($"colours_{colourScheme.Name}")" Value="@colourScheme.Value" />
+                                    <span aria-label="@colourScheme.Name" class="hint--bottom hint-info">
+                                        <label for="@($"colours_{colourScheme.Name}")">@colourScheme.Name</label>
                                     </span>
                                 }
                             </InputRadioGroup>

@@ -54,12 +54,33 @@ public sealed class PlayerType : SmartEnum<PlayerType>
     public string Description { get; }
 }
 
-public enum ColourScheme
+public sealed class ColourSchemeConverter : TypeConverter
 {
-    [Description("Original")]
-    Original = 1,
-    [Description("Alternate")]
-    Alternate
+    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
+    {
+        return sourceType == typeof(string)
+               || base.CanConvertFrom(context, sourceType);
+    }
+
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
+    {
+        return value is string name && !string.IsNullOrEmpty(name) 
+            ? ColourScheme.FromName(name) 
+            : (object?)null;
+    }
+
+    public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
+    {
+        return value is ColourScheme playerType ? playerType.Name : null;
+    }
+}
+
+[TypeConverter(typeof(ColourSchemeConverter))]
+public sealed class ColourScheme(string name, int value)
+    : SmartEnum<ColourScheme>(name, value)
+{
+    public static readonly ColourScheme Original = new(nameof(Original), 1);
+    public static readonly ColourScheme Alternate = new(nameof(Alternate), 2);
 }
 
 public enum AtomShape

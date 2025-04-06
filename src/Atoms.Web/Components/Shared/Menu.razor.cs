@@ -64,11 +64,11 @@ public partial class MenuComponent : Component2Base
         await JSRuntime.InvokeVoidAsync("App.copyToClipboard", url.ToString());
     }
 
-    protected async Task ColourSchemeChanged(ColourScheme colourScheme)
+    protected async Task ColourSchemeChanged(int value)
     {
-        Options.ColourScheme = colourScheme;
+        Options.ColourScheme = ColourScheme.FromValue(value);
 
-        await BrowserStorageService.SetColourScheme(colourScheme);
+        await BrowserStorageService.SetColourScheme(Options.ColourScheme);
     }
 
     protected async Task AtomShapeChanged(AtomShape atomShape)

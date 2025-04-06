@@ -4,7 +4,7 @@ using static Atoms.Core.Enums.EnumExtensions;
 
 public class GameMenuOptions(Guid gameId,
                              List<GameMenuOptions.Player> players,
-                             ColourScheme colourScheme = ColourScheme.Original,
+                             ColourScheme? colourScheme = null,
                              AtomShape atomShape = AtomShape.Round,
                              bool hasSound = true,
                              StorageId? localStorageId = null,
@@ -17,13 +17,12 @@ public class GameMenuOptions(Guid gameId,
     public UserId? UserId { get; } = userId;
     public IEnumerable<PlayerType> PlayerTypes { get; } = PlayerType.List.OrderBy(pt => pt.Value);
 
-    public IEnumerable<KeyValuePair<ColourScheme, string>> ColourSchemes { get; } =
-        GetValuesDescriptions<ColourScheme>();
+    public IEnumerable<ColourScheme> ColourSchemes { get; } = ColourScheme.List.OrderBy(cs => cs.Value);
 
     public IEnumerable<KeyValuePair<AtomShape, string>> AtomShapes { get; } =
         GetValuesDescriptions<AtomShape>();
 
-    public ColourScheme ColourScheme { get; set; } = colourScheme;
+    public ColourScheme ColourScheme { get; set; } = colourScheme ?? ColourScheme.Original;
     public AtomShape AtomShape { get; set; } = atomShape;
     public bool HasSound { get; set; } = hasSound;
 
