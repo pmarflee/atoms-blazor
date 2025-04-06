@@ -5,7 +5,7 @@ using static Atoms.Core.Enums.EnumExtensions;
 public class GameMenuOptions(Guid gameId,
                              List<GameMenuOptions.Player> players,
                              ColourScheme? colourScheme = null,
-                             AtomShape atomShape = AtomShape.Round,
+                             AtomShape? atomShape = null,
                              bool hasSound = true,
                              StorageId? localStorageId = null,
                              UserId? userId = null)
@@ -15,15 +15,11 @@ public class GameMenuOptions(Guid gameId,
     public List<Player> Players { get; } = players;
     public StorageId? LocalStorageId { get; } = localStorageId;
     public UserId? UserId { get; } = userId;
-    public IEnumerable<PlayerType> PlayerTypes { get; } = PlayerType.List.OrderBy(pt => pt.Value);
-
-    public IEnumerable<ColourScheme> ColourSchemes { get; } = ColourScheme.List.OrderBy(cs => cs.Value);
-
-    public IEnumerable<KeyValuePair<AtomShape, string>> AtomShapes { get; } =
-        GetValuesDescriptions<AtomShape>();
-
+    public IEnumerable<PlayerType> PlayerTypes { get; } = PlayerType.List.OrderBy(x => x.Value);
+    public IEnumerable<ColourScheme> ColourSchemes { get; } = ColourScheme.List.OrderBy(x => x.Value);
+    public IEnumerable<AtomShape> AtomShapes { get; } = AtomShape.List.OrderBy(x => x.Value);
     public ColourScheme ColourScheme { get; set; } = colourScheme ?? ColourScheme.Original;
-    public AtomShape AtomShape { get; set; } = atomShape;
+    public AtomShape AtomShape { get; set; } = atomShape ?? AtomShape.Round;
     public bool HasSound { get; set; } = hasSound;
 
     public InviteLink CreateInviteLink(Player player,

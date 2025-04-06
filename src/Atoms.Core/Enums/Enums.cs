@@ -83,12 +83,33 @@ public sealed class ColourScheme(string name, int value)
     public static readonly ColourScheme Alternate = new(nameof(Alternate), 2);
 }
 
-public enum AtomShape
+public sealed class AtomShapeConverter : TypeConverter
 {
-    [Description("Round")]
-    Round = 1,
-    [Description("Varied")]
-    Varied
+    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
+    {
+        return sourceType == typeof(string)
+               || base.CanConvertFrom(context, sourceType);
+    }
+
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
+    {
+        return value is string name && !string.IsNullOrEmpty(name) 
+            ? AtomShape.FromName(name) 
+            : (object?)null;
+    }
+
+    public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
+    {
+        return value is AtomShape playerType ? playerType.Name : null;
+    }
+}
+
+[TypeConverter(typeof(AtomShapeConverter))]
+public sealed class AtomShape(string name, int value)
+    : SmartEnum<AtomShape>(name, value)
+{
+    public static readonly AtomShape Round = new(nameof(Round), 1);
+    public static readonly AtomShape Varied = new(nameof(Varied), 2);
 }
 
 public enum ExplosionState

@@ -71,11 +71,11 @@ public partial class MenuComponent : Component2Base
         await BrowserStorageService.SetColourScheme(Options.ColourScheme);
     }
 
-    protected async Task AtomShapeChanged(AtomShape atomShape)
+    protected async Task AtomShapeChanged(int value)
     {
-        Options.AtomShape = atomShape;
+        Options.AtomShape = AtomShape.FromValue(value);
 
-        await BrowserStorageService.SetAtomShape(atomShape);
+        await BrowserStorageService.SetAtomShape(Options.AtomShape);
     }
 
     protected async Task SoundChanged(bool hasSound)

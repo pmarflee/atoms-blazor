@@ -97,12 +97,12 @@ public class BrowserStorageService(
 
         try
         {
-            var result = await protectedLocalStore.GetAsync<AtomShape>(
+            var result = await protectedLocalStore.GetAsync<int>(
                 Constants.StorageKeys.AtomShape);
 
             if (result.Success)
             {
-                returnValue = result.Value;
+                returnValue = AtomShape.FromValue(result.Value);
             }
         }
         catch (Exception ex)
@@ -113,11 +113,11 @@ public class BrowserStorageService(
         return returnValue;
     }
 
-    public async ValueTask SetAtomShape(AtomShape colourScheme)
+    public async ValueTask SetAtomShape(AtomShape atomShape)
     {
         await protectedLocalStore.SetAsync(
             Constants.StorageKeys.AtomShape,
-            colourScheme);
+            atomShape.Value);
     }
 
     public async ValueTask<bool> GetSound()

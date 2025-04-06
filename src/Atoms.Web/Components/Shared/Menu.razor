@@ -83,12 +83,15 @@
                     <tr>
                         <th>Atom shapes</th>
                         <td>
-                            <InputRadioGroup Value="Options.AtomShape" ValueChanged="@(e => AtomShapeChanged(e))" TValue="AtomShape" ValueExpression="() => Options.AtomShape">
+                            <InputRadioGroup Value="Options.AtomShape.Value"
+                                             ValueChanged="@(e => AtomShapeChanged(e))" 
+                                             TValue="int" 
+                                             ValueExpression="() => Options.AtomShape.Value">
                                 @foreach (var atomShape in Options.AtomShapes)
                                 {
-                                    <InputRadio id="@($"shapes_{atomShape.Key}")" Value="@atomShape.Key" />
-                                    <span aria-label="@atomShape.Value" class="hint--bottom hint-info">
-                                        <label for="@($"shapes_{atomShape.Key}")">@atomShape.Value</label>
+                                    <InputRadio id="@($"shapes_{atomShape.Name}")" Value="@atomShape.Value" />
+                                    <span aria-label="@atomShape.Name" class="hint--bottom hint-info">
+                                        <label for="@($"shapes_{atomShape.Name}")">@atomShape.Name</label>
                                     </span>
                                 }
                             </InputRadioGroup>
