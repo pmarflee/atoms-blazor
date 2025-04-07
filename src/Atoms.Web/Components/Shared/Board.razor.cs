@@ -217,7 +217,7 @@ public class BoardComponent : Component2Base, IDisposable
         {
             await PlayDebugGame();
         }
-        else if (!isReload && !Game!.ActivePlayer.IsHuman)
+        else if (!isReload && !Game!.HasWinner && !Game!.ActivePlayer.IsHuman)
         {
             await PlayMove();
         }

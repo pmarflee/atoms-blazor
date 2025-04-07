@@ -124,7 +124,8 @@ public enum PlayerMoveResult
     None = 0,
     Success = 1,
     InvalidMove = 2,
-    GameStateHasChanged = 3
+    GameStateHasChanged = 3,
+    GameHasWinner = 4
 }
 
 public enum InviteResult

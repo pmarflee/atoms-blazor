@@ -1,4 +1,5 @@
-﻿using Atoms.UseCases.PlayerMove;
+﻿using Atoms.Core.DTOs;
+using Atoms.UseCases.PlayerMove;
 using Atoms.UseCases.Shared.Notifications;
 
 namespace Atoms.UnitTests.UseCases.PlayerMove;
@@ -12,9 +13,7 @@ public abstract class PlayerMoveAtomTestFixture : BaseDbTestFixture
     {
         using var dbContext = await DbContextFactory.CreateDbContextAsync();
 
-        var gameDto = ObjectMother.GameDTO();
-
-        await dbContext.Games.AddAsync(gameDto);
+        await dbContext.Games.AddAsync(GameState);
 
         await dbContext.SaveChangesAsync();
 
@@ -22,6 +21,8 @@ public abstract class PlayerMoveAtomTestFixture : BaseDbTestFixture
         Handler = new PlayerMoveRequestHandler(
             Mediator, DbContextFactory, CreateDateTimeService());
     }
+
+    protected virtual GameDTO GameState => ObjectMother.GameDTO();
 
     private static IMediator CreateMediator()
     {

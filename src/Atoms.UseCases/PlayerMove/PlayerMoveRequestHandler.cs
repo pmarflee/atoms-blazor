@@ -15,6 +15,11 @@ public class PlayerMoveRequestHandler(
         var game = request.Game;
         var cell = request.Cell;
 
+        if (game.HasWinner)
+        {
+            return new PlayerMoveResponse(PlayerMoveResult.GameHasWinner);
+        }
+
         if (game.ActivePlayer.IsHuman)
         {
             if (cell is null || !game.CanPlaceAtom(cell))
