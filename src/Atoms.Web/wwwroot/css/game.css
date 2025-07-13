@@ -357,6 +357,9 @@ html.shaped-atoms .atom.player3, html.shaped-atoms .player.player3:before {
     margin-right: 2px;
     font-size: 10pt;
 }
+.player > .name-highlight {
+    font-weight: bold;
+}
 .progress {
     float: right;
 }

@@ -14,9 +14,6 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
     Invite _invite = default!;
     UserId? _userId;
 
-    [CascadingParameter]
-    ClaimsPrincipal? AuthenticatedUser { get; set; }
-
     [Inject]
     IBrowserStorageService BrowserStorageService { get; set; } = default!;
 

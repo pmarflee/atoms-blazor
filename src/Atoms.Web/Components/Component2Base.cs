@@ -8,6 +8,9 @@ public abstract class Component2Base : ComponentBase
     [Inject]
     public IJSRuntime JSRuntime { get; set; } = default!;
 
+    [CascadingParameter]
+    public ClaimsPrincipal? AuthenticatedUser { get; set; }
+
     protected async Task SetDisplayColourScheme(ColourScheme colourScheme)
     {
         var colourSchemeFuncName = colourScheme == ColourScheme.Alternate

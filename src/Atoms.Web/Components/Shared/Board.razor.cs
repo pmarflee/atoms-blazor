@@ -14,16 +14,10 @@ public class BoardComponent : Component2Base, IDisposable
     ICourier Courier { get; set; } = default!;
 
     [Inject]
-    IJSRuntime JSRuntime { get; set; } = default!;
-
-    [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
     [Inject]
     IBrowserStorageService BrowserStorageService { get; set; } = default!;
-
-    [CascadingParameter]
-    ClaimsPrincipal? AuthenticatedUser { get; set; }
 
     [Parameter]
     public EventCallback OnPlayAgainClicked { get; set; }
@@ -32,19 +26,22 @@ public class BoardComponent : Component2Base, IDisposable
     public int? Debug { get; set; }
 
     bool _disableClicks;
+    StorageId? _localStorageId;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         StateContainer.OnChange += OnStateHasChanged;
         StateContainer.OnGameSet += OnGameSet;
 
         Courier.Subscribe<AtomPlaced>(AtomPlaced);
         Courier.Subscribe<AtomExploded>(AtomExploded);
+
+        _localStorageId = await BrowserStorageService.GetStorageId();
     }
 
     protected async Task CellClicked(CellClickEventArgs eventArgs)
     {
-        if (!await CanPlayMove()) return;
+        if (!CanPlayMove()) return;
 
         await PlayMove(eventArgs.Cell);
     }
@@ -127,6 +124,20 @@ public class BoardComponent : Component2Base, IDisposable
             classNames.Where(cn => !string.IsNullOrEmpty(cn)));
     }
 
+    protected string GetPlayerNameClassNames(Game.Player player)
+    {
+        List<string> playerNameClassNames = ["name"];
+
+        var authenticatedUserId = AuthenticatedUser.GetUserId();
+
+        if (Game!.PlayerBelongsToUser(player, authenticatedUserId, _localStorageId))
+        {
+            playerNameClassNames.Add("name-highlight");
+        }
+
+        return string.Join(" ", playerNameClassNames);
+    }
+
     protected Game? Game => StateContainer.Game;
 
     async Task PlayMove(Game.GameBoard.Cell? cell = null, bool isDebug = false)
@@ -140,7 +151,7 @@ public class BoardComponent : Component2Base, IDisposable
                 game, cell, Debug.HasValue,
                 AuthenticatedUser.GetUserId(),
                 username,
-                await BrowserStorageService.GetStorageId()));
+                _localStorageId));
 
         if (response.IsSuccessful)
         {
@@ -171,7 +182,7 @@ public class BoardComponent : Component2Base, IDisposable
 
     async Task SetCursor()
     {
-        if (await CanPlayMove())
+        if (CanPlayMove())
         {
             await JSRuntime.InvokeVoidAsync(
                 "App.setCursor",
@@ -225,13 +236,12 @@ public class BoardComponent : Component2Base, IDisposable
         await SetCursor();
     }
 
-    async Task<bool> CanPlayMove()
+    bool CanPlayMove()
     {
         if (_disableClicks) return false;
 
         var authenticatedUserId = AuthenticatedUser.GetUserId();
-        var localStorageId = await BrowserStorageService.GetStorageId();
 
-        return Game!.CanPlayMove(authenticatedUserId, localStorageId);
+        return Game!.CanPlayMove(authenticatedUserId, _localStorageId);
     }
 }

@@ -70,20 +70,27 @@ public class Game
 
     public bool CanPlayMove(UserId? userId, StorageId? localStorageId)
     {
-        if (HasWinner || !ActivePlayer.IsHuman) return false;
+        return !HasWinner
+               && PlayerBelongsToUser(ActivePlayer, userId, localStorageId);
+    }
 
-        if (userId is not null && ActivePlayer.UserId is not null)
+    public bool PlayerBelongsToUser(Player player, 
+                                    UserId? userId, StorageId? localStorageId)
+    {
+        if (!player.IsHuman) return false;
+
+        if (userId is not null && player.UserId is not null)
         {
-            return userId.Id == ActivePlayer.UserId.Id;
+            return userId.Id == player.UserId.Id;
         }
 
-        if (localStorageId is not null && ActivePlayer.LocalStorageId is not null)
+        if (localStorageId is not null && player.LocalStorageId is not null)
         {
-            return localStorageId == ActivePlayer.LocalStorageId;
+            return localStorageId == player.LocalStorageId;
         }
 
         return userId is not null && userId.Id == UserId?.Id
-            || LocalStorageId == localStorageId;
+               || LocalStorageId == localStorageId;
     }
 
     public bool CanPlaceAtom(GameBoard.Cell cell)

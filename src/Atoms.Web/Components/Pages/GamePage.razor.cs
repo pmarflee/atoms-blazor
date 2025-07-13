@@ -17,9 +17,6 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
-    [CascadingParameter]
-    ClaimsPrincipal? AuthenticatedUser { get; set; }
-
     [Parameter]
     public Guid? GameId { get; set; }
 

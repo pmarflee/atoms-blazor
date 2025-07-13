@@ -17,9 +17,6 @@ public partial class MenuComponent : Component2Base
     [Inject]
     protected IInviteSerializer InviteSerializer { get; set; } = default!;
 
-    [CascadingParameter]
-    ClaimsPrincipal? AuthenticatedUser { get; set; }
-
     [Parameter]
     public EventCallback<Game> OnCreateGame { get; set; }
 

@@ -40,7 +40,7 @@
                     }
                     @if (!string.IsNullOrEmpty(player.AbbreviatedName))
                     {
-                        <div class="name" title="@player.Name">@player.AbbreviatedName</div>
+                        <div class="@(GetPlayerNameClassNames(player))" title="@player.Name">@player.AbbreviatedName</div>
                     }
                 </div>
             </div>
