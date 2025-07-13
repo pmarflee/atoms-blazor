@@ -15,9 +15,6 @@ public partial class MenuComponent : Component2Base
     protected NavigationManager NavigationManager { get; set; } = default!;
 
     [Inject]
-    IJSRuntime JSRuntime { get; set; } = default!;
-
-    [Inject]
     protected IInviteSerializer InviteSerializer { get; set; } = default!;
 
     [CascadingParameter]
@@ -40,6 +37,8 @@ public partial class MenuComponent : Component2Base
 
         Options = response.Options;
         State = MenuState.Menu;
+
+        await SetDisplayColourScheme(Options.ColourScheme);
     }
 
     protected async Task SubmitAsync()
@@ -72,6 +71,7 @@ public partial class MenuComponent : Component2Base
         Options.ColourScheme = ColourScheme.FromValue(value);
 
         await BrowserStorageService.SetColourScheme(Options.ColourScheme);
+        await SetDisplayColourScheme(Options.ColourScheme);
     }
 
     protected async Task AtomShapeChanged(int value)

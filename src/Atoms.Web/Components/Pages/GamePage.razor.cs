@@ -17,9 +17,6 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
-    [Inject]
-    IJSRuntime JSRuntime { get; set; } = default!;
-
     [CascadingParameter]
     ClaimsPrincipal? AuthenticatedUser { get; set; }
 
@@ -96,24 +93,8 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
     async Task Initialize(Game game, bool isReload = false)
     {
         await StateContainer.SetGame(game, isReload);
-
-        if (game.ColourScheme == ColourScheme.Alternate)
-        {
-            await JSRuntime.InvokeVoidAsync("App.setAlternateColourScheme");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("App.setDefaultColourScheme");
-        }
-
-        if (game.AtomShape == AtomShape.Varied)
-        {
-            await JSRuntime.InvokeVoidAsync("App.setVariedAtomShape");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("App.setDefaultAtomShape");
-        }
+        await SetDisplayColourScheme(game.ColourScheme);
+        await SetDisplayAtomShape(game.AtomShape);
 
         var hasSound = await BrowserStorageService.GetSound();
 
