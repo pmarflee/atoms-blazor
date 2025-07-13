@@ -6,7 +6,14 @@
         @if (Game.HasWinner)
         {
             <span class="@(GetPlayerClassName(Game.Winner!.Number))">
-                Player @Game.Winner!.Number
+                @if (!string.IsNullOrEmpty(Game.Winner!.Name))
+                {
+                    @Game.Winner.Name
+                }
+                else
+                {
+                    @:Player @Game.Winner!.Number
+                }
             </span>
             @(" wins! ")
             <button @onclick="@PlayAgainClick">Play again</button>
@@ -30,6 +37,10 @@
                     {
                         <div class="cells">@(cells)C</div>
                         <div class="atoms">@(atoms)A</div>
+                    }
+                    @if (!string.IsNullOrEmpty(player.AbbreviatedName))
+                    {
+                        <div class="name" title="@player.Name">@player.AbbreviatedName</div>
                     }
                 </div>
             </div>

@@ -16,7 +16,7 @@ namespace Atoms.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
                     LocalStorageId = table.Column<Guid>(type: "TEXT", nullable: false),
                     ColourScheme = table.Column<int>(type: "INTEGER", nullable: false),
                     AtomShape = table.Column<int>(type: "INTEGER", nullable: false),
@@ -45,7 +45,8 @@ namespace Atoms.Infrastructure.Data.Migrations
                     UserId = table.Column<string>(type: "TEXT", nullable: true),
                     IsWinner = table.Column<bool>(type: "INTEGER", nullable: false),
                     GameId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true)
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    AbbreviatedName = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

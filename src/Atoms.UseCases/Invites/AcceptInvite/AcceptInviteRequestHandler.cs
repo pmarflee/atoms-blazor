@@ -30,15 +30,16 @@ public class AcceptInviteRequestHandler(
         var player = game!.Players.First(p => p.Id == invite.PlayerId);
         var localStorageId = await browserStorageService.GetOrAddStorageId();
 
-        player.UserId = request.UserId?.Id;
-        player.Name = request.Name;
+        player.UserId = request.UserIdentity.Id;
+        player.Name = request.UserIdentity.Name;
+        player.AbbreviatedName = request.UserIdentity.GetAbbreviatedName(game!.Players);
         player.LocalStorageId = localStorageId.Value;
 
         game.LastUpdatedDateUtc = dateTimeService.UtcNow;
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        await browserStorageService.SetUserName(request.Name);
+        await browserStorageService.SetUserName(request.UserIdentity.Name!);
 
         return new(true, player);
     }

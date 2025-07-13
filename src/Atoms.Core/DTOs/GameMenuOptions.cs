@@ -50,6 +50,5 @@ public class GameMenuOptions(Guid gameId,
         public Guid Id { get; init; }
         public required int Number { get; init; }
         public required PlayerType Type { get; set; }
-        public ApplicationUser? User { get; set; }
     }
 }

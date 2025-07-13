@@ -68,7 +68,7 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
     public async Task AcceptInvite()
     {
         var response = await Mediator.Send(
-            new AcceptInviteRequest(_invite, _userId, Input.Name));
+            new AcceptInviteRequest(_invite, new(_userId, Input.Name)));
 
         if (response.Success)
         {
@@ -87,7 +87,7 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
 
     protected sealed class InputModel
     {
-        [Required]
+        [Required, MaxLength(25), RegularExpression("[A-Za-z0-9_ ]+")]
         public string Name { get; set; } = default!;
     }
 

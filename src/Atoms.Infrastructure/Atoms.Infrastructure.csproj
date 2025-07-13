@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Atoms\**" />
+    <EmbeddedResource Remove="Atoms\**" />
+    <None Remove="Atoms\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="4.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.2" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.2" />
@@ -31,6 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Atoms\Infrastructure\Data\Migrations\" />
+    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 </Project>

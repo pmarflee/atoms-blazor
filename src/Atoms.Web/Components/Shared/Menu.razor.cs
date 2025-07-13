@@ -44,7 +44,10 @@ public partial class MenuComponent : Component2Base
 
     protected async Task SubmitAsync()
     {
-        var response = await Mediator.Send(new CreateNewGameRequest(Options));
+        var response = await Mediator.Send(
+            new CreateNewGameRequest(
+                Options,
+                new(AuthenticatedUser.GetUserId(), await GetUserName())));
 
         await OnCreateGame.InvokeAsync(response.Game);
     }
@@ -88,5 +91,11 @@ public partial class MenuComponent : Component2Base
         }
 
         await BrowserStorageService.SetSound(hasSound);
+    }
+
+    async Task<string?> GetUserName()
+    {
+        return AuthenticatedUser.GetUserName() 
+            ?? (await BrowserStorageService.GetUserName());
     }
 }

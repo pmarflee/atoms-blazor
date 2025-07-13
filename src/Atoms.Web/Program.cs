@@ -31,9 +31,9 @@ builder.Services.AddSingleton<CreateGame>(sp =>
     var rngFactory = sp.GetRequiredService<CreateRng>();
     var playerStrategyFactory = sp.GetRequiredService<CreatePlayerStrategy>();
 
-    return options => GameFactory.Create(rngFactory,
-                                         playerStrategyFactory,
-                                         options);
+    return (options, userIdentity) => 
+        GameFactory.Create(rngFactory, playerStrategyFactory,
+                           options, userIdentity);
 });
 
 builder.Services.AddScoped<GameStateContainer>();

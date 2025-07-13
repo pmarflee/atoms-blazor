@@ -41,7 +41,7 @@ public class AcceptInviteTests : BaseDbTestFixture
 
         var handler = CreateHandler();
         var result = await handler.Handle(
-            new AcceptInviteRequest(invite, ObjectMother.UserId, Player_Name),
+            new AcceptInviteRequest(invite, new(ObjectMother.UserId, Player_Name)),
             CancellationToken.None);
 
         await Assert.That(result.Success).IsFalse();
@@ -65,7 +65,7 @@ public class AcceptInviteTests : BaseDbTestFixture
 
         var handler = CreateHandler();
         var result = await handler.Handle(
-            new AcceptInviteRequest(invite, userId, Player_Name),
+            new AcceptInviteRequest(invite, new(userId, Player_Name)),
             CancellationToken.None);
 
         using var _ = Assert.Multiple();

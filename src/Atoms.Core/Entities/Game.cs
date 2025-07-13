@@ -194,6 +194,7 @@ public class Game
                       PlayerType type,
                       UserId? userId = null,
                       string? name = null,
+                      string? abbreviatedName = null,
                       IPlayerStrategy? strategy = null,
                       StorageId? localStorageId = null)
         {
@@ -207,6 +208,7 @@ public class Game
             Type = type;
             UserId = userId;
             Name = name;
+            AbbreviatedName = abbreviatedName;
             LocalStorageId = localStorageId;
 
             _strategy = strategy;
@@ -217,6 +219,7 @@ public class Game
         public PlayerType Type { get; }
         public UserId? UserId { get; private set; }
         public string? Name { get; private set; }
+        public string? AbbreviatedName { get; private set; }
         public StorageId? LocalStorageId { get; private set; }
         public bool IsDead { get; private set; }
         public bool IsHuman => Type == PlayerType.Human;

@@ -17,6 +17,7 @@ internal static class ObjectMother
     public static readonly StorageId LocalStorageId = new(Guid.Parse("22D05F6C-DE9B-4B70-81B0-A54E0E83DA6D"));
     public static readonly UserId UserId = new("7B452FD8-C32C-497A-BC20-2190C1244B9E");
     public static readonly string Username = "David";
+    public static readonly UserIdentity UserIdentity = new(UserId, Username);
 
     public static readonly Guid Player1Id = new("FE0FA471-AC98-4D1B-825B-4DDF64122022");
     public static readonly Guid Player2Id = new("08C5B9A7-0B0C-4E2F-9741-0FE822093901");

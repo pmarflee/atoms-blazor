@@ -7,13 +7,20 @@ public static class GameFactory
     public static Game Create(
         CreateRng rngFactory, 
         CreatePlayerStrategy playerStrategyFactory,
-        GameMenuOptions options)
+        GameMenuOptions options,
+        UserIdentity? userIdentity = null)
     {
         var rng = rngFactory.Invoke(options.GameId.GetHashCode(), 0);
-        var players = options.Players
+        var optionsPlayers = options.Players
             .Take(options.NumberOfPlayers)
+            .ToList();
+        var firstHumanPlayer = optionsPlayers.FirstOrDefault(p => p.Type == PlayerType.Human);
+        var players = optionsPlayers
             .Select(p => new Game.Player(
-                p.Id, p.Number, p.Type, p.User?.Id, p.User?.Name,
+                p.Id, p.Number, p.Type,
+                p == firstHumanPlayer ? userIdentity?.Id : null,
+                p == firstHumanPlayer ? userIdentity?.Name : null,
+                p == firstHumanPlayer ? userIdentity?.GetAbbreviatedName() : null,
                 playerStrategyFactory.Invoke(p.Type, rng)))
             .ToList();
 

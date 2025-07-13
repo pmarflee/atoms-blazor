@@ -352,6 +352,11 @@ html.shaped-atoms .atom.player3, html.shaped-atoms .player.player3:before {
     margin-right: 2px;
     font-size: 10pt;
 }
+.player > .name {
+    text-align: center;
+    margin-right: 2px;
+    font-size: 10pt;
+}
 .progress {
     float: right;
 }

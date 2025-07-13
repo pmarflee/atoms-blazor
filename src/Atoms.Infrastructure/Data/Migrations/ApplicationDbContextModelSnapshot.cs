@@ -48,7 +48,7 @@ namespace Atoms.Infrastructure.Data.Migrations
                     b.Property<int>("Round")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
                     b.ComplexProperty<Dictionary<string, object>>("Board", "Atoms.Core.DTOs.GameDTO.Board#BoardDTO", b1 =>
@@ -82,6 +82,9 @@ namespace Atoms.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AbbreviatedName")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("GameId")

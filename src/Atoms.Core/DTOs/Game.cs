@@ -46,6 +46,8 @@ public class GameDTO
                 Type = player.Type,
                 IsWinner = game.Winner == player,
                 UserId = player.UserId?.Id,
+                Name = player.Name,
+                AbbreviatedName = player.AbbreviatedName,
                 LocalStorageId = player.LocalStorageId?.Value
             });
         }
@@ -76,6 +78,7 @@ public class GameDTO
                                     playerDto.Type,
                                     playerDto.UserId,
                                     user?.Name ?? playerDto.Name,
+                                    playerDto.AbbreviatedName,
                                     playerStrategyFactory.Invoke(playerDto.Type, rng),
                                     localStorageId);
 
@@ -136,6 +139,7 @@ public class PlayerDTO
     public bool IsWinner { get; set; }
     public Guid GameId { get; init; }
     public string? Name { get; set; }
+    public string? AbbreviatedName { get; set; }
     public GameDTO Game { get; set; } = default!;
 }
 
