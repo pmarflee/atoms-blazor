@@ -41,21 +41,6 @@
                                     }
                                 </InputRadioGroup>
                             </td>
-                            <td>
-                                @if (player.Type == PlayerType.Human)
-                                {
-                                    var inviteLink = Options.CreateInviteLink(player, InviteSerializer, NavigationManager.BaseUri);
-
-                                    <div class="image-row">
-                                        <a href="" @onclick="() => CopyInviteToClipboard(inviteLink.Url)" @onclick:preventDefault>
-                                            <img src="images/copy.png" title="Copy invite to clipboard" alt="Copy invite to clipboard" />
-                                        </a>
-                                        <a href="@inviteLink.WhatsAppUrl" target="_blank">
-                                            <img src="images/whatsapp.png" title="Send invite to WhatsApp" alt="Send invite to WhatsApp" />
-                                        </a>
-                                    </div>
-                                }
-                            </td>
                         </tr>
                     }
                 </tbody>

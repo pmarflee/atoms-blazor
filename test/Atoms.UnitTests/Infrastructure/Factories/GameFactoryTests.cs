@@ -55,6 +55,7 @@ public class GameFactoryTests
         return GameFactory.Create(
             ObjectMother.CreateRng,
             ObjectMother.CreatePlayerStrategy,
+            ObjectMother.InviteSerializer,
             ObjectMother.GameMenuOptions);
     }
 }

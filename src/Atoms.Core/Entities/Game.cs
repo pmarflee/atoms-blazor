@@ -1,4 +1,6 @@
-﻿namespace Atoms.Core.Entities;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Atoms.Core.Entities;
 
 public class Game
 {
@@ -203,7 +205,8 @@ public class Game
                       string? name = null,
                       string? abbreviatedName = null,
                       IPlayerStrategy? strategy = null,
-                      StorageId? localStorageId = null)
+                      StorageId? localStorageId = null,
+                      string? inviteCode = null)
         {
             if (type != PlayerType.Human && strategy is null)
             {
@@ -217,6 +220,7 @@ public class Game
             Name = name;
             AbbreviatedName = abbreviatedName;
             LocalStorageId = localStorageId;
+            InviteCode = inviteCode;
 
             _strategy = strategy;
         }
@@ -228,6 +232,7 @@ public class Game
         public string? Name { get; private set; }
         public string? AbbreviatedName { get; private set; }
         public StorageId? LocalStorageId { get; private set; }
+        public string? InviteCode { get; private set; }
         public bool IsDead { get; private set; }
         public bool IsHuman => Type == PlayerType.Human;
         public void MarkDead() => IsDead = true;
@@ -244,6 +249,20 @@ public class Game
             UserId = userId;
             Name = name;
             LocalStorageId = localStorageId;
+        }
+
+        public bool TryCreateInviteLink(string baseUrl, [NotNullWhen(true)] out InviteLink? inviteLink)
+        {
+            if (IsHuman && LocalStorageId is null && InviteCode is not null)
+            {
+                inviteLink = new(InviteCode, baseUrl);
+
+                return true;
+            }
+
+            inviteLink = null;
+
+            return false;
         }
     }
 

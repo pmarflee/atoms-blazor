@@ -22,16 +22,6 @@ public class GameMenuOptions(Guid gameId,
     public AtomShape AtomShape { get; set; } = atomShape ?? AtomShape.Round;
     public bool HasSound { get; set; } = hasSound;
 
-    public InviteLink CreateInviteLink(Player player,
-                                       IInviteSerializer inviteSerializer,
-                                       string baseUrl)
-    {
-        var invite = new Invite(GameId, player.Id);
-        var code = inviteSerializer.Serialize(invite);
-
-        return new(code, baseUrl);
-    }
-
     public static GameMenuOptions CreateForDebug() =>
         new(Guid.NewGuid(),
             [

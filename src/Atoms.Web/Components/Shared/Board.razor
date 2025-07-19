@@ -42,6 +42,12 @@
                     {
                         <div class="@(GetPlayerNameClassNames(player))" title="@player.Name">@player.AbbreviatedName</div>
                     }
+                    else if (player.TryCreateInviteLink(NavigationManager.BaseUri, out var inviteLink))
+                    {
+                        <a href="" @onclick="() => CopyInviteToClipboard(inviteLink.Url)" @onclick:preventDefault>
+                            <img src="images/copy.png" title="Copy invite to clipboard" alt="Copy invite to clipboard" />
+                        </a>
+                    }
                 </div>
             </div>
         }

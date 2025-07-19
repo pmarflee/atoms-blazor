@@ -48,7 +48,8 @@ public class GameDTO
                 UserId = player.UserId?.Id,
                 Name = player.Name,
                 AbbreviatedName = player.AbbreviatedName,
-                LocalStorageId = player.LocalStorageId?.Value
+                LocalStorageId = player.LocalStorageId?.Value,
+                InviteCode = player.InviteCode
             });
         }
 
@@ -80,7 +81,8 @@ public class GameDTO
                                     user?.Name ?? playerDto.Name,
                                     playerDto.AbbreviatedName,
                                     playerStrategyFactory.Invoke(playerDto.Type, rng),
-                                    localStorageId);
+                                    localStorageId,
+                                    playerDto.InviteCode);
 
             players.Add(player);
         }
@@ -140,6 +142,7 @@ public class PlayerDTO
     public Guid GameId { get; init; }
     public string? Name { get; set; }
     public string? AbbreviatedName { get; set; }
+    public string? InviteCode { get; init; }
     public GameDTO Game { get; set; } = default!;
 }
 

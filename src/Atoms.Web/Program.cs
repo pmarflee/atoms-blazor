@@ -26,13 +26,14 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddSingleton<CreateRng>(RngFactory.Create);
 builder.Services.AddSingleton<CreatePlayerStrategy>(PlayerStrategyFactory.Create);
-builder.Services.AddSingleton<CreateGame>(sp =>
+builder.Services.AddScoped<CreateGame>(sp =>
 {
     var rngFactory = sp.GetRequiredService<CreateRng>();
     var playerStrategyFactory = sp.GetRequiredService<CreatePlayerStrategy>();
+    var inviteSerializer = sp.GetRequiredService<IInviteSerializer>();
 
     return (options, userIdentity) => 
-        GameFactory.Create(rngFactory, playerStrategyFactory,
+        GameFactory.Create(rngFactory, playerStrategyFactory, inviteSerializer,
                            options, userIdentity);
 });
 

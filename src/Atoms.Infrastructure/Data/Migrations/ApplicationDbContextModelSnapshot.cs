@@ -90,6 +90,9 @@ namespace Atoms.Infrastructure.Data.Migrations
                     b.Property<Guid>("GameId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("InviteCode")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsWinner")
                         .HasColumnType("INTEGER");
 

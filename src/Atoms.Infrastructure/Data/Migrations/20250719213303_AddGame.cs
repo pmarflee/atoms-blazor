@@ -46,7 +46,8 @@ namespace Atoms.Infrastructure.Data.Migrations
                     IsWinner = table.Column<bool>(type: "INTEGER", nullable: false),
                     GameId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
-                    AbbreviatedName = table.Column<string>(type: "TEXT", nullable: true)
+                    AbbreviatedName = table.Column<string>(type: "TEXT", nullable: true),
+                    InviteCode = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -11,3 +11,4 @@ using Microsoft.AspNetCore.DataProtection;
 [assembly: Rock(typeof(IInviteSerializer), BuildType.Create)]
 [assembly: Rock(typeof(IValidator<>), BuildType.Create)]
 [assembly: Rock(typeof(IBrowserStorageService), BuildType.Create)]
+[assembly: Rock(typeof(IInviteSerializer), BuildType.Create)]

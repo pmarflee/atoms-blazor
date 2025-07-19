@@ -16,6 +16,12 @@ public class BoardComponent : Component2Base, IDisposable
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
+    [Inject]
+    protected IInviteSerializer InviteSerializer { get; set; } = default!;
+
+    [Inject]
+    protected NavigationManager NavigationManager { get; set; } = default!;
+
     [Parameter]
     public EventCallback OnPlayAgainClicked { get; set; }
 
@@ -134,6 +140,11 @@ public class BoardComponent : Component2Base, IDisposable
     }
 
     protected Game? Game => StateContainer.Game;
+
+    protected async Task CopyInviteToClipboard(Uri url)
+    {
+        await JSRuntime.InvokeVoidAsync("App.copyToClipboard", url.ToString());
+    }
 
     async Task PlayMove(Game.GameBoard.Cell? cell = null, bool isDebug = false)
     {

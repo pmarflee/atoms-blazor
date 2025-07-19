@@ -4,12 +4,21 @@ using Atoms.Core.Services;
 using Atoms.Core.ValueObjects;
 using Atoms.UseCases.Invites.ReadInviteCode;
 using Microsoft.Extensions.Logging;
+
 using static Atoms.Core.Entities.Game;
 
 namespace Atoms.UnitTests;
 
 internal static class ObjectMother
 {
+    static ObjectMother()
+    {
+        _inviteSerializerCreateExpectations = new IInviteSerializerCreateExpectations();
+        _inviteSerializerCreateExpectations.Methods.Serialize(Arg.Any<Invite>()).ReturnValue(string.Empty);
+
+        InviteSerializer = _inviteSerializerCreateExpectations.Instance();
+    }
+
     public const int Rows = 6;
     public const int Columns = 10;
 
@@ -171,6 +180,10 @@ internal static class ObjectMother
             ? null
             : new IPlayerStrategyCreateExpectations().Instance();
     }
+
+    static readonly IInviteSerializerCreateExpectations _inviteSerializerCreateExpectations;
+
+    public static readonly IInviteSerializer InviteSerializer;
 
     public static ApplicationUser CreateApplicationUser(UserId userId)
     {
