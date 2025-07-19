@@ -9,9 +9,6 @@ public partial class MenuComponent : Component2Base
     protected const int MaxPlayers = 4;
 
     [Inject]
-    IBrowserStorageService BrowserStorageService { get; set; } = default!;
-
-    [Inject]
     protected NavigationManager NavigationManager { get; set; } = default!;
 
     [Inject]
@@ -29,8 +26,8 @@ public partial class MenuComponent : Component2Base
             new CreateGameOptionsRequest(
                 Guid.NewGuid(),
                 MaxPlayers,
-                await BrowserStorageService.GetOrAddStorageId(),
-                AuthenticatedUser.GetUserId()));
+                await GetOrAddStorageId(),
+                UserId));
 
         Options = response.Options;
         State = MenuState.Menu;
@@ -43,7 +40,7 @@ public partial class MenuComponent : Component2Base
         var response = await Mediator.Send(
             new CreateNewGameRequest(
                 Options,
-                new(AuthenticatedUser.GetUserId(), await GetUserName())));
+                new(UserId, await GetUserName())));
 
         await OnCreateGame.InvokeAsync(response.Game);
     }
@@ -88,11 +85,5 @@ public partial class MenuComponent : Component2Base
         }
 
         await BrowserStorageService.SetSound(hasSound);
-    }
-
-    async Task<string?> GetUserName()
-    {
-        return AuthenticatedUser.GetUserName() 
-            ?? (await BrowserStorageService.GetUserName());
     }
 }

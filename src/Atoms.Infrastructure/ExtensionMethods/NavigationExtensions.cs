@@ -5,6 +5,8 @@ namespace Atoms.Infrastructure.ExtensionMethods;
 
 public static class NavigationExtensions
 {
+    const string BaseUrl = "/games/";
+
     public static void NavigateToGame(this NavigationManager navigation,
                                       Game game)
     {
@@ -23,11 +25,20 @@ public static class NavigationExtensions
         navigation.NavigateToGame(debug: debug);
     }
 
+    public static void NavigateToSetUserNamePage(
+        this NavigationManager navigation, Game game)
+    {
+        var url = BaseUrl.AppendPathSegment(game.Id)
+                         .AppendPathSegment("/username/");
+
+        navigation.NavigateTo(url);
+    }
+
     static void NavigateToGame(this NavigationManager navigation,
                                Guid? gameId = null,
                                int? debug = null)
     {
-        var url = "/games/";
+        var url = BaseUrl;
 
         if (gameId.HasValue)
         {

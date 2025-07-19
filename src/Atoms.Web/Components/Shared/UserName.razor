@@ -1,0 +1,19 @@
+﻿@inherits UserNameComponent
+
+<div>
+    <section>
+        <EditForm Model="Input" OnValidSubmit=@OnValidSubmit>
+            <FluentValidationValidator />
+            <ValidationSummary role="alert" />
+            <div class="input-form">
+                <div class="input-group">
+                    <label for="Input.Name">Name</label>
+                    <InputText @ref="InputName" @bind-Value="Input.Name" autocomplete="name" aria-required="true" placeholder="Please enter your name" maxlength="25" />
+                </div>
+                <div class="submit-group">
+                    <button type="submit">Submit</button>
+                </div>
+            </div>
+        </EditForm>
+    </section>
+</div>

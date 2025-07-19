@@ -12,9 +12,6 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
     NavigationManager Navigation { get; set; } = default!;
 
     [Inject]
-    IBrowserStorageService BrowserStorageService { get; set; } = default!;
-
-    [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
     [Parameter]
@@ -68,10 +65,9 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
 
     async Task LoadGame(bool isReload = false)
     {
-        var userId = AuthenticatedUser.GetUserId();
-        var storageId = await BrowserStorageService.GetOrAddStorageId();
+        var storageId = await GetOrAddStorageId();
         var response = await Mediator.Send(
-            new GetGameRequest(GameId!.Value, storageId, userId));
+            new GetGameRequest(GameId!.Value, storageId, UserId));
 
         if (response.Success)
         {

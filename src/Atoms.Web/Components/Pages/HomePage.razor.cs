@@ -29,7 +29,17 @@ public partial class HomePageComponent : Component2Base, IDisposable
 
     protected void OnCreateGame(Game game)
     {
-        Navigation.NavigateToGame(game);
+        var firstHumanPlayer = game.Players.FirstOrDefault(p => p.IsHuman);
+
+        if (firstHumanPlayer is not null 
+            && string.IsNullOrEmpty(firstHumanPlayer.Name))
+        {
+            Navigation.NavigateToSetUserNamePage(game);
+        }
+        else
+        {
+            Navigation.NavigateToGame(game);
+        }
     }
 
     async Task StateHasChangedAsync()

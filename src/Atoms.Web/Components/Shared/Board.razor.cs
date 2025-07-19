@@ -16,9 +16,6 @@ public class BoardComponent : Component2Base, IDisposable
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
-    [Inject]
-    IBrowserStorageService BrowserStorageService { get; set; } = default!;
-
     [Parameter]
     public EventCallback OnPlayAgainClicked { get; set; }
 
@@ -128,9 +125,7 @@ public class BoardComponent : Component2Base, IDisposable
     {
         List<string> playerNameClassNames = ["name"];
 
-        var authenticatedUserId = AuthenticatedUser.GetUserId();
-
-        if (Game!.PlayerBelongsToUser(player, authenticatedUserId, _localStorageId))
+        if (Game!.PlayerBelongsToUser(player, UserId, _localStorageId))
         {
             playerNameClassNames.Add("name-highlight");
         }
@@ -144,12 +139,12 @@ public class BoardComponent : Component2Base, IDisposable
     {
         var game = Game!;
         var playerNumber = game.ActivePlayer.Number;
-        var username = AuthenticatedUser?.Identity?.Name ?? await BrowserStorageService.GetUserName();
+        var username = await GetUserName() ?? await BrowserStorageService.GetUserName();
 
         var response = await Mediator.Send(
             new PlayerMoveRequest(
                 game, cell, Debug.HasValue,
-                AuthenticatedUser.GetUserId(),
+                UserId,
                 username,
                 _localStorageId));
 
@@ -240,8 +235,6 @@ public class BoardComponent : Component2Base, IDisposable
     {
         if (_disableClicks) return false;
 
-        var authenticatedUserId = AuthenticatedUser.GetUserId();
-
-        return Game!.CanPlayMove(authenticatedUserId, _localStorageId);
+        return Game!.CanPlayMove(UserId, _localStorageId);
     }
 }

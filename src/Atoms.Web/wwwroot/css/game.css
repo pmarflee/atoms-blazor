@@ -381,24 +381,24 @@ div.image-row {
 	display: flex;
 }
 
-.invite form {
+.input-form div {
     display: grid;
     gap: 1rem;
     margin: 2rem;
     grid-template-columns: auto 1fr;
 }
-.invite .input-group {
+.input-form .input-group {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
     align-items: baseline;
 }
-.invite .submit-group {
+.input-form .submit-group {
     display: grid;
     grid-column: 1 / span 2;
     justify-self: center;
 }
-.invite button {
+.input-form button {
     font-size: 18pt;
     line-height: 1;
     padding: 10px;

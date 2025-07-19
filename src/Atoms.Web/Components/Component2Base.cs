@@ -8,8 +8,19 @@ public abstract class Component2Base : ComponentBase
     [Inject]
     public IJSRuntime JSRuntime { get; set; } = default!;
 
+    [Inject]
+    public IBrowserStorageService BrowserStorageService { get; set; } = default!;
+
     [CascadingParameter]
     public ClaimsPrincipal? AuthenticatedUser { get; set; }
+
+    public UserId? UserId => AuthenticatedUser?.GetUserId();
+
+    public Task<StorageId> GetOrAddStorageId() => BrowserStorageService.GetOrAddStorageId();
+
+    public async Task<string?> GetUserName() =>
+        AuthenticatedUser?.GetUserName()
+        ?? (await BrowserStorageService.GetUserName());
 
     protected async Task SetDisplayColourScheme(ColourScheme colourScheme)
     {

@@ -82,7 +82,7 @@ builder.Services.AddOptions<EmailSettings>()
 
 builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
 
-builder.Services.AddTransient<IValidator<Invite>, InviteValidator>();
+builder.AddValidation();
 
 builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
 

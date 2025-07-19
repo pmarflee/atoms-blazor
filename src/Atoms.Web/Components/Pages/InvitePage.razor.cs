@@ -15,13 +15,12 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
     UserId? _userId;
 
     [Inject]
-    IBrowserStorageService BrowserStorageService { get; set; } = default!;
-
-    [Inject]
     NavigationManager Navigation { get; set; } = default!;
 
     [Parameter]
     public string Code { get; set; } = default!;
+
+    protected InputText InputName { get; set; } = default!;
 
     protected InputModel Input { get; set; } = new();
 
@@ -34,7 +33,7 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
         if (response.IsSuccessful)
         {
             _invite = response.Invite!;
-            _userId = AuthenticatedUser.GetUserId();
+            _userId = UserId;
 
             _hubConnection = new HubConnectionBuilder()
                         .WithUrl(Navigation.ToAbsoluteUri("/gamehub"))
@@ -44,7 +43,7 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
 
             if (_userId is not null)
             {
-                Input.Name = AuthenticatedUser!.Identity!.Name!;
+                Input.Name = AuthenticatedUser.GetUserName()!;
 
                 await AcceptInvite();
             }
@@ -59,6 +58,14 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
         else
         {
             ErrorMessage = response.ErrorMessage;
+        }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InputName.Element!.Value.FocusAsync();
         }
     }
 

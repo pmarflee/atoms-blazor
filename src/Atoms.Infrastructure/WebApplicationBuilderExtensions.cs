@@ -5,6 +5,7 @@ using Atoms.Core.Data;
 using System.Reflection;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Core.Data.Identity;
+using FluentValidation;
 
 namespace Atoms.Infrastructure;
 
@@ -31,6 +32,11 @@ public static class WebApplicationBuilderExtensions
 
         builder.Services.AddDbContext<DataProtectionKeyContext>(
             options => options.UseSqlite(connectionString));
+    }
+
+    public static void AddValidation(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
     static string BuildConnectionString(WebApplicationBuilder builder)

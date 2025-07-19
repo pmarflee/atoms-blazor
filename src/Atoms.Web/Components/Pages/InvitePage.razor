@@ -13,17 +13,19 @@
 
 @if (InviteCodeRead)
 {
-    <div class="invite">
+    <div>
         <section>
             <EditForm Model="Input" OnValidSubmit="AcceptInvite">
                 <DataAnnotationsValidator />
                 <ValidationSummary role="alert" />
-                <div class="input-group">
-                    <label for="Input.Name">Name</label>
-                    <InputText @bind-Value="Input.Name" autocomplete="name" aria-required="true" placeholder="Please enter your name" maxlength="25" />
-                </div>
-                <div class="submit-group">
-                    <button type="submit">Submit</button>
+                <div class="input-form">
+                    <div class="input-group">
+                        <label for="Input.Name">Name</label>
+                        <InputText @ref="InputName" @bind-Value="Input.Name" autocomplete="name" aria-required="true" placeholder="Please enter your name" maxlength="25" />
+                    </div>
+                    <div class="submit-group">
+                        <button type="submit">Submit</button>
+                    </div>
                 </div>
             </EditForm>
         </section>
