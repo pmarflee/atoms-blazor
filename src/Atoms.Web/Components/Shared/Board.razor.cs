@@ -150,6 +150,7 @@ public class BoardComponent : Component2Base, IDisposable
     {
         var game = Game!;
         var playerNumber = game.ActivePlayer.Number;
+        var playerName = game.ActivePlayer.Name;
         var username = await GetUserName() ?? await BrowserStorageService.GetUserName();
 
         var response = await Mediator.Send(
@@ -163,7 +164,7 @@ public class BoardComponent : Component2Base, IDisposable
         {
             if (!isDebug)
             {
-                await StateContainer.PlayerMoved(playerNumber);
+                await StateContainer.PlayerMoved(playerNumber, playerName);
                 await SetCursor();
             }
 

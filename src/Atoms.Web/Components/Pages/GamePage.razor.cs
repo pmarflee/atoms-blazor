@@ -107,13 +107,14 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
         await InvokeAsync(StateHasChanged);
     }
 
-    async Task NotifyPlayerMoved(int playerNumber)
+    async Task NotifyPlayerMoved(int playerNumber, string? playerName)
     {
         if (_hubConnection is not null && StateContainer.Game is not null)
         {
-            await _hubConnection.SendAsync("Notify",
-                                           StateContainer.Game.Id,
-                                           $"Player {playerNumber} moved");
+            await _hubConnection.SendAsync(
+                "Notify",
+                StateContainer.Game.Id,
+                $"Player {playerNumber}{(!string.IsNullOrEmpty(playerName) ? $" ({playerName})" : null)} moved");
         }
     }
 

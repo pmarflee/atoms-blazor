@@ -76,10 +76,12 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
 
         if (response.Success)
         {
+            var player = response.Player!;
+
             await _hubConnection!.SendAsync(
                 "Notify",
                 _invite.GameId,
-                $"Player {response.Player!.Number} joined");
+                $"Player {player.Number}{(!string.IsNullOrEmpty(player.Name) ? $" ({player.Name})" : null)} joined");
 
             Navigation.NavigateToGame(_invite);
         }

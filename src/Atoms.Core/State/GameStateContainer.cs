@@ -34,9 +34,9 @@ public class GameStateContainer
         await NotifyGameReloadRequired();
     }
 
-    public async Task PlayerMoved(int playerNumber)
+    public async Task PlayerMoved(int playerNumber, string? playerName)
     {
-        await NotifyPlayerMoved(playerNumber);
+        await NotifyPlayerMoved(playerNumber, playerName);
     }
 
     public async Task SetMenu()
@@ -50,7 +50,7 @@ public class GameStateContainer
     public event Func<Task> OnChange = default!;
     public event Func<bool, Task>? OnGameSet;
     public event Func<Task> OnGameReloadRequired = default!;
-    public event Func<int, Task> OnPlayerMoved = default!;
+    public event Func<int, string?, Task> OnPlayerMoved = default!;
 
     async Task NotifyStateChanged() => await OnChange.Invoke();
 
@@ -65,6 +65,6 @@ public class GameStateContainer
     async Task NotifyGameReloadRequired() => 
         await OnGameReloadRequired.Invoke();
 
-    async Task NotifyPlayerMoved(int playerNumber) => 
-        await OnPlayerMoved.Invoke(playerNumber);
+    async Task NotifyPlayerMoved(int playerNumber, string? playerName) => 
+        await OnPlayerMoved.Invoke(playerNumber, playerName);
 }
