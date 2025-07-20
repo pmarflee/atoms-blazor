@@ -50,6 +50,6 @@ public static class NavigationExtensions
             url = url.AppendQueryParam("debug", debug);
         }
 
-        navigation.NavigateTo(url);
+        navigation.NavigateTo(url, true);
     }
 }

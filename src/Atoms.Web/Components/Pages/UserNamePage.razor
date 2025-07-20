@@ -1,5 +1,5 @@
 ﻿@inherits UserNamePageComponent
 
-@page "/games/{gameId:guid}/username"
+@page "/username"
 
-<UserName @bind-Name=@Name @bind-Name:after=@NameUpdated />
+<UserName NameChanged=@NameChanged />

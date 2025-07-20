@@ -2,8 +2,7 @@
 namespace Atoms.UseCases.SetUserName;
 
 public class SetUserNameRequestHandler(
-    IDbContextFactory<ApplicationDbContext> dbContextFactory,
-    IBrowserStorageService browserStorageService) 
+    IDbContextFactory<ApplicationDbContext> dbContextFactory) 
     : IRequestHandler<SetUserNameRequest>
 {
     public async Task Handle(SetUserNameRequest request,
@@ -23,6 +22,5 @@ public class SetUserNameRequestHandler(
         playerDto.AbbreviatedName = request.UserIdentity.GetAbbreviatedName();
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        await browserStorageService.SetUserName(userName);
     }
 }

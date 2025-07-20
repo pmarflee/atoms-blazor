@@ -5,6 +5,8 @@
     @if (!string.IsNullOrEmpty(UserName))
     {
         <span class="push"></span>
-        <span>@UserName</span>
+        <span>
+            <NavLink href="/username">@UserName</NavLink>
+        </span>
     }
 </div>
