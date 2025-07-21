@@ -379,6 +379,7 @@ div#instructions {
 }
 div.image-row {
 	display: flex;
+    justify-content: center;
 }
 
 .input-form div {
