@@ -32,9 +32,9 @@ builder.Services.AddScoped<CreateGame>(sp =>
     var playerStrategyFactory = sp.GetRequiredService<CreatePlayerStrategy>();
     var inviteSerializer = sp.GetRequiredService<IInviteSerializer>();
 
-    return (options, userIdentity) => 
+    return (options, localStorageId, userIdentity) => 
         GameFactory.Create(rngFactory, playerStrategyFactory, inviteSerializer,
-                           options, userIdentity);
+                           options, localStorageId, userIdentity);
 });
 
 builder.Services.AddScoped<GameStateContainer>();

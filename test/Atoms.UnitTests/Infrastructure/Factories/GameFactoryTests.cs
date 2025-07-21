@@ -56,6 +56,7 @@ public class GameFactoryTests
             ObjectMother.CreateRng,
             ObjectMother.CreatePlayerStrategy,
             ObjectMother.InviteSerializer,
-            ObjectMother.GameMenuOptions);
+            ObjectMother.GameMenuOptions,
+            ObjectMother.LocalStorageId);
     }
 }

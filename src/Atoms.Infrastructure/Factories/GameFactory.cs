@@ -9,6 +9,7 @@ public static class GameFactory
         CreatePlayerStrategy playerStrategyFactory,
         IInviteSerializer inviteSerializer,
         GameMenuOptions options,
+        StorageId localStorageId,
         UserIdentity? userIdentity = null)
     {
         var rng = rngFactory.Invoke(options.GameId.GetHashCode(), 0);
@@ -36,7 +37,7 @@ public static class GameFactory
                 p == firstHumanPlayer ? userIdentity?.Name : null,
                 p == firstHumanPlayer ? userIdentity?.GetAbbreviatedName() : null,
                 playerStrategyFactory.Invoke(p.Type, rng),
-                p == firstHumanPlayer ? options.LocalStorageId : null,
+                p == firstHumanPlayer ? localStorageId : null,
                 CreateInviteLink(p)))
             .ToList();
 
@@ -48,8 +49,8 @@ public static class GameFactory
                         options.ColourScheme,
                         options.AtomShape,
                         rng,
-                        options.LocalStorageId!,
+                        localStorageId,
                         DateTime.UtcNow,
-                        userId: options.UserId);
+                        userId: userIdentity?.Id);
     }
 }

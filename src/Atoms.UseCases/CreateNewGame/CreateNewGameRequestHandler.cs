@@ -9,7 +9,8 @@ public class CreateNewGameRequestHandler(
         CreateNewGameRequest request,
         CancellationToken cancellationToken)
     {
-        var game = gameFactory.Invoke(request.Options, request.UserIdentity);
+        var game = gameFactory.Invoke(
+            request.Options, request.LocalStorageId, request.UserIdentity);
 
         await SaveGame(game, cancellationToken);
 

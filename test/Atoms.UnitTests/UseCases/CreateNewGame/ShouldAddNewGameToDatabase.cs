@@ -9,11 +9,12 @@ public class ShouldAddNewGameToDatabase : BaseDbTestFixture
     {
         var game = ObjectMother.Game();
         var handler = new CreateNewGameRequestHandler(
-            (options, userIdentity) => game, 
+            (options, localStorageId, userIdentity) => game, 
             DbContextFactory);
 
-        var request = new CreateNewGameRequest(
-            ObjectMother.GameMenuOptions, ObjectMother.UserIdentity);
+        var request = new CreateNewGameRequest(ObjectMother.GameMenuOptions,
+                                               ObjectMother.LocalStorageId,
+                                               ObjectMother.UserIdentity);
         var response = await handler.Handle(request, CancellationToken.None);
 
         using var dbContext = await DbContextFactory.CreateDbContextAsync();

@@ -57,9 +57,7 @@ internal static class ObjectMother
             ],
             ColourScheme.Original,
             AtomShape.Round,
-            true,
-            LocalStorageId,
-            UserId);
+            true);
 
     public static Game Game(List<Player>? players = null,
                             int? active = 1,

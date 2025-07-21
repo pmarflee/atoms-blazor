@@ -1,20 +1,14 @@
 ﻿namespace Atoms.Core.DTOs;
 
-using static Atoms.Core.Enums.EnumExtensions;
-
 public class GameMenuOptions(Guid gameId,
                              List<GameMenuOptions.Player> players,
                              ColourScheme? colourScheme = null,
                              AtomShape? atomShape = null,
-                             bool hasSound = true,
-                             StorageId? localStorageId = null,
-                             UserId? userId = null)
+                             bool hasSound = true)
 {
     public Guid GameId { get; } = gameId;
     public int NumberOfPlayers { get; set; } = players.Count;
     public List<Player> Players { get; } = players;
-    public StorageId? LocalStorageId { get; } = localStorageId;
-    public UserId? UserId { get; } = userId;
     public IEnumerable<PlayerType> PlayerTypes { get; } = PlayerType.List.OrderBy(x => x.Value);
     public IEnumerable<ColourScheme> ColourSchemes { get; } = ColourScheme.List.OrderBy(x => x.Value);
     public IEnumerable<AtomShape> AtomShapes { get; } = AtomShape.List.OrderBy(x => x.Value);
