@@ -40,8 +40,7 @@ internal static class ObjectMother
     public const string BaseUrl = "https://www.atoms.com";
 
     public static readonly GameMenuOptions GameMenuOptions =
-        new(GameId, 
-            [
+        new([
                 new GameMenuOptions.Player 
                 {
                     Id = Player1Id,

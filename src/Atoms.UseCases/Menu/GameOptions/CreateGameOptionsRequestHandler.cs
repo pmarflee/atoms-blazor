@@ -25,8 +25,7 @@ public class CreateGameOptionsRequestHandler(
         }
 
         var options = new GameMenuOptions(
-            request.GameId, players,
-            colourScheme, atomShape, hasSound);
+            players, colourScheme, atomShape, hasSound);
 
         return new GameOptionsResponse(options);
     }

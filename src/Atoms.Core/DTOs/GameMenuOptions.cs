@@ -1,12 +1,10 @@
 ﻿namespace Atoms.Core.DTOs;
 
-public class GameMenuOptions(Guid gameId,
-                             List<GameMenuOptions.Player> players,
+public class GameMenuOptions(List<GameMenuOptions.Player> players,
                              ColourScheme? colourScheme = null,
                              AtomShape? atomShape = null,
                              bool hasSound = true)
 {
-    public Guid GameId { get; } = gameId;
     public int NumberOfPlayers { get; set; } = players.Count;
     public List<Player> Players { get; } = players;
     public IEnumerable<PlayerType> PlayerTypes { get; } = PlayerType.List.OrderBy(x => x.Value);
@@ -17,8 +15,7 @@ public class GameMenuOptions(Guid gameId,
     public bool HasSound { get; set; } = hasSound;
 
     public static GameMenuOptions CreateForDebug() =>
-        new(Guid.NewGuid(),
-            [
+        new([
                 new Player
                 {
                     Id = Guid.NewGuid(), Number = 1, Type = PlayerType.Human

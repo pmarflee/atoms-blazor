@@ -8,7 +8,8 @@ public class CreateDebugGameRequestHandler(CreateGame gameFactory)
                                                 CancellationToken cancellationToken)
     {
         var options = GameMenuOptions.CreateForDebug();
-        var game = gameFactory.Invoke(options, request.LocalStorageId);
+        var game = gameFactory.Invoke(
+            request.GameId, options, request.LocalStorageId);
         var response = new CreateDebugGameResponse(game);
 
         return Task.FromResult(response);

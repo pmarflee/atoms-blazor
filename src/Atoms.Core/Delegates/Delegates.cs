@@ -5,7 +5,8 @@ public delegate IRandomNumberGenerator CreateRng(int seed, int iterations);
 public delegate IPlayerStrategy? CreatePlayerStrategy(PlayerType playerType,
                                                       IRandomNumberGenerator rng);
 
-public delegate Game CreateGame(GameMenuOptions options,
+public delegate Game CreateGame(Guid gameId,
+                                GameMenuOptions options,
                                 StorageId localStorageId,
                                 UserIdentity? userIdentity = null);
 

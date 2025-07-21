@@ -35,7 +35,8 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
         {
             var response = await Mediator.Send(
                 new CreateDebugGameRequest(
-                    Debug.Value, await GetOrAddStorageId()));
+                    Guid.NewGuid(), Debug.Value,
+                    await GetOrAddStorageId()));
 
             await Task.Delay(10);
             await Initialize(response.Game);
