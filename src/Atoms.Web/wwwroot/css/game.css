@@ -354,7 +354,7 @@ html.shaped-atoms .atom.player3, html.shaped-atoms .player.player3:before {
 }
 .player > .name {
     margin-right: 2px;
-    font-size: 10pt;
+    font-size: 12pt;
     display: flex;
     justify-content: center;
     align-items: center;
