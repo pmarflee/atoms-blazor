@@ -6,8 +6,11 @@
         <EditForm Model="Options" OnSubmit="SubmitAsync">
             <p>
                 Number of players:
-                <InputRadioGroup @bind-Value="Options.NumberOfPlayers">
-                    @for (var players = MinPlayers; players <= MaxPlayers; players++)
+                <InputRadioGroup TValue="int"
+                                 Value=@Options.NumberOfPlayers
+                                 ValueExpression="() => Options.NumberOfPlayers"
+                                 ValueChanged="NumberOfPlayersChanged">
+                    @for (var players = Core.Constants.MinPlayers; players <= Core.Constants.MaxPlayers; players++)
                     {
                         <InputRadio id="@($"players_{players}")" Value="@players" />
                         <label for="@($"players_{players}")">@players</label>
@@ -28,8 +31,8 @@
                                                  TValue="int"
                                                  Value="@player.Type.Value"
                                                  ValueExpression="() => player.Type.Value"
-                                                 ValueChanged="@(e => player.Type = PlayerType.FromValue(e))">
-                                    @foreach (var playerType in Options.PlayerTypes)
+                                                 ValueChanged="@(e => PlayerTypeChanged(player, e))">
+                                    @foreach (var playerType in PlayerTypes)
                                     {
                                         var radioId = $"player_{playerId}_{playerType.Value}";
                                         <td>
@@ -55,7 +58,7 @@
                                              ValueChanged="@(e => ColourSchemeChanged(e))" 
                                              TValue="int" 
                                              ValueExpression="() => Options.ColourScheme.Value">
-                                @foreach (var colourScheme in Options.ColourSchemes)
+                                @foreach (var colourScheme in ColourSchemes)
                                 {
                                     <InputRadio id="@($"colours_{colourScheme.Name}")" Value="@colourScheme.Value" />
                                     <span aria-label="@colourScheme.Name" class="hint--bottom hint-info">
@@ -72,7 +75,7 @@
                                              ValueChanged="@(e => AtomShapeChanged(e))" 
                                              TValue="int" 
                                              ValueExpression="() => Options.AtomShape.Value">
-                                @foreach (var atomShape in Options.AtomShapes)
+                                @foreach (var atomShape in AtomShapes)
                                 {
                                     <InputRadio id="@($"shapes_{atomShape.Name}")" Value="@atomShape.Value" />
                                     <span aria-label="@atomShape.Name" class="hint--bottom hint-info">

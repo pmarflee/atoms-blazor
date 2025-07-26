@@ -9,23 +9,32 @@ public class CreateGameOptionsRequestHandler(
     public async Task<GameOptionsResponse> Handle(
         CreateGameOptionsRequest request, CancellationToken cancellationToken)
     {
-        var colourScheme = await browserStorageService.GetColourScheme();
-        var atomShape = await browserStorageService.GetAtomShape();
-        var hasSound = await browserStorageService.GetSound();
-        var players = new List<Player>(request.NumberOfPlayers);
+        var options = await browserStorageService.GetGameMenuOptions();
 
-        for (var i = 0; i < request.NumberOfPlayers; i++)
+        if (options is null)
         {
-            players.Add(new Player
-            {
-                Id = Guid.NewGuid(),
-                Type = PlayerType.Human,
-                Number = i + 1 
-            });
-        }
+            var players = new List<Player>(request.NumberOfPlayers);
 
-        var options = new GameMenuOptions(
-            players, colourScheme, atomShape, hasSound);
+            for (var i = 0; i < request.NumberOfPlayers; i++)
+            {
+                players.Add(new Player
+                {
+                    Type = PlayerType.Human,
+                    Number = i + 1
+                });
+            }
+
+            options = new GameMenuOptions
+            {
+                NumberOfPlayers = players.Count,
+                Players = players,
+                ColourScheme = ColourScheme.Original,
+                AtomShape = AtomShape.Round,
+                HasSound = true
+            };
+
+            await browserStorageService.SetGameMenuOptions(options);
+        }
 
         return new GameOptionsResponse(options);
     }

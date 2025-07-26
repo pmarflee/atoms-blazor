@@ -5,7 +5,7 @@ namespace Atoms.Infrastructure.Factories;
 public static class GameFactory
 {
     public static Game Create(
-        CreateRng rngFactory, 
+        CreateRng rngFactory,
         CreatePlayerStrategy playerStrategyFactory,
         IInviteSerializer inviteSerializer,
         Guid gameId,
@@ -19,11 +19,11 @@ public static class GameFactory
             .ToList();
         var firstHumanPlayer = optionsPlayers.FirstOrDefault(p => p.Type == PlayerType.Human);
 
-        string? CreateInviteLink(GameMenuOptions.Player player)
+        string? CreateInviteLink(Guid playerId, GameMenuOptions.Player player)
         {
             if (player.Type == PlayerType.Human && player != firstHumanPlayer)
             {
-                var invite = new Invite(gameId, player.Id);
+                var invite = new Invite(gameId, playerId);
 
                 return inviteSerializer.Serialize(invite);
             }
@@ -31,16 +31,21 @@ public static class GameFactory
             return null;
         }
 
-        var players = optionsPlayers
-            .Select(p => new Game.Player(
-                p.Id, p.Number, p.Type,
-                p == firstHumanPlayer ? userIdentity?.Id : null,
-                p == firstHumanPlayer ? userIdentity?.Name : null,
-                p == firstHumanPlayer ? userIdentity?.GetAbbreviatedName() : null,
-                playerStrategyFactory.Invoke(p.Type, rng),
-                p == firstHumanPlayer ? localStorageId : null,
-                CreateInviteLink(p)))
-            .ToList();
+        List<Game.Player> players =
+            [.. optionsPlayers
+                .Select(p =>
+                {
+                    var playerId = Guid.NewGuid();
+
+                    return new Game.Player(
+                        playerId, p.Number, p.Type,
+                        p == firstHumanPlayer ? userIdentity?.Id : null,
+                        p == firstHumanPlayer ? userIdentity?.Name : null,
+                        p == firstHumanPlayer ? userIdentity?.GetAbbreviatedName() : null,
+                        playerStrategyFactory.Invoke(p.Type, rng),
+                        p == firstHumanPlayer ? localStorageId : null,
+                        CreateInviteLink(playerId, p));
+                }) ];
 
         return new Game(gameId,
                         Constants.Rows,

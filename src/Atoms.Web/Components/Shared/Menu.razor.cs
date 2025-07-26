@@ -5,9 +5,6 @@ namespace Atoms.Web.Components.Shared;
 
 public partial class MenuComponent : Component2Base
 {
-    protected const int MinPlayers = 2;
-    protected const int MaxPlayers = 4;
-
     [Inject]
     protected NavigationManager NavigationManager { get; set; } = default!;
 
@@ -24,7 +21,7 @@ public partial class MenuComponent : Component2Base
     {
         var response = await Mediator.Send(
             new CreateGameOptionsRequest(
-                MaxPlayers,
+                Core.Constants.MaxPlayers,
                 await GetOrAddStorageId(),
                 UserId));
 
@@ -65,7 +62,7 @@ public partial class MenuComponent : Component2Base
     {
         Options.ColourScheme = ColourScheme.FromValue(value);
 
-        await BrowserStorageService.SetColourScheme(Options.ColourScheme);
+        await SaveGameMenuOptions();
         await SetDisplayColourScheme(Options.ColourScheme);
     }
 
@@ -73,7 +70,7 @@ public partial class MenuComponent : Component2Base
     {
         Options.AtomShape = AtomShape.FromValue(value);
 
-        await BrowserStorageService.SetAtomShape(Options.AtomShape);
+        await SaveGameMenuOptions();
     }
 
     protected async Task SoundChanged(bool hasSound)
@@ -85,6 +82,30 @@ public partial class MenuComponent : Component2Base
             await JSRuntime.InvokeVoidAsync("App.stopMusic");
         }
 
-        await BrowserStorageService.SetSound(hasSound);
+        await SaveGameMenuOptions();
     }
+
+    protected async Task NumberOfPlayersChanged(int numberOfPlayers)
+    {
+        Options.NumberOfPlayers = numberOfPlayers;
+
+        await SaveGameMenuOptions();
+    }
+
+    protected async Task PlayerTypeChanged(
+        GameMenuOptions.Player player, int playerTypeValue)
+    {
+        player.Type = PlayerType.FromValue(playerTypeValue);
+
+        await SaveGameMenuOptions();
+    }
+
+    async Task SaveGameMenuOptions()
+    {
+        await BrowserStorageService.SetGameMenuOptions(Options);
+    }
+
+    protected IEnumerable<PlayerType> PlayerTypes => PlayerType.List.OrderBy(x => x.Value);
+    protected IEnumerable<ColourScheme> ColourSchemes => ColourScheme.List.OrderBy(x => x.Value);
+    protected IEnumerable<AtomShape> AtomShapes => AtomShape.List.OrderBy(x => x.Value);
 }

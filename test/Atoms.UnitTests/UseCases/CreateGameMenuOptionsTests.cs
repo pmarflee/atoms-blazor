@@ -1,26 +1,26 @@
-﻿using Atoms.UseCases.Menu.GameOptions;
+﻿using Atoms.Core.DTOs;
+using Atoms.UseCases.Menu.GameOptions;
 
 namespace Atoms.UnitTests.UseCases;
 
 public class CreateGameMenuOptionsTests
 {
     [Test]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2012:Use ValueTasks correctly", Justification = "<Pending>")]
     public async Task OptionsCreatedShouldMatchSpecification()
     {
         var browserStorageServiceExpectations = new IBrowserStorageServiceCreateExpectations();
         browserStorageServiceExpectations.Methods
-            .GetColourScheme()
-            .ReturnValue(ValueTask.FromResult(ColourScheme.Original));
-        browserStorageServiceExpectations.Methods
-            .GetAtomShape()
-            .ReturnValue(ValueTask.FromResult(AtomShape.Round));
-        browserStorageServiceExpectations.Methods
-            .GetSound()
-            .ReturnValue(ValueTask.FromResult(true));
+            .GetGameMenuOptions()
+            .ReturnValue(
+                ValueTask.FromResult<GameMenuOptions?>(
+                    ObjectMother.CreateGameMenuOptions(
+                        Atoms.Core.Constants.MaxPlayers)));
 
         var handler = new CreateGameOptionsRequestHandler(browserStorageServiceExpectations.Instance());
         var request = new CreateGameOptionsRequest(
-            4, ObjectMother.LocalStorageId, ObjectMother.UserId);
+            Atoms.Core.Constants.MaxPlayers,
+            ObjectMother.LocalStorageId, ObjectMother.UserId);
 
         var response = await handler.Handle(request, CancellationToken.None);
         var options = response.Options;

@@ -17,6 +17,8 @@ internal static class ObjectMother
         _inviteSerializerCreateExpectations.Methods.Serialize(Arg.Any<Invite>()).ReturnValue(string.Empty);
 
         InviteSerializer = _inviteSerializerCreateExpectations.Instance();
+
+        GameMenuOptions = CreateGameMenuOptions(Atoms.Core.Constants.MinPlayers);
     }
 
     public const int Rows = 6;
@@ -39,24 +41,24 @@ internal static class ObjectMother
 
     public const string BaseUrl = "https://www.atoms.com";
 
-    public static readonly GameMenuOptions GameMenuOptions =
-        new([
-                new GameMenuOptions.Player 
-                {
-                    Id = Player1Id,
-                    Number = 1,
-                    Type = PlayerType.Human
-                },
-                new GameMenuOptions.Player
-                {
-                    Id = Player2Id,
-                    Number = 2,
-                    Type = PlayerType.Human
-                }
+    public static readonly GameMenuOptions GameMenuOptions;
+
+    public static GameMenuOptions CreateGameMenuOptions(int numberOfPlayers)
+        => new()
+        {
+            NumberOfPlayers = numberOfPlayers,
+            Players = [..
+                Enumerable.Range(0, numberOfPlayers)
+                    .Select(i => new GameMenuOptions.Player
+                    {
+                        Number = i + 1,
+                        Type = PlayerType.Human
+                    })
             ],
-            ColourScheme.Original,
-            AtomShape.Round,
-            true);
+            ColourScheme = ColourScheme.Original,
+            AtomShape = AtomShape.Round,
+            HasSound = true
+        };
 
     public static Game Game(List<Player>? players = null,
                             int? active = 1,
@@ -80,7 +82,7 @@ internal static class ObjectMother
 
         return new Game(GameId, Rows, Columns, players, activePlayer,
                         ColourScheme.Original, AtomShape.Round,
-                        rng, 
+                        rng,
                         localStorageId ?? LocalStorageId,
                         CreatedDateUtc,
                         lastUpdatedDateUtc ?? LastUpdatedDateUtc,
@@ -89,12 +91,12 @@ internal static class ObjectMother
     }
 
     public static Player CreateHumanPlayer(
-        Guid id, int number, 
-        UserId? userId = null, 
+        Guid id, int number,
+        UserId? userId = null,
         StorageId? localStorageId = null)
     {
         return new(
-            id, number, PlayerType.Human, 
+            id, number, PlayerType.Human,
             userId: userId,
             localStorageId: localStorageId);
     }

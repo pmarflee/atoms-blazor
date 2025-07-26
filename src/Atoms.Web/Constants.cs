@@ -9,5 +9,6 @@ public static class Constants
         public const string ColourScheme = nameof(ColourScheme);
         public const string AtomShape = nameof(AtomShape);
         public const string Sound = nameof(Sound);
+        public const string GameMenuOptions = nameof(GameMenuOptions);
     }
 }

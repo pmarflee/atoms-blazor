@@ -1,4 +1,7 @@
-﻿namespace Atoms.Web.Services;
+﻿
+using System.Text.Json;
+
+namespace Atoms.Web.Services;
 
 public class BrowserStorageService(
     ProtectedLocalStorage protectedLocalStore, 
@@ -62,91 +65,37 @@ public class BrowserStorageService(
             userName);
     }
 
-    public async ValueTask<ColourScheme> GetColourScheme()
-    {
-        var returnValue = ColourScheme.Original;
-
-        try
-        {
-            var result = await protectedLocalStore.GetAsync<int>(
-                Constants.StorageKeys.ColourScheme);
-
-            if (result.Success)
-            {
-                returnValue = ColourScheme.FromValue(result.Value);
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Unable to retrieve colour scheme selection from local storage");
-        }
-
-        return returnValue;
-    }
-
-    public async ValueTask SetColourScheme(ColourScheme colourScheme)
-    {
-        await protectedLocalStore.SetAsync(
-            Constants.StorageKeys.ColourScheme,
-            colourScheme.Value);
-    }
-
-    public async ValueTask<AtomShape> GetAtomShape()
-    {
-        var returnValue = AtomShape.Round;
-
-        try
-        {
-            var result = await protectedLocalStore.GetAsync<int>(
-                Constants.StorageKeys.AtomShape);
-
-            if (result.Success)
-            {
-                returnValue = AtomShape.FromValue(result.Value);
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Unable to retrieve atom shape selection from local storage");
-        }
-
-        return returnValue;
-    }
-
-    public async ValueTask SetAtomShape(AtomShape atomShape)
-    {
-        await protectedLocalStore.SetAsync(
-            Constants.StorageKeys.AtomShape,
-            atomShape.Value);
-    }
-
     public async ValueTask<bool> GetSound()
     {
-        var returnValue = true;
+        var options = await GetGameMenuOptions();
+
+        return options?.HasSound ?? true;
+    }
+
+    public async ValueTask<GameMenuOptions?> GetGameMenuOptions()
+    {
+        var result = await protectedLocalStore.GetAsync<string>(
+            Constants.StorageKeys.GameMenuOptions);
+
+        if (!result.Success) return null;
 
         try
         {
-            var result = await protectedLocalStore.GetAsync<bool>(
-                Constants.StorageKeys.Sound);
-
-            if (result.Success)
-            {
-                returnValue = result.Value;
-            }
+            return JsonSerializer.Deserialize<GameMenuOptions>(result.Value!);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unable to retrieve sound selection from local storage");
-        }
+            logger.LogError(ex, "Unable to retrieve game menu options from local storage");
 
-        return returnValue;
+            return null;
+        }
     }
 
-    public async ValueTask SetSound(bool hasSound)
+    public async ValueTask SetGameMenuOptions(GameMenuOptions options)
     {
         await protectedLocalStore.SetAsync(
-            Constants.StorageKeys.Sound,
-            hasSound);
+            Constants.StorageKeys.GameMenuOptions,
+            JsonSerializer.Serialize(options));
     }
 
     async Task<StorageId> CreateStorageId()
