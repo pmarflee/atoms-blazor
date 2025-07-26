@@ -5,7 +5,9 @@ namespace Atoms.Infrastructure.Validation;
 
 public class InviteValidator : AbstractValidator<Invite>
 {
-    public InviteValidator(IDbContextFactory<ApplicationDbContext> dbContextFactory)
+    public InviteValidator(
+        IDbContextFactory<ApplicationDbContext> dbContextFactory,
+        IBrowserStorageService browserStorageService)
     {
         RuleFor(x => x).CustomAsync(async (invite, ctx, token) =>
         {
@@ -38,6 +40,14 @@ public class InviteValidator : AbstractValidator<Invite>
             if (player.UserId is not null || player.LocalStorageId is not null)
             {
                 ctx.AddFailure(nameof(Invite.PlayerId), "Invite no longer valid");
+            }
+
+            var firstHumanPlayer = game.Players.First(p => p.Type == PlayerType.Human);
+            var localStorageId = await browserStorageService.GetOrAddStorageId();
+
+            if (localStorageId.Value == firstHumanPlayer.LocalStorageId)
+            {
+                ctx.AddFailure(nameof(Invite.PlayerId), "Invite not accepted on same browser instance");
             }
         });
     }

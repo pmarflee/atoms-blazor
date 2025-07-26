@@ -16,7 +16,7 @@ public abstract class Component2Base : ComponentBase
 
     public UserId? UserId => AuthenticatedUser?.GetUserId();
 
-    public Task<StorageId> GetOrAddStorageId() => BrowserStorageService.GetOrAddStorageId();
+    public ValueTask<StorageId> GetOrAddStorageId() => BrowserStorageService.GetOrAddStorageId();
 
     public async Task<string?> GetUserName() =>
         AuthenticatedUser?.GetUserName()

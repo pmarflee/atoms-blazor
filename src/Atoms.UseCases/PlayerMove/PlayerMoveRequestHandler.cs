@@ -51,13 +51,6 @@ public class PlayerMoveRequestHandler(
             }
         }
 
-        var player = game.ActivePlayer;
-
-        if (!request.Debug && player.UserId is null && player.LocalStorageId is null)
-        {
-            player.SetIdentity(request.UserId, request.Username, request.LocalStorageId);
-        }
-
         if (!game.HasWinner)
         {
             game.PostMoveUpdate();

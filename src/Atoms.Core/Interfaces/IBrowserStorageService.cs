@@ -2,8 +2,8 @@
 
 public interface IBrowserStorageService
 {
-    Task<StorageId> GetOrAddStorageId();
-    Task<StorageId?> GetStorageId();
+    ValueTask<StorageId> GetOrAddStorageId();
+    ValueTask<StorageId?> GetStorageId();
     ValueTask<string?> GetUserName();
     ValueTask SetUserName(string userName);
     ValueTask<bool> GetSound();

@@ -17,7 +17,13 @@ public class InviteValidatorTests : BaseDbTestFixture
         await dbContext.Games.AddAsync(gameDto);
         await dbContext.SaveChangesAsync();
 
-        _validator = new InviteValidator(DbContextFactory);
+        var browserStorageServiceExpectations = new IBrowserStorageServiceCreateExpectations();
+        browserStorageServiceExpectations.Methods
+            .GetOrAddStorageId()
+            .ReturnValue(ValueTask.FromResult(ObjectMother.LocalStorageId));
+
+        _validator = new InviteValidator(DbContextFactory,
+                                         browserStorageServiceExpectations.Instance());
     }
 
     [Test]
@@ -59,12 +65,28 @@ public class InviteValidatorTests : BaseDbTestFixture
     }
 
     [Test]
-    public async Task ShouldNotHaveValidationErrorWhenGameAndPlayerExistAndPlayerHasNotAcceptedInvite()
+    public async Task ShouldNotHaveValidationErrorWhenGameAndPlayerExistsAndPlayerHasNotAcceptedInvite()
     {
+        var browserStorageServiceExpectations = new IBrowserStorageServiceCreateExpectations();
+        browserStorageServiceExpectations.Methods
+            .GetOrAddStorageId()
+            .ReturnValue(ValueTask.FromResult(new StorageId(Guid.NewGuid())));
+
+        var validator = new InviteValidator(DbContextFactory,
+                                         browserStorageServiceExpectations.Instance());
         var invite = new Invite(ObjectMother.GameId, ObjectMother.Player2Id);
-        var result = await _validator.ValidateAsync(invite);
+        var result = await validator.ValidateAsync(invite);
 
         await Assert.That(result.IsValid).IsTrue();
+    }
+
+    [Test]
+    public async Task ShouldHaveValidationErrorWhenPlayerHasTheSameLocalStorageIdAsThePlayerWhoStartedTheGame()
+    {
+        var invite = new Invite(ObjectMother.GameId, ObjectMother.Player2Id);
+        var result = await _validator.TestValidateAsync(invite);
+
+        result.ShouldHaveValidationErrorFor(x => x.PlayerId);
     }
 
     public static IEnumerable<(UserId? UserId, StorageId? LocalStorageId)> GetTestArguments()

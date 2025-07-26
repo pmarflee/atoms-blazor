@@ -20,7 +20,7 @@ public class AcceptInviteTests : BaseDbTestFixture
         _browserStorageServiceCreateExpectations = new IBrowserStorageServiceCreateExpectations();
         _browserStorageServiceCreateExpectations.Methods
             .GetOrAddStorageId()
-            .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
+            .ReturnValue(ValueTask.FromResult(ObjectMother.LocalStorageId));
 
         _dateServiceCreateExpectations = new IDateTimeServiceCreateExpectations();
         _dateServiceCreateExpectations.Properties

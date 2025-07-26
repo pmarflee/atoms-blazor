@@ -9,7 +9,7 @@ public class GameDTO
     public required Guid LocalStorageId { get; init; }
     public required ColourScheme ColourScheme { get; init; }
     public required AtomShape AtomShape { get; init; }
-    public ICollection<PlayerDTO> Players { get; } = [];
+    public ICollection<PlayerDTO> Players { get; } = new SortedSet<PlayerDTO>(new PlayerDTOSortComparer());
     public required BoardDTO Board { get; set; }
     public required int Move { get; set; }
     public required int Round { get; set; }
@@ -144,6 +144,18 @@ public class PlayerDTO
     public string? AbbreviatedName { get; set; }
     public string? InviteCode { get; init; }
     public GameDTO Game { get; set; } = default!;
+}
+
+class PlayerDTOSortComparer : IComparer<PlayerDTO>
+{
+    public int Compare(PlayerDTO? x, PlayerDTO? y)
+    {
+        if (x == null && y == null) return 0;
+        if (x == null) return -1;
+        if (y == null) return 1;
+
+        return x.Number.CompareTo(y.Number);
+    }
 }
 
 public class RngDTO

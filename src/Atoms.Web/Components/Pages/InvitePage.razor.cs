@@ -63,9 +63,9 @@ public class InvitePageComponent : Component2Base, IAsyncDisposable
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && InputName?.Element is not null)
         {
-            await InputName.Element!.Value.FocusAsync();
+            await InputName.Element.Value.FocusAsync();
         }
     }
 

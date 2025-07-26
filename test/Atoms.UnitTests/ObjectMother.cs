@@ -71,7 +71,7 @@ internal static class ObjectMother
     {
         players ??=
         [
-            new (Player1Id, 1, PlayerType.Human),
+            new (Player1Id, 1, PlayerType.Human, localStorageId: LocalStorageId),
             new (Player2Id, 2, PlayerType.Human),
         ];
 
@@ -141,6 +141,7 @@ internal static class ObjectMother
                     Id = Player1Id,
                     Number = 1,
                     Type = PlayerType.Human,
+                    LocalStorageId = LocalStorageId.Value,
                     Game = gameDto
                 },
                 new PlayerDTO

@@ -7,12 +7,12 @@ public class BrowserStorageService(
     CreateLocalStorageId createLocalStorageId)
     : IBrowserStorageService
 {
-    public async Task<StorageId> GetOrAddStorageId()
+    public async ValueTask<StorageId> GetOrAddStorageId()
     {
         return await GetStorageId() ?? await CreateStorageId();
     }
 
-    public async Task<StorageId?> GetStorageId()
+    public async ValueTask<StorageId?> GetStorageId()
     {
         var id = await localStorageService.GetItemAsync<Guid?>(
                 Constants.StorageKeys.LocalStorageId);
