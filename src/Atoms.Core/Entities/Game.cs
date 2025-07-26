@@ -253,7 +253,7 @@ public class Game
 
         public bool TryCreateInviteLink(string baseUrl, [NotNullWhen(true)] out InviteLink? inviteLink)
         {
-            if (IsHuman && LocalStorageId is null && InviteCode is not null)
+            if (IsHuman && !IsDead && LocalStorageId is null && InviteCode is not null)
             {
                 inviteLink = new(InviteCode, baseUrl);
 

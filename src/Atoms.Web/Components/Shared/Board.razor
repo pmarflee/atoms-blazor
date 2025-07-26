@@ -33,21 +33,20 @@
             var (cells, atoms) = Game.GetScore(player);
             <div>
                 <div class="@(GetPlayerClassNames(player))">
-                    @if (!player.IsDead)
-                    {
-                        <div class="cells">@(cells)C</div>
-                        <div class="atoms">@(atoms)A</div>
-                    }
-                    @if (!string.IsNullOrEmpty(player.AbbreviatedName))
-                    {
-                        <div class="@(GetPlayerNameClassNames(player))" title="@player.Name">@player.AbbreviatedName</div>
-                    }
-                    else if (player.TryCreateInviteLink(NavigationManager.BaseUri, out var inviteLink))
-                    {
-                        <a href="" @onclick="() => CopyInviteToClipboard(inviteLink.Url)" @onclick:preventDefault>
-                            <img src="images/copy.png" title="Copy invite to clipboard" alt="Copy invite to clipboard" />
-                        </a>
-                    }
+                    <div class="cells">@(cells)C</div>
+                    <div class="atoms">@(atoms)A</div>
+                    <div class="@(GetPlayerNameClassNames(player))">
+                        @if (!string.IsNullOrEmpty(player.AbbreviatedName))
+                        {
+                            <span title="@player.Name">@player.AbbreviatedName</span>
+                        }
+                        else if (!Game.HasWinner && player.TryCreateInviteLink(NavigationManager.BaseUri, out var inviteLink))
+                        {
+                            <a href="" @onclick="() => CopyInviteToClipboard(inviteLink.Url)" @onclick:preventDefault>
+                                <img src="images/copy.png" title="Copy invite to clipboard" alt="Copy invite to clipboard" />
+                            </a>
+                        }
+                    </div>
                 </div>
             </div>
         }
