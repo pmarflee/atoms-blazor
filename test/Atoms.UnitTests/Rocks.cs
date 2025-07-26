@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Blazored.LocalStorage;
+using FluentValidation;
 using Microsoft.AspNetCore.DataProtection;
 
 [assembly: Rock(typeof(IMediator), BuildType.Create)]
@@ -12,3 +13,4 @@ using Microsoft.AspNetCore.DataProtection;
 [assembly: Rock(typeof(IValidator<>), BuildType.Create)]
 [assembly: Rock(typeof(IBrowserStorageService), BuildType.Create)]
 [assembly: Rock(typeof(IInviteSerializer), BuildType.Create)]
+[assembly: Rock(typeof(ILocalStorageService), BuildType.Create)]

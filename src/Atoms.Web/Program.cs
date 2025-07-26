@@ -2,15 +2,13 @@ using Atoms.Core.Data.Identity;
 using Atoms.Core.Delegates;
 using Atoms.Core.Entities.Configuration;
 using Atoms.Core.Serialization;
-using Atoms.Core.Services;
 using Atoms.Infrastructure;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Email;
 using Atoms.Infrastructure.Factories;
-using Atoms.Infrastructure.Validation;
 using Atoms.UseCases.CreateNewGame;
 using Atoms.Web.Hubs;
-using FluentValidation;
+using Blazored.LocalStorage;
 using MediatR.Courier;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -36,6 +34,7 @@ builder.Services.AddScoped<CreateGame>(sp =>
         GameFactory.Create(rngFactory, playerStrategyFactory, inviteSerializer,
                            gameId, options, localStorageId, userIdentity);
 });
+builder.Services.AddSingleton<CreateLocalStorageId>(Guid.CreateVersion7);
 
 builder.Services.AddScoped<GameStateContainer>();
 
@@ -81,6 +80,7 @@ builder.Services.AddDataProtection()
 builder.Services.AddOptions<EmailSettings>()
                 .BindConfiguration("Email");
 
+builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
 
 builder.AddValidation();
