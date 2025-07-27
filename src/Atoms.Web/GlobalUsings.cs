@@ -21,3 +21,4 @@ global using Atoms.Core.ValueObjects;
 global using Atoms.Infrastructure.Identity;
 global using Atoms.Infrastructure.ExtensionMethods;
 global using Atoms.Web.Components;
+global using Atoms.Web.CustomEvents;

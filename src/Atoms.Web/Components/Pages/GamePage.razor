@@ -2,4 +2,6 @@
 
 @page "/games/{gameId:guid?}"
 
-<Board OnPlayAgainClicked="@OnGoToHomePage" Debug="@Debug" />
+<Board Debug=@Debug
+       OnPlayAgainClicked=@GoToHomePage
+       OnCellClicked=@CellClicked />

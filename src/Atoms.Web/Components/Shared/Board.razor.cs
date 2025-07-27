@@ -1,7 +1,6 @@
 ﻿using Atoms.Core.Test;
 using Atoms.UseCases.PlayerMove;
 using Atoms.UseCases.Shared.Notifications;
-using Atoms.Web.CustomEvents;
 using MediatR.Courier;
 
 namespace Atoms.Web.Components.Shared;
@@ -26,6 +25,9 @@ public class BoardComponent : Component2Base, IDisposable
     public EventCallback OnPlayAgainClicked { get; set; }
 
     [Parameter]
+    public EventCallback<CellClickEventArgs> OnCellClicked { get; set; }
+
+    [Parameter]
     public int? Debug { get; set; }
 
     bool _disableClicks;
@@ -47,6 +49,7 @@ public class BoardComponent : Component2Base, IDisposable
         if (!CanPlayMove()) return;
 
         await PlayMove(eventArgs.Cell);
+        await OnCellClicked.InvokeAsync(eventArgs);
     }
 
     protected async Task PlayAgainClick()

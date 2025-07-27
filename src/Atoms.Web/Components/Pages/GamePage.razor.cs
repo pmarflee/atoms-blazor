@@ -7,6 +7,7 @@ namespace Atoms.Web.Components.Pages;
 public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposable
 {
     HubConnection? _hubConnection = default!;
+    bool _firstCellClicked;
 
     [Inject]
     NavigationManager Navigation { get; set; } = default!;
@@ -53,7 +54,7 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
                     .WithUrl(Navigation.ToAbsoluteUri("/gamehub"))
                     .Build();
 
-        _hubConnection.On<string>("Notification", 
+        _hubConnection.On<string>("Notification",
             async message =>
             {
                 await ReloadGame();
@@ -90,18 +91,21 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
         await StateContainer.SetGame(game, isReload);
         await SetDisplayColourScheme(game.ColourScheme);
         await SetDisplayAtomShape(game.AtomShape);
-
-        var hasSound = await BrowserStorageService.GetSound();
-
-        if (hasSound)
-        {
-            await JSRuntime.InvokeVoidAsync("App.startMusic");
-        }
     }
 
-    protected void OnGoToHomePage()
+    protected void GoToHomePage()
     {
         Navigation.NavigateTo("/");
+    }
+
+    protected async Task CellClicked()
+    {
+        if (!_firstCellClicked)
+        {
+            await TryPlayMusic();
+
+            _firstCellClicked = true;
+        }
     }
 
     async Task StateHasChangedAsync()
@@ -117,6 +121,16 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
                 "Notify",
                 StateContainer.Game.Id,
                 $"Player {playerNumber}{(!string.IsNullOrEmpty(playerName) ? $" ({playerName})" : null)} moved");
+        }
+    }
+
+    async Task TryPlayMusic()
+    {
+        var hasSound = await BrowserStorageService.GetSound();
+
+        if (hasSound)
+        {
+            await JSRuntime.InvokeVoidAsync("App.startMusic");
         }
     }
 
