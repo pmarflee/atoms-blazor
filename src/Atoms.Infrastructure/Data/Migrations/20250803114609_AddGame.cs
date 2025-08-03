@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Atoms.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
@@ -35,12 +37,25 @@ namespace Atoms.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlayerTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Players",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Number = table.Column<int>(type: "INTEGER", nullable: false),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    PlayerTypeId = table.Column<int>(type: "INTEGER", nullable: false),
                     LocalStorageId = table.Column<Guid>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", nullable: true),
                     IsWinner = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -58,7 +73,29 @@ namespace Atoms.Infrastructure.Data.Migrations
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Players_PlayerTypes_PlayerTypeId",
+                        column: x => x.PlayerTypeId,
+                        principalTable: "PlayerTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "PlayerTypes",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Human", "Human" },
+                    { 2, "CPU (Easy)", "CPU (E)" },
+                    { 3, "CPU (Medium)", "CPU (M)" },
+                    { 4, "CPU (Hard)", "CPU (H)" }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Games_LastUpdatedDateUtc",
+                table: "Games",
+                column: "LastUpdatedDateUtc");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_LocalStorageId",
@@ -66,9 +103,34 @@ namespace Atoms.Infrastructure.Data.Migrations
                 column: "LocalStorageId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Games_UserId",
+                table: "Games",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Players_GameId",
                 table: "Players",
                 column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_IsWinner",
+                table: "Players",
+                column: "IsWinner");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_LocalStorageId",
+                table: "Players",
+                column: "LocalStorageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_PlayerTypeId",
+                table: "Players",
+                column: "PlayerTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_UserId",
+                table: "Players",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -79,6 +141,9 @@ namespace Atoms.Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Games");
+
+            migrationBuilder.DropTable(
+                name: "PlayerTypes");
         }
     }
 }

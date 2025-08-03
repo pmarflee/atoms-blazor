@@ -1,7 +1,8 @@
 ﻿@inherits NavMenuComponent
 
 <div id="auth-container">
-    <NavLink href="/">Home</NavLink>
+    <span class="link-home"><NavLink href="/">Home</NavLink></span>
+    <span><NavLink href="/games">Games</NavLink></span>
     @if (!string.IsNullOrEmpty(UserName))
     {
         <span class="push"></span>

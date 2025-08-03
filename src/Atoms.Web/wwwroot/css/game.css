@@ -411,3 +411,12 @@ div.image-row {
     border: 2px solid;
     border-color: #88a #224 #224 #88a;
 }
+
+.quickgrid[theme=default] .sort-indicator {
+    filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(151deg) brightness(115%) contrast(102%);
+}
+
+.link-home {
+    margin-right: 5px;
+}
+

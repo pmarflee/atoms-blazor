@@ -12,7 +12,7 @@ public class SetUserNameRequestHandler(
         var gameDto = await dbContext.GetGameById(request.Game.Id, cancellationToken);
         var playerDto = gameDto!.Players
             .OrderBy(p => p.Number)
-            .First(p => p.Type == PlayerType.Human);
+            .First(p => p.PlayerTypeId == PlayerType.Human);
 
         if (!string.IsNullOrEmpty(playerDto.Name)) return;
 

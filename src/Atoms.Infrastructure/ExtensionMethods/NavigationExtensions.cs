@@ -14,6 +14,12 @@ public static class NavigationExtensions
     }
 
     public static void NavigateToGame(this NavigationManager navigation,
+                                      GameInfoDTO game)
+    {
+        navigation.NavigateToGame(game.Id);
+    }
+
+    public static void NavigateToGame(this NavigationManager navigation,
                                       Invite invite)
     {
         navigation.NavigateToGame(invite.GameId);

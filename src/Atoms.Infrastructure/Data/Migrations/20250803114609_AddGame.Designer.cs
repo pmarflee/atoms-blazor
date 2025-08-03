@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Atoms.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250719213303_AddGame")]
+    [Migration("20250803114609_AddGame")]
     partial class AddGame
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
 
             modelBuilder.Entity("Atoms.Core.DTOs.GameDTO", b =>
                 {
@@ -76,9 +76,44 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LastUpdatedDateUtc");
+
                     b.HasIndex("LocalStorageId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("Atoms.Core.DTOs.GameInfoDTO", b =>
+                {
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdatedDateUtc")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Move")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Opponents")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Round")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Winner")
+                        .HasColumnType("TEXT");
+
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
                 });
 
             modelBuilder.Entity("Atoms.Core.DTOs.PlayerDTO", b =>
@@ -108,7 +143,7 @@ namespace Atoms.Infrastructure.Data.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Type")
+                    b.Property<int>("PlayerTypeId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserId")
@@ -118,7 +153,59 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.HasIndex("GameId");
 
+                    b.HasIndex("IsWinner");
+
+                    b.HasIndex("LocalStorageId");
+
+                    b.HasIndex("PlayerTypeId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("Atoms.Core.DTOs.PlayerTypeDTO", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlayerTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Human",
+                            Name = "Human"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "CPU (Easy)",
+                            Name = "CPU (E)"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "CPU (Medium)",
+                            Name = "CPU (M)"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "CPU (Hard)",
+                            Name = "CPU (H)"
+                        });
                 });
 
             modelBuilder.Entity("Atoms.Core.DTOs.PlayerDTO", b =>
@@ -129,7 +216,15 @@ namespace Atoms.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Atoms.Core.DTOs.PlayerTypeDTO", "PlayerType")
+                        .WithMany()
+                        .HasForeignKey("PlayerTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Game");
+
+                    b.Navigation("PlayerType");
                 });
 
             modelBuilder.Entity("Atoms.Core.DTOs.GameDTO", b =>

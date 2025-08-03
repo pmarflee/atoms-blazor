@@ -36,14 +36,14 @@ public class ShouldNotAllowPlayerMoveIfGameHasWinner : PlayerMoveAtomTestFixture
             {
                 Id = ObjectMother.Player1Id,
                 Number = 1,
-                Type = PlayerType.Human,
+                PlayerTypeId = PlayerType.Human,
                 IsWinner = true
             },
             new PlayerDTO 
             { 
                 Id = ObjectMother.Player2Id,
                 Number = 2,
-                Type = PlayerType.CPU_Easy,
+                PlayerTypeId = PlayerType.CPU_Easy,
                 IsWinner = false 
             }
         ],

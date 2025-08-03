@@ -42,7 +42,7 @@ public class InviteValidator : AbstractValidator<Invite>
                 ctx.AddFailure(nameof(Invite.PlayerId), "Invite no longer valid");
             }
 
-            var firstHumanPlayer = game.Players.First(p => p.Type == PlayerType.Human);
+            var firstHumanPlayer = game.Players.First(p => p.PlayerTypeId == PlayerType.Human);
             var localStorageId = await browserStorageService.GetOrAddStorageId();
 
             if (localStorageId.Value == firstHumanPlayer.LocalStorageId)

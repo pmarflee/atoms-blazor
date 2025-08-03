@@ -27,7 +27,7 @@ public class AbbreviatedNameTests
                 new PlayerDTO 
                 { 
                     Id = Guid.NewGuid(),
-                    Type = PlayerType.Human,
+                    PlayerTypeId = PlayerType.Human,
                     Number = 1,
                     Name = "Paul McCartney",
                     AbbreviatedName = "PM"
@@ -39,7 +39,7 @@ public class AbbreviatedNameTests
                 new PlayerDTO 
                 { 
                     Id = Guid.NewGuid(),
-                    Type = PlayerType.Human,
+                    PlayerTypeId = PlayerType.Human,
                     Number = 1,
                     Name = "James Last",
                     AbbreviatedName = "JL"
@@ -51,7 +51,7 @@ public class AbbreviatedNameTests
                 new PlayerDTO 
                 { 
                     Id = Guid.NewGuid(),
-                    Type = PlayerType.Human,
+                    PlayerTypeId = PlayerType.Human,
                     Number = 1,
                     Name = "James Last",
                     AbbreviatedName = "JL"
@@ -59,7 +59,7 @@ public class AbbreviatedNameTests
                 new PlayerDTO 
                 { 
                     Id = Guid.NewGuid(),
-                    Type = PlayerType.Human,
+                    PlayerTypeId = PlayerType.Human,
                     Number = 2,
                     Name = "Jimmy Lewis",
                     AbbreviatedName = "JL1"

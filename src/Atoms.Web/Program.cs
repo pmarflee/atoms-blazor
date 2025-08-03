@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.FluentUI.AspNetCore.Components;
 using NReco.Logging.File;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddFluentUIComponents();
+builder.Services.AddDataGridEntityFrameworkAdapter();
 
 builder.Services.AddSingleton<CreateRng>(RngFactory.Create);
 builder.Services.AddSingleton<CreatePlayerStrategy>(PlayerStrategyFactory.Create);

@@ -140,7 +140,7 @@ internal static class ObjectMother
                 {
                     Id = Player1Id,
                     Number = 1,
-                    Type = PlayerType.Human,
+                    PlayerTypeId = PlayerType.Human,
                     LocalStorageId = LocalStorageId.Value,
                     Game = gameDto
                 },
@@ -148,7 +148,7 @@ internal static class ObjectMother
                 {
                     Id = Player2Id,
                     Number = 2,
-                    Type = PlayerType.Human,
+                    PlayerTypeId = PlayerType.Human,
                     Game = gameDto
                 }
             ];

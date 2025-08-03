@@ -1,0 +1,31 @@
+﻿@inherits GamesPageComponent
+
+@page "/games"
+
+<FluentTabs @bind-ActiveTabId=@ActiveTabId>
+    <FluentTab Label="Active" Id="Tab-Active">
+        <Content>
+            <FluentDataGrid Items=@ActiveGames Pagination=@ActiveGamesPagination AutoFit=@true DisplayMode=@DataGridDisplayMode.Table MultiLine=@true>
+                <PropertyColumn Property="game => game.LastUpdatedDateUtc" Title="Created/Updated" Format="d" Sortable=@false IsDefaultSortColumn=@true InitialSortDirection=@SortDirection.Descending />
+                <PropertyColumn Property="game => game.Opponents" Title="Opponents" Tooltip=@true TooltipText="game => game.Opponents" />
+                <TemplateColumn>
+                    <FluentButton Appearance=@Appearance.Accent OnClick="@(() => OpenGame(context))">Open</FluentButton>
+                </TemplateColumn>
+            </FluentDataGrid>
+            <FluentPaginator State=@ActiveGamesPagination />
+        </Content>
+    </FluentTab>
+    <FluentTab Label="Inactive" Id="Tab-Inactive">
+        <Content>
+            <FluentDataGrid Items=@InactiveGames Pagination=@InactiveGamesPagination AutoFit=@true DisplayMode=@DataGridDisplayMode.Table MultiLine=@true>
+                <PropertyColumn Property="game => game.LastUpdatedDateUtc" Title="Created/Updated" Format="d" Sortable=@false IsDefaultSortColumn=@true InitialSortDirection=@SortDirection.Descending />
+                <PropertyColumn Property="game => game.Opponents" Title="Opponents" Tooltip=@true TooltipText="game => game.Opponents" />
+                <PropertyColumn Property="game => game.Winner" Title="Winner" Tooltip=@true TooltipText="game => game.Winner" />
+                <TemplateColumn>
+                    <FluentButton Appearance=@Appearance.Accent OnClick="@(() => OpenGame(context))">Open</FluentButton>
+                </TemplateColumn>
+            </FluentDataGrid>
+            <FluentPaginator State=@InactiveGamesPagination />
+        </Content>
+    </FluentTab>
+</FluentTabs>

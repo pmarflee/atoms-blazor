@@ -2,6 +2,25 @@
 
 namespace Atoms.Core.DTOs;
 
+public class GameInfoDTO
+{
+    public Guid Id { get; init; }
+    public int Move { get; init; }
+    public int Round { get; init; }
+    public string? Opponents { get; init; }
+    public bool IsActive { get; init; }
+    public string? Winner { get; init; }
+    public DateTime CreatedDateUtc { get; init; }
+    public DateTime LastUpdatedDateUtc { get; init; }
+}
+
+public class PlayerTypeDTO
+{ 
+    public required PlayerType Id { get; init; }
+    public required string Name { get; init; }
+    public required string Description { get; init; }
+}
+
 public class GameDTO
 {
     public required Guid Id { get; init; }
@@ -43,7 +62,7 @@ public class GameDTO
                 Id = player.Id,
                 Number = player.Number,
                 Game = gameDto,
-                Type = player.Type,
+                PlayerTypeId = player.Type,
                 IsWinner = game.Winner == player,
                 UserId = player.UserId?.Id,
                 Name = player.Name,
@@ -76,11 +95,11 @@ public class GameDTO
 
             var player = new Player(playerDto.Id,
                                     playerDto.Number,
-                                    playerDto.Type,
+                                    playerDto.PlayerTypeId,
                                     playerDto.UserId,
                                     user?.Name ?? playerDto.Name,
                                     playerDto.AbbreviatedName,
-                                    playerStrategyFactory.Invoke(playerDto.Type, rng),
+                                    playerStrategyFactory.Invoke(playerDto.PlayerTypeId, rng),
                                     localStorageId,
                                     playerDto.InviteCode);
 
@@ -135,7 +154,7 @@ public class PlayerDTO
 {
     public required Guid Id { get; init; }
     public required int Number { get; init; }
-    public required PlayerType Type { get; init; }
+    public required PlayerType PlayerTypeId { get; init; }
     public Guid? LocalStorageId { get; set; }
     public string? UserId { get; set; }
     public bool IsWinner { get; set; }
@@ -144,6 +163,7 @@ public class PlayerDTO
     public string? AbbreviatedName { get; set; }
     public string? InviteCode { get; init; }
     public GameDTO Game { get; set; } = default!;
+    public PlayerTypeDTO PlayerType { get; set; } = default!;
 }
 
 class PlayerDTOSortComparer : IComparer<PlayerDTO>
