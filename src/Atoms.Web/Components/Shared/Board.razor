@@ -2,6 +2,8 @@
 
 @if (Game is not null)
 {
+    var scores = Game.GetScores();
+
     <div id="status">
         @if (Game.HasWinner)
         {
@@ -30,21 +32,32 @@
     <div id="playerList">
         @foreach (var player in Game.Players)
         {
-            var (cells, atoms) = Game.GetScore(player);
+            var (score, rank) = scores[player];
+
             <div>
                 <div class="@(GetPlayerClassNames(player))">
-                    <div class="cells">@(cells)C</div>
-                    <div class="atoms">@(atoms)A</div>
+                    <div class="cells">@(score.Cells)C</div>
+                    <div class="atoms">@(score.Atoms)A</div>
                     <div class="@(GetPlayerNameClassNames(player))">
                         @if (!string.IsNullOrEmpty(player.AbbreviatedName))
                         {
                             <span title="@player.Name">@player.AbbreviatedName</span>
+                        }
+                        else if (!player.IsHuman)
+                        {
+                            <span title="@player.Type.Description">@player.Type.Name</span>
                         }
                         else if (!Game.HasWinner && player.TryCreateInviteLink(NavigationManager.BaseUri, out var inviteLink))
                         {
                             <a href="" @onclick="() => CopyInviteToClipboard(inviteLink.Url)" @onclick:preventDefault>
                                 <img src="images/copy.png" title="Copy invite to clipboard" alt="Copy invite to clipboard" />
                             </a>
+                        }
+                    </div>
+                    <div class="rank">
+                        @if (!player.IsDead)
+                        {
+                            @rank;
                         }
                     </div>
                 </div>

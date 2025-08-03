@@ -128,18 +128,35 @@ public class Game
         }
     }
 
-    public (int, int) GetScore(Player player)
+    public Dictionary<Player, (PlayerScore, int)> GetScores()
     {
-        var cells = 0;
-        var atoms = 0;
+        List<PlayerScoreBuilder> playerScorers = [..
+            Players.Select(player => new PlayerScoreBuilder(player))
+        ];
 
-        foreach (var cell in Board.Cells.Where(cell => cell.Player == player.Number))
+        foreach (var cell in Board.Cells.Where(cell => cell.Player is not null))
         {
-            cells++;
-            atoms += cell.Atoms;
+            playerScorers[cell.Player!.Value - 1].AddCell(cell.Atoms);
         }
 
-        return (cells, atoms);
+        List<PlayerScore> playerScores = [..
+            playerScorers.Select(ps => ps.Build())
+        ];
+
+        var playerScoresIndexed = playerScores
+            .GroupBy(score => score.Score)
+            .OrderByDescending(group => group.Key)
+            .Index();
+
+        var playerScoresRanked = from item in playerScoresIndexed
+                                 let rank = item.Index + 1
+                                 from score in item.Item
+                                 select new { Score = score, Rank = rank };
+
+        return playerScoresRanked
+            .ToDictionary(
+                score => score.Score.player,
+                score => (score.Score, score.Rank));
     }
 
     internal void MarkCreated(DateTime createdDate)
@@ -376,4 +393,29 @@ public class Game
 
         public record CellState(int Row, int Column, int Player, int Atoms);
     }
+
+    private class PlayerScoreBuilder(Player player)
+    {
+        int _cells = 0;
+        int _atoms = 0;
+        int _score = 0;
+
+        public void AddCell(int atoms)
+        {
+            _cells++;
+            _atoms += atoms;
+            _score += atoms switch
+            {
+                var x when x == 1 || x == 2 => x * 2,
+                _ => 6
+            };
+        }
+
+        public PlayerScore Build()
+        {
+            return new(player, _cells, _atoms, _score);
+        }
+    }
+
+    public record PlayerScore(Player player, int Cells, int Atoms, int Score);
 }

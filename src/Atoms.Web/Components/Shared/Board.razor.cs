@@ -134,6 +134,11 @@ public class BoardComponent : Component2Base, IDisposable
     {
         List<string> playerNameClassNames = ["name"];
 
+        if (!player.IsHuman)
+        {
+            playerNameClassNames.Add("name-cpu");
+        }
+
         if (Game!.PlayerBelongsToUser(player, UserId, _localStorageId))
         {
             playerNameClassNames.Add("name-highlight");
