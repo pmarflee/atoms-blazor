@@ -4,6 +4,8 @@ namespace Atoms.Web.Hubs;
 
 public class GameHub : Hub<IGameClient>
 {
+    public const string HubUrl = "/gamehub";
+
     public async Task AddPlayer(Guid gameId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(gameId));

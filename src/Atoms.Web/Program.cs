@@ -158,7 +158,7 @@ app.MapRazorComponents<App>()
 
 app.MapAdditionalIdentityEndpoints();
 
-app.MapHub<GameHub>("/gamehub");
+app.MapHub<GameHub>(GameHub.HubUrl);
 
 app.RunDatabaseMigrations();
 

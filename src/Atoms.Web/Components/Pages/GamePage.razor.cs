@@ -1,5 +1,6 @@
 ﻿using Atoms.UseCases.CreateDebugGame;
 using Atoms.UseCases.GetGame;
+using Atoms.Web.Hubs;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Atoms.Web.Components.Pages;
@@ -51,8 +52,8 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
     private async Task InitializeHub()
     {
         _hubConnection = new HubConnectionBuilder()
-                    .WithUrl(Navigation.ToAbsoluteUri("/gamehub"))
-                    .Build();
+            .WithUrl(Navigation.BaseUri.TrimEnd('/') + GameHub.HubUrl)
+            .Build();
 
         _hubConnection.On<string>("Notification",
             async message =>
