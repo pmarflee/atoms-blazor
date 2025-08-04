@@ -2,6 +2,7 @@
 using Atoms.UseCases.GetGame;
 using Atoms.Web.Hubs;
 using Microsoft.AspNetCore.SignalR.Client;
+using static System.Net.WebRequestMethods;
 
 namespace Atoms.Web.Components.Pages;
 
@@ -9,12 +10,16 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
 {
     HubConnection? _hubConnection = default!;
     bool _firstCellClicked;
+    AppSettings _appSettings = default!;
 
     [Inject]
     NavigationManager Navigation { get; set; } = default!;
 
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
+
+    [Inject]
+    IOptions<AppSettings> AppSettingsOptions { get; set; } = default!;
 
     [Parameter]
     public Guid? GameId { get; set; }
@@ -24,6 +29,8 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
 
     protected async override Task OnInitializedAsync()
     {
+        _appSettings = AppSettingsOptions.Value;
+
         StateContainer.OnChange += StateHasChangedAsync;
         StateContainer.OnGameReloadRequired += ReloadGame;
         StateContainer.OnPlayerMoved += NotifyPlayerMoved;
@@ -51,8 +58,12 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
 
     private async Task InitializeHub()
     {
+        var baseUrl = _appSettings.UseDocker
+            ? "http://localhost:8080"
+            : Navigation.BaseUri.TrimEnd('/');
+
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.BaseUri.TrimEnd('/') + GameHub.HubUrl)
+            .WithUrl(baseUrl + GameHub.HubUrl)
             .Build();
 
         _hubConnection.On<string>("Notification",

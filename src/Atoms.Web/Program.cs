@@ -1,3 +1,4 @@
+using Atoms.Core;
 using Atoms.Core.Data.Identity;
 using Atoms.Core.Delegates;
 using Atoms.Core.Entities.Configuration;
@@ -46,7 +47,10 @@ builder.Services.AddScoped<IInviteSerializer, InviteSerializer>();
 
 builder.Services
     .AddMediatR(cfg =>
-        cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>())
+    {
+        cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>();
+        cfg.LicenseKey = builder.Configuration["MediatR:LicenceKey"];
+    })
     .AddCourier(typeof(CreateNewGameRequest).Assembly);
 
 builder.Services.AddCascadingAuthenticationState();
@@ -126,6 +130,9 @@ builder.Services.AddLogging(loggingBuilder =>
         });
 });
 
+builder.Services.Configure<AppSettings>(
+    builder.Configuration.GetSection("AppSettings"));
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -141,7 +148,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.MapGet("/music/{filename}", ([FromRoute] string filename) =>
 {
