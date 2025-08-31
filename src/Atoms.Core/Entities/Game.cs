@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace Atoms.Core.Entities;
 
@@ -100,14 +101,21 @@ public class Game
         return cell.Player is null || cell.Player == ActivePlayer.Number;
     }
 
-    public void PlaceAtom(GameBoard.Cell cell)
+    public void PlaceAtom(int row, int column, Player player)
     {
+        PlaceAtom(Board[row, column], player);
+    }
+
+    public void PlaceAtom(GameBoard.Cell cell, Player? player = null)
+    {
+        player ??= ActivePlayer;
+
         var cellPlayer = Players.FirstOrDefault(p => p.Number == cell.Player);
 
-        cell.AddAtom(ActivePlayer);
+        cell.AddAtom(player);
 
         if (cellPlayer != null &&
-            cellPlayer != ActivePlayer &&
+            cellPlayer != player &&
             !Board.Cells.Any(c => c.Player == cellPlayer.Number))
         {
             cellPlayer.MarkDead();
@@ -155,8 +163,13 @@ public class Game
 
         return playerScoresRanked
             .ToDictionary(
-                score => score.Score.player,
+                score => score.Score.Player,
                 score => (score.Score, score.Rank));
+    }
+
+    public Player GetPlayer(Guid playerId)
+    {
+        return Players.First(p => p.Id == playerId);
     }
 
     internal void MarkCreated(DateTime createdDate)
@@ -280,6 +293,25 @@ public class Game
             inviteLink = null;
 
             return false;
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder($"Player {Number}");
+
+            if (IsHuman)
+            {
+                if (!string.IsNullOrEmpty(Name))
+                {
+                    builder.Append($" ({Name})");
+                }
+            }
+            else
+            {
+                builder.Append($" ({Type.Description})");
+            }
+
+                return builder.ToString();
         }
     }
 
@@ -417,5 +449,5 @@ public class Game
         }
     }
 
-    public record PlayerScore(Player player, int Cells, int Atoms, int Score);
+    public record PlayerScore(Player Player, int Cells, int Atoms, int Score);
 }

@@ -1,5 +1,6 @@
 ﻿using Atoms.Core.ValueObjects;
 using Atoms.UseCases.Invites.AcceptInvite;
+using Atoms.UseCases.Shared.Notifications;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -9,12 +10,15 @@ public class AcceptInviteTests : BaseDbTestFixture
 {
     const string Player_Name = "Bob";
 
+    private IMediatorCreateExpectations _mediatorExpectations = default!;
     private IValidatorCreateExpectations<Invite> _validatorExpectations = default!;
     private IBrowserStorageServiceCreateExpectations _browserStorageServiceCreateExpectations = default!;
     private IDateTimeServiceCreateExpectations _dateServiceCreateExpectations = default!;
 
     protected override Task SetupInternal()
     {
+        _mediatorExpectations = new IMediatorCreateExpectations();
+
         _validatorExpectations = new IValidatorCreateExpectations<Invite>();
 
         _browserStorageServiceCreateExpectations = new IBrowserStorageServiceCreateExpectations();
@@ -51,6 +55,14 @@ public class AcceptInviteTests : BaseDbTestFixture
     public async Task InviteShouldBeSuccessfullyAcceptedIfItIsValid(UserId? userId)
     {
         var invite = ObjectMother.Invite;
+
+        _mediatorExpectations.Methods
+            .Publish(
+                Arg.Validate<PlayerJoined>(
+                    x => x.GameId == invite.GameId
+                    && x.PlayerId == invite.PlayerId),
+                CancellationToken.None)
+            .ReturnValue(Task.CompletedTask);
 
         _validatorExpectations.Methods
             .ValidateAsync(Arg.Is(invite), CancellationToken.None)
@@ -103,14 +115,15 @@ public class AcceptInviteTests : BaseDbTestFixture
     }
 
     AcceptInviteRequestHandler CreateHandler() =>
-        new(_browserStorageServiceCreateExpectations.Instance(),
+        new(_mediatorExpectations.Instance(),
+            _browserStorageServiceCreateExpectations.Instance(),
             _validatorExpectations.Instance(),
             DbContextFactory,
             _dateServiceCreateExpectations.Instance());
 
-    public static IEnumerable<UserId?> GetTestCaseUsers()
+    public static IEnumerable<Func<UserId?>> GetTestCaseUsers()
     {
-        yield return ObjectMother.UserId;
-        yield return null;
+        yield return () => ObjectMother.UserId;
+        yield return () => null;
     }
 }

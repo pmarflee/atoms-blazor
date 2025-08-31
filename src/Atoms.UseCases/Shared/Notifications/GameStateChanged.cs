@@ -1,6 +1,7 @@
 ﻿namespace Atoms.UseCases.Shared.Notifications;
 
-public abstract class GameStateChanged(Game game) : INotification
+public abstract record GameStateChanged(Guid GameId, Guid PlayerId) 
+    : INotification
 {
-    public Game Game { get; } = game;
+    public bool CanHandle(Game game) => game.Id == GameId;
 }

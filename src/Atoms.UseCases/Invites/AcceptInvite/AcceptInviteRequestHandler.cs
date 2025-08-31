@@ -3,6 +3,7 @@
 namespace Atoms.UseCases.Invites.AcceptInvite;
 
 public class AcceptInviteRequestHandler(
+    IMediator mediator,
     IBrowserStorageService browserStorageService,
     IValidator<Invite> inviteValidator,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
@@ -41,6 +42,10 @@ public class AcceptInviteRequestHandler(
 
         await browserStorageService.SetUserName(request.UserIdentity.Name!);
 
-        return new(true, player);
+        await mediator.Publish(
+            new PlayerJoined(game.Id, player.Id),
+            cancellationToken);
+
+        return new(true);
     }
 }

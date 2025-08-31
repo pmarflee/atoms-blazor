@@ -1,9 +1,11 @@
-﻿using Blazored.LocalStorage;
+﻿using Atoms.Core.Delegates;
+using Blazored.LocalStorage;
 
-namespace Atoms.Core.Services;
+namespace Atoms.Infrastructure.Services;
 
 public class BrowserStorageService(
     ILocalStorageService localStorageService,
+    IProtectedBrowserStorageService protectedBrowserStorageService,
     CreateLocalStorageId createLocalStorageId)
     : IBrowserStorageService
 {
@@ -14,7 +16,7 @@ public class BrowserStorageService(
 
     public async ValueTask<StorageId?> GetStorageId()
     {
-        var id = await localStorageService.GetItemAsync<Guid?>(
+        var id = await protectedBrowserStorageService.GetAsync<Guid?>(
                 Constants.StorageKeys.LocalStorageId);
 
         return id.HasValue ? new(id.Value) : null;
@@ -57,7 +59,7 @@ public class BrowserStorageService(
     {
         var id = createLocalStorageId.Invoke();
 
-        await localStorageService.SetItemAsync(
+        await protectedBrowserStorageService.SetAsync(
             Constants.StorageKeys.LocalStorageId,
             id);
 

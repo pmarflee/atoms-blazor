@@ -1,5 +1,5 @@
 ﻿using Atoms.Core;
-using Atoms.Core.Services;
+using Atoms.Infrastructure.Services;
 using Blazored.LocalStorage;
 
 namespace Atoms.UnitTests.Core.Services;
@@ -7,11 +7,13 @@ namespace Atoms.UnitTests.Core.Services;
 public class BrowserStorageServiceTests
 {
     ILocalStorageServiceCreateExpectations _localStorageServiceExpectations = default!;
+    IProtectedBrowserStorageServiceCreateExpectations _protectedBrowserStorageService = default!;
 
     [Before(Test)]
     public Task Setup()
     {
         _localStorageServiceExpectations = new ILocalStorageServiceCreateExpectations();
+        _protectedBrowserStorageService = new IProtectedBrowserStorageServiceCreateExpectations();
 
         return Task.CompletedTask;
     }
@@ -19,8 +21,8 @@ public class BrowserStorageServiceTests
     [Test]
     public async Task GetOrAddStorageIdShouldReturnCurrentValueIfValueIsStoredInLocalStorage()
     {
-        _localStorageServiceExpectations.Methods
-            .GetItemAsync<Guid?>(Arg.Is(Constants.StorageKeys.LocalStorageId))
+        _protectedBrowserStorageService.Methods
+            .GetAsync<Guid?>(Arg.Is(Constants.StorageKeys.LocalStorageId))
             .ReturnValue(ValueTask.FromResult<Guid?>(ObjectMother.LocalStorageId.Value));
 
         var service = CreateBrowserStorageService();
@@ -32,14 +34,15 @@ public class BrowserStorageServiceTests
     [Test]
     public async Task GetOrAddStorageIdShouldGenerateANewValueIfValueIsCurrentlyNotStoredInLocalStorage()
     {
-        _localStorageServiceExpectations.Methods
-            .GetItemAsync<Guid?>(Arg.Is(Constants.StorageKeys.LocalStorageId))
+        _protectedBrowserStorageService.Methods
+            .GetAsync<Guid?>(Arg.Is(Constants.StorageKeys.LocalStorageId))
             .ReturnValue(ValueTask.FromResult<Guid?>(null));
 
-        _localStorageServiceExpectations.Methods
-            .SetItemAsync(
+        _protectedBrowserStorageService.Methods
+            .SetAsync(
                 Arg.Is(Constants.StorageKeys.LocalStorageId),
-                Arg.Is(ObjectMother.LocalStorageId.Value));
+                Arg.Is<object>(ObjectMother.LocalStorageId.Value))
+            .ReturnValue(ValueTask.CompletedTask);
 
         var service = CreateBrowserStorageService();
 
@@ -51,5 +54,6 @@ public class BrowserStorageServiceTests
 
     BrowserStorageService CreateBrowserStorageService() =>
         new(_localStorageServiceExpectations.Instance(),
+            _protectedBrowserStorageService.Instance(),
             () => ObjectMother.LocalStorageId.Value);
 }

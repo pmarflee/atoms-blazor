@@ -89,10 +89,10 @@ public class InviteValidatorTests : BaseDbTestFixture
         result.ShouldHaveValidationErrorFor(x => x.PlayerId);
     }
 
-    public static IEnumerable<(UserId? UserId, StorageId? LocalStorageId)> GetTestArguments()
+    public static IEnumerable<Func<(UserId? UserId, StorageId? LocalStorageId)>> GetTestArguments()
     {
-        yield return (ObjectMother.UserId, null);
-        yield return (null, ObjectMother.LocalStorageId);
-        yield return (ObjectMother.UserId, ObjectMother.LocalStorageId);
+        yield return () => (ObjectMother.UserId, null);
+        yield return () => (null, ObjectMother.LocalStorageId);
+        yield return () => (ObjectMother.UserId, ObjectMother.LocalStorageId);
     }
 }

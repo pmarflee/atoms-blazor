@@ -122,7 +122,7 @@ public enum ExplosionState
 public enum PlayerMoveResult
 {
     None = 0,
-    Success = 1,
+    Ok = 1,
     InvalidMove = 2,
     GameStateHasChanged = 3,
     GameHasWinner = 4

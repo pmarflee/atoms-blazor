@@ -1,19 +1,17 @@
-﻿namespace Atoms.Core.State;
+﻿
+namespace Atoms.Core.State;
 
 public class GameStateContainer
 {
-    private Game? _game;
-    private GameState _state;
+    Game? _game;
+    GameState _state;
+    StorageId _localStorageId = default!;
 
-    public Game? Game
-    {
-        get => _game;
-    }
+    public Game? Game => _game;
 
-    public GameState State
-    {
-        get => _state;
-    }
+    public GameState State => _state;
+
+    public StorageId LocalStorageId => _localStorageId;
 
     public async Task SetGame(Game game, bool isReload)
     {
@@ -24,6 +22,11 @@ public class GameStateContainer
         await NotifyStateChanged();
     }
 
+    public void SetLocalStorageId(StorageId localStorageId)
+    {
+        _localStorageId = localStorageId;
+    }
+
     public async Task GameUpdated()
     {
         await NotifyStateChanged();
@@ -32,11 +35,6 @@ public class GameStateContainer
     public async Task GameReloadRequired()
     {
         await NotifyGameReloadRequired();
-    }
-
-    public async Task PlayerMoved(int playerNumber, string? playerName)
-    {
-        await NotifyPlayerMoved(playerNumber, playerName);
     }
 
     public async Task SetMenu()
@@ -50,7 +48,6 @@ public class GameStateContainer
     public event Func<Task> OnChange = default!;
     public event Func<bool, Task>? OnGameSet;
     public event Func<Task> OnGameReloadRequired = default!;
-    public event Func<int, string?, Task> OnPlayerMoved = default!;
 
     async Task NotifyStateChanged() => await OnChange.Invoke();
 
@@ -64,7 +61,4 @@ public class GameStateContainer
 
     async Task NotifyGameReloadRequired() => 
         await OnGameReloadRequired.Invoke();
-
-    async Task NotifyPlayerMoved(int playerNumber, string? playerName) => 
-        await OnPlayerMoved.Invoke(playerNumber, playerName);
 }

@@ -1,5 +1,4 @@
-﻿using Atoms.Core.DTOs;
-using Atoms.UseCases.PlayerMove;
+﻿using Atoms.UseCases.PlayerMove;
 
 namespace Atoms.UnitTests.UseCases.PlayerMove;
 

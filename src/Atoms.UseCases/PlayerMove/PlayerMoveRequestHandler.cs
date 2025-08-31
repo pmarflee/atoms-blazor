@@ -14,57 +14,69 @@ public class PlayerMoveRequestHandler(
     {
         var game = request.Game;
         var cell = request.Cell;
+        var requestPlayer = game.ActivePlayer;
 
-        if (game.HasWinner)
+        do
         {
-            return new PlayerMoveResponse(PlayerMoveResult.GameHasWinner);
-        }
-
-        if (game.ActivePlayer.IsHuman)
-        {
-            if (cell is null || !game.CanPlaceAtom(cell))
+            if (game.HasWinner)
             {
-                return new PlayerMoveResponse(PlayerMoveResult.InvalidMove);
+                return new PlayerMoveResponse(PlayerMoveResult.GameHasWinner);
             }
 
-            if (await GameStateHasChanged(game, cancellationToken))
+            var player = game.ActivePlayer;
+
+            if (player.IsHuman)
             {
-                return new PlayerMoveResponse(PlayerMoveResult.GameStateHasChanged);
+                if (cell is null || !game.CanPlaceAtom(cell))
+                {
+                    return new PlayerMoveResponse(PlayerMoveResult.InvalidMove);
+                }
+
+                if (await GameStateHasChanged(game, cancellationToken))
+                {
+                    return new PlayerMoveResponse(PlayerMoveResult.GameStateHasChanged);
+                }
             }
-        }
-        else
-        {
-            cell = game.ActivePlayer.ChooseCell(game);
-        }
-
-        if (cell is not null)
-        {
-            await PlaceAtom(game, cell);
-
-            var overloaded = new Stack<Cell>();
-
-            if (cell.IsOverloaded)
+            else
             {
-                overloaded.Push(cell);
-
-                await DoChainReaction(game, overloaded);
+                cell = player.ChooseCell(game);
             }
-        }
 
-        if (!game.HasWinner)
-        {
-            game.PostMoveUpdate();
-        }
+            if (cell is not null)
+            {
+                await PlaceAtom(game, cell, requestPlayer);
+
+                var overloaded = new Stack<Cell>();
+
+                if (cell.IsOverloaded)
+                {
+                    overloaded.Push(cell);
+
+                    await DoChainReaction(game, overloaded, requestPlayer);
+                }
+            }
+
+            if (!game.HasWinner)
+            {
+                game.PostMoveUpdate();
+            }
+
+            if (!request.Debug)
+            {
+                await NotifyPlayerMoved(game, player, requestPlayer);
+            }    
+        } while (!request.Debug && !game.HasWinner && !game.ActivePlayer.IsHuman);
 
         if (!request.Debug)
         {
             await SaveGame(game, cancellationToken);
+            await NotifyGameSaved(game, requestPlayer);
         }
 
-        return new PlayerMoveResponse(PlayerMoveResult.Success);
+        return new PlayerMoveResponse(PlayerMoveResult.Ok);
     }
 
-    async Task DoChainReaction(Game game, Stack<Cell> overloaded)
+    async Task DoChainReaction(Game game, Stack<Cell> overloaded, Game.Player requestPlayer)
     {
         do
         {
@@ -72,11 +84,11 @@ public class PlayerMoveRequestHandler(
 
             if (!cell.IsOverloaded) continue;
 
-            await DoExplosion(game, cell);
+            await DoExplosion(game, cell, requestPlayer);
 
             foreach (var neighbour in game.Board.GetNeighbours(cell))
             {
-                await PlaceAtom(game, neighbour);
+                await PlaceAtom(game, neighbour, requestPlayer);
 
                 if (neighbour.Atoms == neighbour.MaxAtoms + 1)
                 {
@@ -90,37 +102,59 @@ public class PlayerMoveRequestHandler(
         } while (overloaded.Count > 0);
     }
 
-    async Task PlaceAtom(Game game, Cell cell)
+    async Task PlaceAtom(Game game, Cell cell, Game.Player requestPlayer)
     {
         game.PlaceAtom(cell);
 
-        await NotifyAtomPlaced(game);
+        await NotifyAtomPlaced(game, cell, requestPlayer);
     }
 
-    async Task DoExplosion(Game game, Cell cell)
+    async Task DoExplosion(Game game, Cell cell, Game.Player requestPlayer)
     {
         cell.Explosion = ExplosionState.Before;
         cell.Explode();
 
-        await NotifyAtomExploded(game);
+        await NotifyAtomExploded(game, cell, requestPlayer);
 
         cell.Explosion = ExplosionState.After;
 
-        await NotifyAtomExploded(game);
+        await NotifyAtomExploded(game, cell, requestPlayer);
 
         cell.Explosion = ExplosionState.None;
 
-        await NotifyAtomExploded(game);
+        await NotifyAtomExploded(game, cell, requestPlayer);
     }
 
-    async Task NotifyAtomPlaced(Game game)
+    async Task NotifyAtomPlaced(Game game, Cell cell, Game.Player requestPlayer)
     {
-        await mediator.Publish(new AtomPlaced(game));
+        await mediator.Publish(
+            new AtomPlaced(game.Id,
+                           game.ActivePlayer.Id,
+                           requestPlayer.Id,
+                           cell.Row,
+                           cell.Column));
     }
 
-    async Task NotifyAtomExploded(Game game)
+    async Task NotifyAtomExploded(Game game, Cell cell, Game.Player requestPlayer)
     {
-        await mediator.Publish(new AtomExploded(game));
+        await mediator.Publish(
+            new AtomExploded(game.Id,
+                             game.ActivePlayer.Id,
+                             requestPlayer.Id,
+                             cell.Row,
+                             cell.Column,
+                             cell.Explosion));
+    }
+
+    async Task NotifyPlayerMoved(
+        Game game, Game.Player player, Game.Player requestPlayer)
+    {
+        await mediator.Publish(new PlayerMoved(game.Id, player.Id, requestPlayer.Id));
+    }
+
+    async Task NotifyGameSaved(Game game, Game.Player player)
+    {
+        await mediator.Publish(new GameSaved(game.Id, player.Id));
     }
 
     static async Task<GameDTO> GetGameDTO(Game game,

@@ -34,6 +34,15 @@ public abstract class PlayerMoveAtomTestFixture : BaseDbTestFixture
         mediatorExpectations.Methods
             .Publish(Arg.Any<AtomExploded>())
             .ReturnValue(Task.CompletedTask);
+        mediatorExpectations.Methods
+            .Publish(Arg.Any<PlayerMoved>())
+            .ReturnValue(Task.CompletedTask);
+        mediatorExpectations.Methods
+            .Publish(Arg.Any<GameSaved>())
+            .ReturnValue(Task.CompletedTask);
+        mediatorExpectations.Methods
+            .Publish(Arg.Any<PlayerJoined>())
+            .ReturnValue(Task.CompletedTask);
 
         return mediatorExpectations.Instance();
     }

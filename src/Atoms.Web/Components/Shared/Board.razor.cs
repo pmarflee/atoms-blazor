@@ -1,13 +1,15 @@
 ﻿using Atoms.Core.Test;
 using Atoms.UseCases.PlayerMove;
 using Atoms.UseCases.Shared.Notifications;
+using Atoms.UseCases.UpdateGameFromNotification;
 using MediatR.Courier;
 
 namespace Atoms.Web.Components.Shared;
 
 public class BoardComponent : Component2Base, IDisposable
 {
-    const int Delay = 50;
+    const int AtomExplodedDelay = 50;
+    const int PlayerMovedDelay = 300;
 
     [Inject]
     ICourier Courier { get; set; } = default!;
@@ -31,17 +33,19 @@ public class BoardComponent : Component2Base, IDisposable
     public int? Debug { get; set; }
 
     bool _disableClicks;
-    StorageId? _localStorageId;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         StateContainer.OnChange += OnStateHasChanged;
         StateContainer.OnGameSet += OnGameSet;
 
         Courier.Subscribe<AtomPlaced>(AtomPlaced);
         Courier.Subscribe<AtomExploded>(AtomExploded);
+        Courier.Subscribe<PlayerMoved>(PlayerMoved);
+        Courier.Subscribe<GameSaved>(GameSaved);
+        Courier.Subscribe<PlayerJoined>(PlayerJoined);
 
-        _localStorageId = await BrowserStorageService.GetStorageId();
+        return Task.CompletedTask;
     }
 
     protected async Task CellClicked(CellClickEventArgs eventArgs)
@@ -57,21 +61,88 @@ public class BoardComponent : Component2Base, IDisposable
         await OnPlayAgainClicked.InvokeAsync();
     }
 
-
     protected async Task AtomPlaced(AtomPlaced notification)
     {
-        if (notification.Game.Id != StateContainer.Game!.Id) return;
+        var game = Game!;
 
-        await UpdateGame();
+        if (notification.CanHandle(game))
+        {
+            await Mediator.Send(
+                new UpdateGameFromAtomPlacedNotificationRequest(
+                    game, notification, UserId, LocalStorageId));
+
+            await UpdateGame();
+        }
     }
 
     protected async Task AtomExploded(AtomExploded notification)
     {
-        if (notification.Game.Id != StateContainer.Game!.Id) return;
+        var game = Game!;
 
-        await UpdateGame();
+        if (notification.CanHandle(game))
+        {
+            await Mediator.Send(
+                new UpdateGameFromAtomExplodedNotificationRequest(
+                    game, notification, UserId, LocalStorageId));
 
-        await Task.Delay(Delay);
+            await UpdateGame();
+
+            await Task.Delay(AtomExplodedDelay);
+        }
+    }
+
+    protected async Task PlayerMoved(PlayerMoved notification)
+    {
+        var game = Game!;
+
+        if (notification.CanHandle(game))
+        {
+            await UpdateGame();
+
+            if (!notification.OriginatesFromRequestPlayer(game, UserId, LocalStorageId))
+            {
+                var player = game.GetPlayer(notification.PlayerId);
+
+                await Notify($"{player} moved");
+            }
+
+            await SetCursor();
+
+            if (game.HasWinner)
+            {
+                await JSRuntime.InvokeVoidAsync("App.stopMusic");
+            }
+
+            if (!game.ActivePlayer.IsHuman)
+            {
+                await DelayBetweenMoves();
+            }
+        }
+    }
+
+    protected async Task GameSaved(GameSaved notification)
+    {
+        var game = Game!;
+
+        if (notification.CanHandle(game))
+        {
+            var player = game.GetPlayer(notification.PlayerId);    
+
+            if (!game.PlayerBelongsToUser(player, UserId, LocalStorageId))
+            {
+                await ReloadGame();
+            }
+        }
+    }
+
+    protected async Task PlayerJoined(PlayerJoined notification)
+    {
+        await ReloadGame();
+
+        var game = Game!;
+        var player = game.GetPlayer(notification.PlayerId);
+
+        await Notify($"{player} joined");
     }
 
     async Task UpdateGame()
@@ -96,7 +167,7 @@ public class BoardComponent : Component2Base, IDisposable
 
             foreach (var (row, column) in moves)
             {
-                await PlayMove(Game!.Board[row, column], true);
+                await PlayMove(Game!.Board[row, column]);
                 await DelayBetweenMoves();
             }
         }
@@ -139,7 +210,7 @@ public class BoardComponent : Component2Base, IDisposable
             playerNameClassNames.Add("name-cpu");
         }
 
-        if (Game!.PlayerBelongsToUser(player, UserId, _localStorageId))
+        if (Game!.PlayerBelongsToUser(player, UserId, LocalStorageId))
         {
             playerNameClassNames.Add("name-highlight");
         }
@@ -149,47 +220,22 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected Game? Game => StateContainer.Game;
 
+    protected StorageId LocalStorageId => StateContainer.LocalStorageId;
+
     protected async Task CopyInviteToClipboard(Uri url)
     {
         await JSRuntime.InvokeVoidAsync("App.copyToClipboard", url.ToString());
     }
 
-    async Task PlayMove(Game.GameBoard.Cell? cell = null, bool isDebug = false)
+    async Task PlayMove(Game.GameBoard.Cell? cell = null)
     {
-        var game = Game!;
-        var playerNumber = game.ActivePlayer.Number;
-        var playerName = game.ActivePlayer.Name;
-        var username = await GetUserName() ?? await BrowserStorageService.GetUserName();
-
         var response = await Mediator.Send(
             new PlayerMoveRequest(
-                game, cell, Debug.HasValue,
+                Game!, cell, Debug.HasValue,
                 UserId,
-                username,
-                _localStorageId));
+                LocalStorageId));
 
-        if (response.IsSuccessful)
-        {
-            if (!isDebug)
-            {
-                await StateContainer.PlayerMoved(playerNumber, playerName);
-                await SetCursor();
-            }
-
-            if (Game!.HasWinner)
-            {
-                await JSRuntime.InvokeVoidAsync("App.stopMusic");
-
-                return;
-            }
-
-            if (!Game!.ActivePlayer.IsHuman)
-            {
-                await DelayBetweenMoves();
-                await PlayMove();
-            }
-        }
-        else if (response.Result == PlayerMoveResult.GameStateHasChanged)
+        if (response.Result == PlayerMoveResult.GameStateHasChanged)
         {
             await ReloadGame();
         }
@@ -211,7 +257,7 @@ public class BoardComponent : Component2Base, IDisposable
 
     static async Task DelayBetweenMoves()
     {
-        await Task.Delay(300);
+        await Task.Delay(PlayerMovedDelay);
     }
 
     public void Dispose()
@@ -226,6 +272,9 @@ public class BoardComponent : Component2Base, IDisposable
         {
             Courier.UnSubscribe<AtomPlaced>(AtomPlaced);
             Courier.UnSubscribe<AtomExploded>(AtomExploded);
+            Courier.UnSubscribe<PlayerMoved>(PlayerMoved);
+            Courier.UnSubscribe<GameSaved>(GameSaved);
+            Courier.UnSubscribe<PlayerJoined>(PlayerJoined);
 
             StateContainer.OnChange -= OnStateHasChanged;
             StateContainer.OnGameSet -= OnGameSet;
@@ -255,6 +304,11 @@ public class BoardComponent : Component2Base, IDisposable
     {
         if (_disableClicks) return false;
 
-        return Game!.CanPlayMove(UserId, _localStorageId);
+        return Game!.CanPlayMove(UserId, LocalStorageId);
+    }
+
+    async Task Notify(string message)
+    {
+        await JSRuntime.InvokeVoidAsync("App.notify", message);
     }
 }

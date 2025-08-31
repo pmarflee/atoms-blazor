@@ -14,3 +14,4 @@ using Microsoft.AspNetCore.DataProtection;
 [assembly: Rock(typeof(IBrowserStorageService), BuildType.Create)]
 [assembly: Rock(typeof(IInviteSerializer), BuildType.Create)]
 [assembly: Rock(typeof(ILocalStorageService), BuildType.Create)]
+[assembly: Rock(typeof(IProtectedBrowserStorageService), BuildType.Create)]

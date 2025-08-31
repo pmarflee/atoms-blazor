@@ -1,4 +1,3 @@
-using Atoms.Core;
 using Atoms.Core.Data.Identity;
 using Atoms.Core.Delegates;
 using Atoms.Core.Entities.Configuration;
@@ -7,8 +6,8 @@ using Atoms.Infrastructure;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Email;
 using Atoms.Infrastructure.Factories;
+using Atoms.Infrastructure.Services;
 using Atoms.UseCases.CreateNewGame;
-using Atoms.Web.Hubs;
 using Blazored.LocalStorage;
 using MediatR.Courier;
 using Microsoft.AspNetCore.DataProtection;
@@ -51,7 +50,9 @@ builder.Services
         cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>();
         cfg.LicenseKey = builder.Configuration["MediatR:LicenceKey"];
     })
-    .AddCourier(typeof(CreateNewGameRequest).Assembly);
+    .AddCourier(
+        options => options.UseTaskWhenAll = true,
+        typeof(CreateNewGameRequest).Assembly);
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -90,12 +91,11 @@ builder.Services.AddOptions<EmailSettings>()
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
+builder.Services.AddScoped<IProtectedBrowserStorageService, ProtectedBrowserStorageService>();
 
 builder.AddValidation();
 
 builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
-
-builder.Services.AddSignalR();
 
 builder.Services.AddResponseCompression(opts =>
 {
@@ -130,9 +130,6 @@ builder.Services.AddLogging(loggingBuilder =>
         });
 });
 
-builder.Services.Configure<AppSettings>(
-    builder.Configuration.GetSection("AppSettings"));
-
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -164,8 +161,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapAdditionalIdentityEndpoints();
-
-app.MapHub<GameHub>(GameHub.HubUrl);
 
 app.RunDatabaseMigrations();
 

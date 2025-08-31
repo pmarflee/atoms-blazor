@@ -1,25 +1,17 @@
 ﻿using Atoms.UseCases.CreateDebugGame;
 using Atoms.UseCases.GetGame;
-using Atoms.Web.Hubs;
-using Microsoft.AspNetCore.SignalR.Client;
-using static System.Net.WebRequestMethods;
 
 namespace Atoms.Web.Components.Pages;
 
-public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposable
+public partial class GameComponent : Component2Base, IDisposable
 {
-    HubConnection? _hubConnection = default!;
     bool _firstCellClicked;
-    AppSettings _appSettings = default!;
 
     [Inject]
     NavigationManager Navigation { get; set; } = default!;
 
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
-
-    [Inject]
-    IOptions<AppSettings> AppSettingsOptions { get; set; } = default!;
 
     [Parameter]
     public Guid? GameId { get; set; }
@@ -29,15 +21,11 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
 
     protected async override Task OnInitializedAsync()
     {
-        _appSettings = AppSettingsOptions.Value;
-
         StateContainer.OnChange += StateHasChangedAsync;
         StateContainer.OnGameReloadRequired += ReloadGame;
-        StateContainer.OnPlayerMoved += NotifyPlayerMoved;
 
         if (GameId.HasValue)
         {
-            await InitializeHub();
             await LoadGame();
         }
         else if (Debug.HasValue)
@@ -54,28 +42,6 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
         {
             Navigation.NavigateTo("/");
         }
-    }
-
-    private async Task InitializeHub()
-    {
-        var baseUrl = _appSettings.UseDocker
-            ? "http://localhost:8080"
-            : Navigation.BaseUri.TrimEnd('/');
-
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl(baseUrl + GameHub.HubUrl)
-            .Build();
-
-        _hubConnection.On<string>("Notification",
-            async message =>
-            {
-                await ReloadGame();
-                await JSRuntime.InvokeVoidAsync("App.notify", message);
-            });
-
-        await _hubConnection.StartAsync();
-        await _hubConnection.SendAsync("AddPlayer", GameId);
-
     }
 
     async Task LoadGame(bool isReload = false)
@@ -100,6 +66,10 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
 
     async Task Initialize(Game game, bool isReload = false)
     {
+        var localStorageId = await GetOrAddStorageId();
+
+        StateContainer.SetLocalStorageId(localStorageId);
+
         await StateContainer.SetGame(game, isReload);
         await SetDisplayColourScheme(game.ColourScheme);
         await SetDisplayAtomShape(game.AtomShape);
@@ -125,17 +95,6 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
         await InvokeAsync(StateHasChanged);
     }
 
-    async Task NotifyPlayerMoved(int playerNumber, string? playerName)
-    {
-        if (_hubConnection is not null && StateContainer.Game is not null)
-        {
-            await _hubConnection.SendAsync(
-                "Notify",
-                StateContainer.Game.Id,
-                $"Player {playerNumber}{(!string.IsNullOrEmpty(playerName) ? $" ({playerName})" : null)} moved");
-        }
-    }
-
     async Task TryPlayMusic()
     {
         var hasSound = await BrowserStorageService.GetSound();
@@ -158,17 +117,6 @@ public partial class GameComponent : Component2Base, IDisposable, IAsyncDisposab
         {
             StateContainer.OnChange -= StateHasChangedAsync;
             StateContainer.OnGameReloadRequired -= ReloadGame;
-            StateContainer.OnPlayerMoved -= NotifyPlayerMoved;
         }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_hubConnection is not null)
-        {
-            await _hubConnection.DisposeAsync();
-        }
-
-        GC.SuppressFinalize(this);
     }
 }
