@@ -11,20 +11,15 @@ public class AcceptInviteTests : BaseDbTestFixture
     const string Player_Name = "Bob";
 
     private IMediatorCreateExpectations _mediatorExpectations = default!;
+    private ILocalStorageUserServiceCreateExpectations _localStorageUserServiceExpectations = default!;
     private IValidatorCreateExpectations<Invite> _validatorExpectations = default!;
-    private IBrowserStorageServiceCreateExpectations _browserStorageServiceCreateExpectations = default!;
     private IDateTimeServiceCreateExpectations _dateServiceCreateExpectations = default!;
 
     protected override Task SetupInternal()
     {
         _mediatorExpectations = new IMediatorCreateExpectations();
-
+        _localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
         _validatorExpectations = new IValidatorCreateExpectations<Invite>();
-
-        _browserStorageServiceCreateExpectations = new IBrowserStorageServiceCreateExpectations();
-        _browserStorageServiceCreateExpectations.Methods
-            .GetOrAddStorageId()
-            .ReturnValue(ValueTask.FromResult(ObjectMother.LocalStorageId));
 
         _dateServiceCreateExpectations = new IDateTimeServiceCreateExpectations();
         _dateServiceCreateExpectations.Properties
@@ -64,16 +59,15 @@ public class AcceptInviteTests : BaseDbTestFixture
                 CancellationToken.None)
             .ReturnValue(Task.CompletedTask);
 
+        _localStorageUserServiceExpectations.Methods
+            .GetOrAddLocalStorageId(Arg.Any<CancellationToken>())
+            .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
+
         _validatorExpectations.Methods
             .ValidateAsync(Arg.Is(invite), CancellationToken.None)
             .ReturnValue(Task.FromResult(new ValidationResult()));
 
         await AddGame();
-
-        _browserStorageServiceCreateExpectations.Methods
-            .SetUserName(Player_Name)
-            .ReturnValue(ValueTask.CompletedTask)
-            .ExpectedCallCount(1);
 
         var handler = CreateHandler();
         var result = await handler.Handle(
@@ -95,13 +89,12 @@ public class AcceptInviteTests : BaseDbTestFixture
 
         var player = game.Players.First(p => p.Id == invite.PlayerId);
 
-        await Assert.That(player.LocalStorageId)
+        await Assert.That(player.LocalStorageUserId)
             .IsEqualTo(ObjectMother.LocalStorageId.Value);
 
         await Assert.That(player.UserId).IsEqualTo(userId?.Id);
-        await Assert.That(player.Name).IsEqualTo(Player_Name);
-
-        _browserStorageServiceCreateExpectations.Verify();
+        await Assert.That(player.LocalStorageUser).IsNotNull();
+        await Assert.That(player.LocalStorageUser!.Name).IsEqualTo(Player_Name);
     }
 
     async Task AddGame()
@@ -110,13 +103,14 @@ public class AcceptInviteTests : BaseDbTestFixture
 
         var gameDto = ObjectMother.GameDTO();
 
+        await dbContext.LocalStorageUsers.AddAsync(ObjectMother.LocalStorageUser);
         await dbContext.Games.AddAsync(gameDto);
         await dbContext.SaveChangesAsync();
     }
 
     AcceptInviteRequestHandler CreateHandler() =>
         new(_mediatorExpectations.Instance(),
-            _browserStorageServiceCreateExpectations.Instance(),
+            _localStorageUserServiceExpectations.Instance(),
             _validatorExpectations.Instance(),
             DbContextFactory,
             _dateServiceCreateExpectations.Instance());

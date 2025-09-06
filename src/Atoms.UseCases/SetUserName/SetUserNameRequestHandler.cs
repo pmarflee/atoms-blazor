@@ -2,24 +2,35 @@
 namespace Atoms.UseCases.SetUserName;
 
 public class SetUserNameRequestHandler(
-    IDbContextFactory<ApplicationDbContext> dbContextFactory) 
+    IDbContextFactory<ApplicationDbContext> dbContextFactory,
+    ILocalStorageUserService localStorageUserService) 
     : IRequestHandler<SetUserNameRequest>
 {
     public async Task Handle(SetUserNameRequest request,
                              CancellationToken cancellationToken)
     {
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        var gameDto = await dbContext.GetGameById(request.Game.Id, cancellationToken);
-        var playerDto = gameDto!.Players
-            .OrderBy(p => p.Number)
-            .First(p => p.PlayerTypeId == PlayerType.Human);
-
-        if (!string.IsNullOrEmpty(playerDto.Name)) return;
-
         var userName = request.UserIdentity.Name!;
 
-        playerDto.Name = userName;
-        playerDto.AbbreviatedName = request.UserIdentity.GetAbbreviatedName();
+        if (request.Game is not null)
+        {
+            var gameDto = await dbContext.GetGameById(request.Game.Id, cancellationToken);
+            var playerDto = gameDto!.Players
+                .OrderBy(p => p.Number)
+                .First(p => p.PlayerTypeId == PlayerType.Human);
+
+            if (string.IsNullOrEmpty(playerDto.AbbreviatedName))
+            {
+                playerDto.AbbreviatedName = request.UserIdentity.GetAbbreviatedName();
+            }
+        }
+
+        var localStorageId = await localStorageUserService.GetOrAddLocalStorageId(
+            cancellationToken);
+
+        var localStorageUser = dbContext.Find<LocalStorageUserDTO>(localStorageId.Value)!;
+
+        localStorageUser.Name = userName;
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }

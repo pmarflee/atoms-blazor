@@ -1,6 +1,4 @@
-﻿using Atoms.Core.DTOs;
-
-using UserIdentityEntity = Atoms.Core.Entities.UserIdentity;
+﻿using UserIdentityEntity = Atoms.Core.Entities.UserIdentity;
 
 namespace Atoms.UnitTests.Core.Entities.UserIdentity;
 
@@ -29,7 +27,6 @@ public class AbbreviatedNameTests
                     Id = Guid.NewGuid(),
                     PlayerTypeId = PlayerType.Human,
                     Number = 1,
-                    Name = "Paul McCartney",
                     AbbreviatedName = "PM"
                 }
             ], "JL");
@@ -41,7 +38,6 @@ public class AbbreviatedNameTests
                     Id = Guid.NewGuid(),
                     PlayerTypeId = PlayerType.Human,
                     Number = 1,
-                    Name = "James Last",
                     AbbreviatedName = "JL"
                 }
             ], "JL1");
@@ -53,7 +49,6 @@ public class AbbreviatedNameTests
                     Id = Guid.NewGuid(),
                     PlayerTypeId = PlayerType.Human,
                     Number = 1,
-                    Name = "James Last",
                     AbbreviatedName = "JL"
                 },
                 new PlayerDTO 
@@ -61,7 +56,6 @@ public class AbbreviatedNameTests
                     Id = Guid.NewGuid(),
                     PlayerTypeId = PlayerType.Human,
                     Number = 2,
-                    Name = "Jimmy Lewis",
                     AbbreviatedName = "JL1"
                 }
             ], "JL2");

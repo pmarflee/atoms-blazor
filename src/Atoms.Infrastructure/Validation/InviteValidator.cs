@@ -37,7 +37,7 @@ public class InviteValidator : AbstractValidator<Invite>
                 return;
             }
 
-            if (player.UserId is not null || player.LocalStorageId is not null)
+            if (player.UserId is not null || player.LocalStorageUserId is not null)
             {
                 ctx.AddFailure(nameof(Invite.PlayerId), "Invite no longer valid");
             }
@@ -45,7 +45,7 @@ public class InviteValidator : AbstractValidator<Invite>
             var firstHumanPlayer = game.Players.First(p => p.PlayerTypeId == PlayerType.Human);
             var localStorageId = await browserStorageService.GetOrAddStorageId();
 
-            if (localStorageId.Value == firstHumanPlayer.LocalStorageId)
+            if (localStorageId.Value == firstHumanPlayer.LocalStorageUserId)
             {
                 ctx.AddFailure(nameof(Invite.PlayerId), "Invite not accepted on same browser instance");
             }

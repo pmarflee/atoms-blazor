@@ -30,13 +30,17 @@ public class GetGameRequestHandler(
         ValueTask<ApplicationUser> GetUserById(UserId userId) =>
             applicationIdentityDbContext.FindAsync<ApplicationUser>(userId.Id)!;
 
+        ValueTask<LocalStorageUserDTO> GetLocalStorageUserById(StorageId localStorageId) =>
+            applicationDbContext.FindAsync<LocalStorageUserDTO>(localStorageId.Value)!;
+
         async ValueTask<GetGameResponse> Found()
         {
             return GetGameResponse.Found(
                 await gameDto.ToEntity(
                     rngFactory,
                     playerStrategyFactory,
-                    GetUserById));
+                    GetUserById,
+                    GetLocalStorageUserById));
         }
 
         bool GameMatchesUserId() =>
@@ -45,8 +49,8 @@ public class GetGameRequestHandler(
             gameDto.Players.Any(p => p.UserId == request.UserId));
 
         bool GameMatchesLocalStorageId() =>
-            gameDto.LocalStorageId == request.StorageId.Value ||
-            gameDto.Players.Any(p => p.LocalStorageId == request.StorageId.Value);
+            gameDto.LocalStorageUserId == request.StorageId.Value ||
+            gameDto.Players.Any(p => p.LocalStorageUserId == request.StorageId.Value);
 
         return GameMatchesUserId() || GameMatchesLocalStorageId()
             ? await Found()

@@ -15,7 +15,8 @@ public class ShouldNotAllowPlayerMoveIfGameHasWinner : PlayerMoveAtomTestFixture
         var game = await gameDto!.ToEntity(
             ObjectMother.CreateRng, 
             ObjectMother.CreatePlayerStrategy, 
-            ObjectMother.GetUserById);
+            ObjectMother.GetUserById,
+            ObjectMother.GetLocalStorageUserById);
 
         var result = await Handler.Handle(
             new PlayerMoveRequest(game, game.Board[1, 1]),

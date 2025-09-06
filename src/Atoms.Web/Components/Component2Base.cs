@@ -1,4 +1,7 @@
-﻿namespace Atoms.Web.Components;
+﻿using Atoms.UseCases.GetLocalStorageUserName;
+using Atoms.UseCases.GetOrAddLocalStorageId;
+
+namespace Atoms.Web.Components;
 
 public abstract class Component2Base : ComponentBase
 {
@@ -16,11 +19,11 @@ public abstract class Component2Base : ComponentBase
 
     public UserId? UserId => AuthenticatedUser?.GetUserId();
 
-    public ValueTask<StorageId> GetOrAddStorageId() => BrowserStorageService.GetOrAddStorageId();
+    public Task<StorageId> GetOrAddStorageId() => Mediator.Send(new GetOrAddLocalStorageIdRequest());
 
     public async Task<string?> GetUserName() =>
         AuthenticatedUser?.GetUserName()
-        ?? (await BrowserStorageService.GetUserName());
+        ?? (await GetUserNameForLocalStorageId());
 
     protected async Task SetDisplayColourScheme(ColourScheme colourScheme)
     {
@@ -38,5 +41,13 @@ public abstract class Component2Base : ComponentBase
             : "Default";
 
         await JSRuntime.InvokeVoidAsync($"App.set{atomShapeFuncName}AtomShape");
+    }
+
+    async Task<string?> GetUserNameForLocalStorageId()
+    {
+        var localStorageId = await GetOrAddStorageId();
+
+        return await Mediator.Send(
+            new GetLocalStorageUserNameRequest(localStorageId));
     }
 }

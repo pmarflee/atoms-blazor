@@ -92,6 +92,7 @@ builder.Services.AddOptions<EmailSettings>()
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
 builder.Services.AddScoped<IProtectedBrowserStorageService, ProtectedBrowserStorageService>();
+builder.Services.AddScoped<ILocalStorageUserService, LocalStorageUserService>();
 
 builder.AddValidation();
 

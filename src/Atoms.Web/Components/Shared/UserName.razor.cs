@@ -1,4 +1,6 @@
-﻿namespace Atoms.Web.Components.Shared;
+﻿using Atoms.UseCases.SetUserName;
+
+namespace Atoms.Web.Components.Shared;
 
 public class UserNameComponent : Component2Base
 {
@@ -24,7 +26,7 @@ public class UserNameComponent : Component2Base
 
     protected async Task OnValidSubmit()
     {
-        await BrowserStorageService.SetUserName(Input.Name!);
+        await Mediator.Send(new SetUserNameRequest(new UserIdentity(Input.Name)));
         await NameChanged.InvokeAsync(Input.Name);
     }
 }

@@ -14,6 +14,7 @@ public class InviteValidatorTests : BaseDbTestFixture
 
         using var dbContext = await DbContextFactory.CreateDbContextAsync();
 
+        await dbContext.LocalStorageUsers.AddAsync(ObjectMother.LocalStorageUser);
         await dbContext.Games.AddAsync(gameDto);
         await dbContext.SaveChangesAsync();
 
@@ -54,7 +55,7 @@ public class InviteValidatorTests : BaseDbTestFixture
         var player = game!.Players.First(p => p.Id == ObjectMother.Player2Id);
 
         player.UserId = userId;
-        player.LocalStorageId = localStorageId?.Value;
+        player.LocalStorageUserId = localStorageId?.Value;
 
         await dbContext.SaveChangesAsync();
 

@@ -1,6 +1,7 @@
 ﻿namespace Atoms.UseCases.CreateNewGame;
 
 public class CreateNewGameRequestHandler(
+    ILocalStorageUserService localStorageUserService,
     CreateGame gameFactory,
     IDbContextFactory<ApplicationDbContext> dbContextFactory)
     : IRequestHandler<CreateNewGameRequest, CreateNewGameResponse>
@@ -9,9 +10,12 @@ public class CreateNewGameRequestHandler(
         CreateNewGameRequest request,
         CancellationToken cancellationToken)
     {
+        var localStorageId = await localStorageUserService.GetOrAddLocalStorageId(
+            cancellationToken);
+
         var game = gameFactory.Invoke(
             request.GameId, request.Options,
-            request.LocalStorageId, request.UserIdentity);
+            localStorageId, request.UserIdentity);
 
         await SaveGame(game, cancellationToken);
 

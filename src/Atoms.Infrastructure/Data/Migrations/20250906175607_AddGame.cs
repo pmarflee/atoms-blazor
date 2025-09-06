@@ -14,26 +14,15 @@ namespace Atoms.Infrastructure.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Games",
+                name: "LocalStorageUsers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
-                    LocalStorageId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ColourScheme = table.Column<int>(type: "INTEGER", nullable: false),
-                    AtomShape = table.Column<int>(type: "INTEGER", nullable: false),
-                    Move = table.Column<int>(type: "INTEGER", nullable: false),
-                    Round = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreatedDateUtc = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    LastUpdatedDateUtc = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Board_Data = table.Column<string>(type: "TEXT", nullable: false),
-                    Rng_Iterations = table.Column<int>(type: "INTEGER", nullable: false),
-                    Rng_Seed = table.Column<int>(type: "INTEGER", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Games", x => x.Id);
+                    table.PrimaryKey("PK_LocalStorageUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -50,17 +39,45 @@ namespace Atoms.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Games",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    LocalStorageUserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ColourScheme = table.Column<int>(type: "INTEGER", nullable: false),
+                    AtomShape = table.Column<int>(type: "INTEGER", nullable: false),
+                    Move = table.Column<int>(type: "INTEGER", nullable: false),
+                    Round = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedDateUtc = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    LastUpdatedDateUtc = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Board_Data = table.Column<string>(type: "TEXT", nullable: false),
+                    Rng_Iterations = table.Column<int>(type: "INTEGER", nullable: false),
+                    Rng_Seed = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Games", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Games_LocalStorageUsers_LocalStorageUserId",
+                        column: x => x.LocalStorageUserId,
+                        principalTable: "LocalStorageUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Players",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Number = table.Column<int>(type: "INTEGER", nullable: false),
                     PlayerTypeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    LocalStorageId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    LocalStorageUserId = table.Column<Guid>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", nullable: true),
                     IsWinner = table.Column<bool>(type: "INTEGER", nullable: false),
                     GameId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
                     AbbreviatedName = table.Column<string>(type: "TEXT", nullable: true),
                     InviteCode = table.Column<string>(type: "TEXT", nullable: true)
                 },
@@ -73,6 +90,12 @@ namespace Atoms.Infrastructure.Data.Migrations
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Players_LocalStorageUsers_LocalStorageUserId",
+                        column: x => x.LocalStorageUserId,
+                        principalTable: "LocalStorageUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Players_PlayerTypes_PlayerTypeId",
                         column: x => x.PlayerTypeId,
@@ -98,9 +121,9 @@ namespace Atoms.Infrastructure.Data.Migrations
                 column: "LastUpdatedDateUtc");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_LocalStorageId",
+                name: "IX_Games_LocalStorageUserId",
                 table: "Games",
-                column: "LocalStorageId");
+                column: "LocalStorageUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_UserId",
@@ -118,9 +141,9 @@ namespace Atoms.Infrastructure.Data.Migrations
                 column: "IsWinner");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Players_LocalStorageId",
+                name: "IX_Players_LocalStorageUserId",
                 table: "Players",
-                column: "LocalStorageId");
+                column: "LocalStorageUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Players_PlayerTypeId",
@@ -144,6 +167,9 @@ namespace Atoms.Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "PlayerTypes");
+
+            migrationBuilder.DropTable(
+                name: "LocalStorageUsers");
         }
     }
 }

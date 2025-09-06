@@ -32,18 +32,13 @@ public class InvitePageComponent : Component2Base
             _invite = response.Invite!;
             _userId = UserId;
 
-            if (_userId is not null)
+            var username = await GetUserName();
+
+            if (!string.IsNullOrEmpty(username))
             {
-                Input.Name = AuthenticatedUser.GetUserName()!;
+                Input.Name = username;
 
                 await AcceptInvite();
-            }
-
-            var userName = await BrowserStorageService.GetUserName();
-
-            if (!string.IsNullOrEmpty(userName))
-            {
-                Input.Name = userName;
             }
         }
         else

@@ -37,7 +37,6 @@ public partial class MenuComponent : Component2Base
             new CreateNewGameRequest(
                 Guid.NewGuid(),
                 Options,
-                await GetOrAddStorageId(),
                 new(UserId, await GetUserName())));
 
         await OnCreateGame.InvokeAsync(response.Game);

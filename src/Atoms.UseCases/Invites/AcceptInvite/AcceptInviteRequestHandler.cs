@@ -4,7 +4,7 @@ namespace Atoms.UseCases.Invites.AcceptInvite;
 
 public class AcceptInviteRequestHandler(
     IMediator mediator,
-    IBrowserStorageService browserStorageService,
+    ILocalStorageUserService localStorageUserService,
     IValidator<Invite> inviteValidator,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
     IDateTimeService dateTimeService) 
@@ -29,18 +29,19 @@ public class AcceptInviteRequestHandler(
 
         var game = await dbContext.GetGameById(invite.GameId, cancellationToken);
         var player = game!.Players.First(p => p.Id == invite.PlayerId);
-        var localStorageId = await browserStorageService.GetOrAddStorageId();
+        var localStorageId = await localStorageUserService.GetOrAddLocalStorageId(cancellationToken);
 
         player.UserId = request.UserIdentity.Id;
-        player.Name = request.UserIdentity.Name;
         player.AbbreviatedName = request.UserIdentity.GetAbbreviatedName(game!.Players);
-        player.LocalStorageId = localStorageId.Value;
+        player.LocalStorageUserId = localStorageId.Value;
 
         game.LastUpdatedDateUtc = dateTimeService.UtcNow;
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        var localStorageUser = (await dbContext.FindAsync<LocalStorageUserDTO>(localStorageId.Value))!;
 
-        await browserStorageService.SetUserName(request.UserIdentity.Name!);
+        localStorageUser.Name = request.UserIdentity.Name!;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         await mediator.Publish(
             new PlayerJoined(game.Id, player.Id),

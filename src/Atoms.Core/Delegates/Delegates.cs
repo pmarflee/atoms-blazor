@@ -11,5 +11,6 @@ public delegate Game CreateGame(Guid gameId,
                                 UserIdentity? userIdentity = null);
 
 public delegate ValueTask<ApplicationUser> GetUserById(UserId userId);
+public delegate ValueTask<LocalStorageUserDTO> GetLocalStorageUserById(StorageId localStorageId);
 
 public delegate Guid CreateLocalStorageId();

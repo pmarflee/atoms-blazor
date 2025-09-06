@@ -16,7 +16,7 @@ namespace Atoms.Infrastructure.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
 
             modelBuilder.Entity("Atoms.Core.DTOs.GameDTO", b =>
                 {
@@ -39,7 +39,7 @@ namespace Atoms.Infrastructure.Data.Migrations
                     b.Property<DateTime>("LastUpdatedDateUtc")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("LocalStorageId")
+                    b.Property<Guid>("LocalStorageUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Move")
@@ -75,7 +75,7 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.HasIndex("LastUpdatedDateUtc");
 
-                    b.HasIndex("LocalStorageId");
+                    b.HasIndex("LocalStorageUserId");
 
                     b.HasIndex("UserId");
 
@@ -113,6 +113,20 @@ namespace Atoms.Infrastructure.Data.Migrations
                     b.ToView(null, (string)null);
                 });
 
+            modelBuilder.Entity("Atoms.Core.DTOs.LocalStorageUserDTO", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LocalStorageUsers");
+                });
+
             modelBuilder.Entity("Atoms.Core.DTOs.PlayerDTO", b =>
                 {
                     b.Property<Guid>("Id")
@@ -131,10 +145,7 @@ namespace Atoms.Infrastructure.Data.Migrations
                     b.Property<bool>("IsWinner")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("LocalStorageId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
+                    b.Property<Guid?>("LocalStorageUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Number")
@@ -152,7 +163,7 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.HasIndex("IsWinner");
 
-                    b.HasIndex("LocalStorageId");
+                    b.HasIndex("LocalStorageUserId");
 
                     b.HasIndex("PlayerTypeId");
 
@@ -205,6 +216,17 @@ namespace Atoms.Infrastructure.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Atoms.Core.DTOs.GameDTO", b =>
+                {
+                    b.HasOne("Atoms.Core.DTOs.LocalStorageUserDTO", "LocalStorageUser")
+                        .WithMany("Games")
+                        .HasForeignKey("LocalStorageUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LocalStorageUser");
+                });
+
             modelBuilder.Entity("Atoms.Core.DTOs.PlayerDTO", b =>
                 {
                     b.HasOne("Atoms.Core.DTOs.GameDTO", "Game")
@@ -212,6 +234,11 @@ namespace Atoms.Infrastructure.Data.Migrations
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Atoms.Core.DTOs.LocalStorageUserDTO", "LocalStorageUser")
+                        .WithMany("Players")
+                        .HasForeignKey("LocalStorageUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Atoms.Core.DTOs.PlayerTypeDTO", "PlayerType")
                         .WithMany()
@@ -221,11 +248,20 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.Navigation("Game");
 
+                    b.Navigation("LocalStorageUser");
+
                     b.Navigation("PlayerType");
                 });
 
             modelBuilder.Entity("Atoms.Core.DTOs.GameDTO", b =>
                 {
+                    b.Navigation("Players");
+                });
+
+            modelBuilder.Entity("Atoms.Core.DTOs.LocalStorageUserDTO", b =>
+                {
+                    b.Navigation("Games");
+
                     b.Navigation("Players");
                 });
 #pragma warning restore 612, 618

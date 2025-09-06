@@ -15,7 +15,8 @@ public class ShouldNotAllowPlayerMoveIfGameStateHasChanged : PlayerMoveAtomTestF
         var game = await gameDto!.ToEntity(
             ObjectMother.CreateRng, 
             ObjectMother.CreatePlayerStrategy, 
-            ObjectMother.GetUserById);
+            ObjectMother.GetUserById,
+            ObjectMother.GetLocalStorageUserById);
 
         gameDto.LastUpdatedDateUtc = DateTime.UtcNow;
 

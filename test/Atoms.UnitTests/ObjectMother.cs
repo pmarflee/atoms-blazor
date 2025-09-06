@@ -1,5 +1,4 @@
-﻿using Atoms.Core.DTOs;
-using Atoms.Core.Identity;
+﻿using Atoms.Core.Identity;
 using Atoms.Core.Services;
 using Atoms.Core.ValueObjects;
 using Atoms.UseCases.Invites.ReadInviteCode;
@@ -29,6 +28,8 @@ internal static class ObjectMother
     public static readonly UserId UserId = new("7B452FD8-C32C-497A-BC20-2190C1244B9E");
     public static readonly string Username = "David";
     public static readonly UserIdentity UserIdentity = new(UserId, Username);
+
+    public static LocalStorageUserDTO LocalStorageUser => new() { Id = LocalStorageId.Value, Name = Username };
 
     public static readonly Guid Player1Id = new("FE0FA471-AC98-4D1B-825B-4DDF64122022");
     public static readonly Guid Player2Id = new("08C5B9A7-0B0C-4E2F-9741-0FE822093901");
@@ -122,7 +123,7 @@ internal static class ObjectMother
         {
             Id = GameId,
             UserId = UserId.Id,
-            LocalStorageId = LocalStorageId.Value,
+            LocalStorageUserId = LocalStorageId.Value,
             ColourScheme = ColourScheme.Original,
             AtomShape = AtomShape.Round,
             Board = board ?? BoardDTO(),
@@ -141,7 +142,7 @@ internal static class ObjectMother
                     Id = Player1Id,
                     Number = 1,
                     PlayerTypeId = PlayerType.Human,
-                    LocalStorageId = LocalStorageId.Value,
+                    LocalStorageUserId = LocalStorageId.Value,
                     Game = gameDto
                 },
                 new PlayerDTO
@@ -193,6 +194,11 @@ internal static class ObjectMother
     public static ValueTask<ApplicationUser> GetUserById(UserId userId)
     {
         return ValueTask.FromResult(CreateApplicationUser(userId));
+    }
+
+    public static ValueTask<LocalStorageUserDTO> GetLocalStorageUserById(StorageId storageId)
+    {
+        return ValueTask.FromResult(new LocalStorageUserDTO { Id = storageId.Value });
     }
 
     public sealed class MockReadInviteCodeRequestLogger : ILogger<ReadInviteCodeRequestHandler>

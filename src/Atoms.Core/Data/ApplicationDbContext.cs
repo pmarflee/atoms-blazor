@@ -10,6 +10,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<GameDTO> Games { get; set; }
     public DbSet<PlayerDTO> Players { get; set; }
     public DbSet<PlayerTypeDTO> PlayerTypes { get; set; }
+    public DbSet<LocalStorageUserDTO> LocalStorageUsers { get; set; }
 
     public IQueryable<GameInfoDTO> GetGamesForUser(
         StorageId localStorageId,
@@ -31,39 +32,43 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                     (
                         SELECT 	    STRING_AGG(
                                         CASE pt.Name
-                                        WHEN 'Human' THEN IFNULL(p.Name, 'Player ' || p.Number)
+                                        WHEN 'Human' THEN IFNULL(u.Name, 'Player ' || p.Number)
                                         ELSE pt.Description
                                         END, ', ') AS [Players]
                         FROM 		Players p
                         INNER JOIN  PlayerTypes pt 
                         ON          p.PlayerTypeId = pt.Id
+                        LEFT JOIN   LocalStorageUsers u
+                        ON          p.LocalStorageUserId = u.Id
                         WHERE		p.GameId = g.Id
-                        AND         (p.LocalStorageId IS NULL OR p.LocalStorageId <> @localStorageId)
+                        AND         (p.LocalStorageUserId IS NULL OR p.LocalStorageUserId <> @localStorageId)
                         AND         (@userId IS NULL OR p.UserId <> @userId)
                         ORDER BY	p."Number"
                     ) AS [Opponents],
                     (
                         SELECT      CASE pt.Name
-                                        WHEN 'Human' THEN IFNULL(p.Name, 'Player ' || p.Number)
+                                        WHEN 'Human' THEN IFNULL(u.Name, 'Player ' || p.Number)
                                         ELSE pt.Description
                                     END as [Player]
                         FROM        Players p
                         INNER JOIN  PlayerTypes pt
                         ON          p.PlayerTypeId = pt.Id
+                        LEFT JOIN   LocalStorageUsers u
+                        ON          p.LocalStorageUserId = u.Id
                         WHERE       p.GameId = g.Id
                         AND         p.IsWinner = 1
                     ) AS [Winner]
             FROM    Games g
             WHERE   
             (
-                g.LocalStorageId = @localStorageId
+                g.LocalStorageUserId = @localStorageId
                 AND (@userId IS NULL OR g.UserId = @userId)
             )
             OR      EXISTS (
                         SELECT 1 
                         FROM Players p
                         WHERE p.GameId = g.Id 
-                        AND (p.LocalStorageId = @localStorageId
+                        AND (p.LocalStorageUserId = @localStorageId
                         AND (@userId IS NULL OR p.UserId = @userId))
                     )
             """, localStorageIdParam, userIdParam);
@@ -72,14 +77,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public async Task<GameDTO?> GetGameById(Guid id,
                                             CancellationToken cancellationToken)
     {
-        var gameDto = await Games.FindAsync([id], cancellationToken);
-
-        if (gameDto is null) return null;
-
-        await Entry(gameDto).Collection(x => x.Players)
-                            .LoadAsync(cancellationToken);
-
-        return gameDto;
+        return await Games.FindAsync([id], cancellationToken);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -88,7 +86,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasKey(x => x.Id);
 
         modelBuilder.Entity<GameDTO>()
-            .HasIndex(x => x.LocalStorageId);
+            .HasIndex(x => x.LocalStorageUserId);
 
         modelBuilder.Entity<GameDTO>()
             .HasIndex(x => x.UserId);
@@ -102,6 +100,20 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.Entity<GameDTO>()
             .ComplexProperty(x => x.Rng);
 
+        modelBuilder.Entity<GameDTO>()
+            .HasOne(x => x.LocalStorageUser)
+            .WithMany(x => x.Games)
+            .HasForeignKey(x => x.LocalStorageUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<GameDTO>()
+            .Navigation(x => x.LocalStorageUser)
+            .AutoInclude();
+
+        modelBuilder.Entity<GameDTO>()
+            .Navigation(x => x.Players)
+            .AutoInclude();
+
         modelBuilder.Entity<PlayerDTO>()
             .HasKey(x => x.Id);
 
@@ -109,10 +121,20 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasIndex(x => x.UserId);
 
         modelBuilder.Entity<PlayerDTO>()
-            .HasIndex(x => x.LocalStorageId);
+            .HasIndex(x => x.LocalStorageUserId);
 
         modelBuilder.Entity<PlayerDTO>()
             .HasIndex(x => x.IsWinner);
+
+        modelBuilder.Entity<PlayerDTO>()
+            .HasOne(x => x.LocalStorageUser)
+            .WithMany(x => x.Players)
+            .HasForeignKey(x => x.LocalStorageUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<PlayerDTO>()
+            .Navigation(x => x.LocalStorageUser)
+            .AutoInclude();
 
         modelBuilder.Entity<GameInfoDTO>()
             .HasNoKey()
