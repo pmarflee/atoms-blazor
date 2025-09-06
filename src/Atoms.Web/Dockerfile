@@ -14,6 +14,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/Atoms.Web/Atoms.Web.csproj", "src/Atoms.Web/"]
 COPY ["src/Atoms.Core/Atoms.Core.csproj", "src/Atoms.Core/"]
+COPY ["src/Atoms.Infrastructure/Atoms.Infrastructure.csproj", "src/Atoms.Infrastructure/"]
 COPY ["src/Atoms.UseCases/Atoms.UseCases.csproj", "src/Atoms.UseCases/"]
 RUN dotnet restore "./src/Atoms.Web/Atoms.Web.csproj"
 COPY . .
