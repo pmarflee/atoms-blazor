@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Atoms.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250906175607_AddGame")]
+    [Migration("20250907184442_AddGame")]
     partial class AddGame
     {
         /// <inheritdoc />
@@ -144,6 +144,9 @@ namespace Atoms.Infrastructure.Data.Migrations
 
                     b.Property<string>("InviteCode")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsWinner")
                         .HasColumnType("INTEGER");

@@ -77,7 +77,8 @@ public class GameDTO
                 UserId = player.UserId?.Id,
                 AbbreviatedName = player.AbbreviatedName,
                 LocalStorageUserId = player.LocalStorageId?.Value,
-                InviteCode = player.InviteCode
+                InviteCode = player.InviteCode,
+                IsActive = game.ActivePlayer == player
             });
         }
 
@@ -92,6 +93,14 @@ public class GameDTO
         var rng = rngFactory.Invoke(Rng.Seed, Rng.Iterations);
 
         List<Player> players = [];
+        Player? activePlayer = null;
+
+        var numberOfActivePlayers = Players.Count(p => p.IsActive);
+
+        if (numberOfActivePlayers != 1)
+        {
+            throw new Exception("Game needs to have a single active player");
+        }
 
         foreach (var playerDto in Players.OrderBy(dto => dto.Number))
         {
@@ -125,7 +134,17 @@ public class GameDTO
                                     localStorageId,
                                     playerDto.InviteCode);
 
+            if (playerDto.IsActive)
+            {
+                activePlayer = player;
+            }
+
             players.Add(player);
+        }
+
+        if (activePlayer is null)
+        {
+            throw new Exception("Game does not have an active player");
         }
 
         var userId = UserId is not null
@@ -136,7 +155,7 @@ public class GameDTO
             Id,
             Constants.Rows, Constants.Columns,
             players,
-            players[(Move - 1) % players.Count],
+            activePlayer,
             ColourScheme,
             AtomShape,
             rng,
@@ -165,6 +184,7 @@ public class GameDTO
             playerDto.IsWinner = game.HasWinner && !player.IsDead;
             playerDto.UserId = player.UserId?.Id;
             playerDto.LocalStorageUserId = player.LocalStorageId?.Value;
+            playerDto.IsActive = game.ActivePlayer == player;
         }
 
         game.MarkUpdated(LastUpdatedDateUtc);
@@ -185,6 +205,7 @@ public class PlayerDTO
     public string? InviteCode { get; init; }
     public GameDTO Game { get; set; } = default!;
     public PlayerTypeDTO PlayerType { get; set; } = default!;
+    public bool IsActive { get; set; }
 }
 
 class PlayerDTOSortComparer : IComparer<PlayerDTO>

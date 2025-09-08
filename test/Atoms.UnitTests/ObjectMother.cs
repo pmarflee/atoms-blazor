@@ -143,7 +143,8 @@ internal static class ObjectMother
                     Number = 1,
                     PlayerTypeId = PlayerType.Human,
                     LocalStorageUserId = LocalStorageId.Value,
-                    Game = gameDto
+                    Game = gameDto,
+                    IsActive = true
                 },
                 new PlayerDTO
                 {
