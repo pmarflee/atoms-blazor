@@ -363,5 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 /src/Atoms.Web/wwwroot/styles.css
-/src/Atoms.Web/Database/Atoms.db*
+/src/Atoms.Web/[Dd]atabase/Atoms.db*
 /Notes.txt

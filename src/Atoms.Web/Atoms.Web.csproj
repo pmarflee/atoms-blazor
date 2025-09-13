@@ -10,7 +10,7 @@
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Database\" />
+    <Folder Include="database\" />
     <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>

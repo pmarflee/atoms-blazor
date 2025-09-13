@@ -13,7 +13,7 @@ public static class WebApplicationBuilderExtensions
 {
     public static void AddAtomsDatabase(this WebApplicationBuilder builder)
     {
-        var connectionString = BuildConnectionString(builder);
+        var connectionString = builder.BuildConnectionString();
 
         builder.Services.AddDbContext<ApplicationIdentityDbContext>(
             options => options.UseSqlite(connectionString),
@@ -39,16 +39,14 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
-    static string BuildConnectionString(WebApplicationBuilder builder)
+    static string BuildConnectionString(this WebApplicationBuilder builder)
     {
         return new SqliteConnectionStringBuilder
         {
             DataSource = Path.GetFullPath(
-            Path.Combine(
-                builder.Environment.ContentRootPath,
-                "Database",
-                "Atoms.db")),
-
+                Path.Combine(
+                    builder.Environment.ContentRootPath, 
+                    "database", "Atoms.db")),
             Cache = SqliteCacheMode.Shared
         }.ToString();
     }

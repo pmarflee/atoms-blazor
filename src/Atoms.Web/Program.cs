@@ -111,7 +111,9 @@ builder.Services.AddLogging(loggingBuilder =>
     loggingBuilder.AddFile(loggingConfigurationSection,
         fileLoggerOpts =>
         {
-            Directory.CreateDirectory("logs");
+            var logsPath = Path.Combine(builder.Environment.ContentRootPath, "logs");
+
+            Directory.CreateDirectory(logsPath);
 
             fileLoggerOpts.FormatLogFileName =
                 fName => string.Format(fName, DateTime.UtcNow);
@@ -121,7 +123,7 @@ builder.Services.AddLogging(loggingBuilder =>
             var lastRetentionDate = DateTime.UtcNow.Date.Subtract(
                 TimeSpan.FromDays(logFileRetentionDays));
 
-            foreach (var filename in Directory.GetFiles("logs", "*.log"))
+            foreach (var filename in Directory.GetFiles(logsPath, "*.log"))
             {
                 var file = new FileInfo(filename);
 

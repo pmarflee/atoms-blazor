@@ -1,6 +1,13 @@
 services:
   atoms.web:
     image: ${DOCKER_REGISTRY-}atomsweb
+    volumes:
+      - sqlite_data:/app/database 
+      - log_data:/app/logs
     build:
       context: .
       dockerfile: src/Atoms.Web/Dockerfile
+
+volumes:
+  sqlite_data:
+  log_data:

@@ -7,6 +7,9 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Create data + logs directories with open permissions
+RUN mkdir -p /app/database /app/logs \
+    && chmod -R 777 /app/database /app/logs
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
