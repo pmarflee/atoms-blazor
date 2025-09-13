@@ -1,0 +1,6 @@
+services:
+  atoms.web:
+    image: ${DOCKER_REGISTRY-}atomsweb
+    build:
+      context: .
+      dockerfile: src/Atoms.Web/Dockerfile

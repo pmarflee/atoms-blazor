@@ -111,6 +111,8 @@ builder.Services.AddLogging(loggingBuilder =>
     loggingBuilder.AddFile(loggingConfigurationSection,
         fileLoggerOpts =>
         {
+            Directory.CreateDirectory("logs");
+
             fileLoggerOpts.FormatLogFileName =
                 fName => string.Format(fName, DateTime.UtcNow);
 
