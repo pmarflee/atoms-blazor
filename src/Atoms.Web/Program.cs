@@ -66,7 +66,11 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-builder.AddAtomsDatabase();
+var atomsDbConnectionString = builder.Configuration.GetConnectionString("AtomsDb")
+    ?? throw new Exception("Atoms Db connection string is null");
+
+
+builder.AddAtomsDatabase(atomsDbConnectionString);
 
 if (builder.Environment.IsDevelopment())
 {

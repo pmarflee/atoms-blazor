@@ -9,21 +9,23 @@ public class LocalStorageUserService(
     : ILocalStorageUserService
 {
     public async Task<StorageId> GetOrAddLocalStorageId(
-        CancellationToken cancellationToken)
+        CancellationToken? cancellationToken = null)
     {
+        cancellationToken ??= CancellationToken.None;
+
+        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken.Value);
+
+        return await GetOrAddLocalStorageId(dbContext, cancellationToken);
+    }
+
+    public async Task<StorageId> GetOrAddLocalStorageId(
+        ApplicationDbContext dbContext, CancellationToken? cancellationToken = null)
+    {
+        cancellationToken ??= CancellationToken.None;
+
         var storageId = await browserStorageService.GetOrAddStorageId();
-        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        var localStorageUserExists = await dbContext.LocalStorageUsers
-            .AnyAsync(u => u.Id == storageId.Value, cancellationToken);
 
-        if (!localStorageUserExists)
-        {
-            var localStorageUser = new LocalStorageUserDTO { Id = storageId.Value };
-
-            dbContext.LocalStorageUsers.Add(localStorageUser);
-
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
+        await dbContext.AddOrUpdateLocalStorageId(storageId, cancellationToken.Value);
 
         return storageId;
     }

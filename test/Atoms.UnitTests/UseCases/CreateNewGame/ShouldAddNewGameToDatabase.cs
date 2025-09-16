@@ -9,7 +9,7 @@ public class ShouldAddNewGameToDatabase : BaseDbTestFixture
     {
         var localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
         localStorageUserServiceExpectations.Methods
-            .GetOrAddLocalStorageId(Arg.Any<CancellationToken>())
+            .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
             .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
 
         using var dbContext = await DbContextFactory.CreateDbContextAsync();

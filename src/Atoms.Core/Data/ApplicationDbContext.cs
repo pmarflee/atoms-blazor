@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Npgsql;
 using Microsoft.EntityFrameworkCore;
 using SmartEnum.EFCore;
 
@@ -16,61 +16,70 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         StorageId localStorageId,
         UserId? userId)
     {
-        var localStorageIdParam = new SqliteParameter(
-            "localStorageId", localStorageId.Value);
-        var userIdParam = new SqliteParameter(
-            "userId", userId?.Id ?? (object)DBNull.Value);
+        var localStorageIdParam = new NpgsqlParameter(
+            "localStorageId", NpgsqlTypes.NpgsqlDbType.Uuid)
+        { Value = localStorageId.Value };
+        var userIdParam = new NpgsqlParameter(
+            "userId", NpgsqlTypes.NpgsqlDbType.Text)
+        { Value = userId?.Id ?? (object)DBNull.Value };
 
         return Set<GameInfoDTO>().FromSqlRaw(
             """
-            SELECT  g.Id, 
-                    g.CreatedDateUtc, 
-                    g.LastUpdatedDateUtc, 
-                    g.Move,
-                    g.Round,
-                    g.IsActive,
-                    (
-                        SELECT 	    STRING_AGG(
-                                        CASE pt.Name
-                                        WHEN 'Human' THEN IFNULL(u.Name, 'Player ' || p.Number)
-                                        ELSE pt.Description
-                                        END, ', ') AS [Players]
-                        FROM 		Players p
-                        INNER JOIN  PlayerTypes pt 
-                        ON          p.PlayerTypeId = pt.Id
-                        LEFT JOIN   LocalStorageUsers u
-                        ON          p.LocalStorageUserId = u.Id
-                        WHERE		p.GameId = g.Id
-                        AND         (p.LocalStorageUserId IS NULL OR p.LocalStorageUserId <> @localStorageId)
-                        AND         (@userId IS NULL OR p.UserId <> @userId)
-                        ORDER BY	p."Number"
-                    ) AS [Opponents],
-                    (
-                        SELECT      CASE pt.Name
-                                        WHEN 'Human' THEN IFNULL(u.Name, 'Player ' || p.Number)
-                                        ELSE pt.Description
-                                    END as [Player]
-                        FROM        Players p
-                        INNER JOIN  PlayerTypes pt
-                        ON          p.PlayerTypeId = pt.Id
-                        LEFT JOIN   LocalStorageUsers u
-                        ON          p.LocalStorageUserId = u.Id
-                        WHERE       p.GameId = g.Id
-                        AND         p.IsWinner = 1
-                    ) AS [Winner]
-            FROM    Games g
-            WHERE   
-            (
-                g.LocalStorageUserId = @localStorageId
-                AND (@userId IS NULL OR g.UserId = @userId)
-            )
-            OR      EXISTS (
-                        SELECT 1 
-                        FROM Players p
-                        WHERE p.GameId = g.Id 
-                        AND (p.LocalStorageUserId = @localStorageId
-                        AND (@userId IS NULL OR p.UserId = @userId))
-                    )
+            SELECT
+                "g"."Id",
+                "g"."CreatedDateUtc",
+                "g"."LastUpdatedDateUtc",
+                "g"."Move",
+                "g"."Round",
+                "g"."IsActive",
+                (
+                    SELECT
+                        STRING_AGG(
+                            CASE "pt"."Name"
+                                WHEN 'Human' THEN COALESCE("u"."Name", 'Player ' || "p"."Number")
+                                ELSE "pt"."Description"
+                            END, ', ' ORDER BY "p"."Number")
+                    FROM
+                        "Players" AS "p"
+                    INNER JOIN
+                        "PlayerTypes" AS "pt" ON "p"."PlayerTypeId" = "pt"."Id"
+                    LEFT JOIN
+                        "LocalStorageUsers" AS "u" ON "p"."LocalStorageUserId" = "u"."Id"
+                    WHERE
+                        "p"."GameId" = "g"."Id"
+                        AND ("p"."LocalStorageUserId" IS NULL OR "p"."LocalStorageUserId" <> @localStorageId)
+                        AND (@userId IS NULL OR "p"."UserId" <> @userId)
+                ) AS "Opponents",
+                (
+                    SELECT
+                        CASE "pt"."Name"
+                            WHEN 'Human' THEN COALESCE("u"."Name", 'Player ' || "p"."Number")
+                            ELSE "pt"."Description"
+                        END
+                    FROM
+                        "Players" AS "p"
+                    INNER JOIN
+                        "PlayerTypes" AS "pt" ON "p"."PlayerTypeId" = "pt"."Id"
+                    LEFT JOIN
+                        "LocalStorageUsers" AS "u" ON "p"."LocalStorageUserId" = "u"."Id"
+                    WHERE
+                        "p"."GameId" = "g"."Id"
+                        AND "p"."IsWinner" = TRUE
+                ) AS "Winner"
+            FROM
+                "Games" AS "g"
+            WHERE
+                (
+                    "g"."LocalStorageUserId" = @localStorageId
+                    AND (@userId IS NULL OR "g"."UserId" = @userId)
+                )
+                OR EXISTS (
+                    SELECT 1
+                    FROM "Players" AS "p"
+                    WHERE "p"."GameId" = "g"."Id"
+                    AND ("p"."LocalStorageUserId" = @localStorageId
+                    AND (@userId IS NULL OR "p"."UserId" = @userId))
+                )
             """, localStorageIdParam, userIdParam);
     }
 
@@ -78,6 +87,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                                             CancellationToken cancellationToken)
     {
         return await Games.FindAsync([id], cancellationToken);
+    }
+
+    public async Task AddOrUpdateLocalStorageId(
+        StorageId localStorageId, CancellationToken cancellationToken)
+    {
+        var localStorageUserExists = await LocalStorageUsers
+            .AnyAsync(u => u.Id == localStorageId.Value, cancellationToken);
+
+        if (!localStorageUserExists)
+        {
+            var localStorageUser = new LocalStorageUserDTO { Id = localStorageId.Value };
+
+            LocalStorageUsers.Add(localStorageUser);
+
+            await SaveChangesAsync(cancellationToken);
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

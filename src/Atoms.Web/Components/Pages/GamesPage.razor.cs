@@ -10,26 +10,36 @@ public class GamesPageComponent : Component2Base, IAsyncDisposable
     protected IDbContextFactory<ApplicationDbContext> DbContextFactory { get; set; } = default!;
 
     [Inject]
+    protected ILocalStorageUserService LocalStorageUserService { get; set; } = default!;
+
+    [Inject]
     NavigationManager Navigation { get; set; } = default!;
 
-    protected IQueryable<GameInfoDTO> Games { get; set; } = default!;
-    protected IQueryable<GameInfoDTO>? ActiveGames => Games?
-        .Where(game => game.IsActive);
-    protected IQueryable<GameInfoDTO>? InactiveGames => Games?
-        .Where(game => !game.IsActive);
+    protected IQueryable<GameInfoDTO>? ActiveGames;
+    protected IQueryable<GameInfoDTO>? InactiveGames;
 
     protected PaginationState ActiveGamesPagination = new() { ItemsPerPage = 8 };
     protected PaginationState InactiveGamesPagination = new() { ItemsPerPage = 8 };
 
     protected string ActiveTabId { get; set; } = default!;
 
-    ApplicationDbContext? _dbContext;
+    ApplicationDbContext? _dbContextActiveGames;
+    ApplicationDbContext? _dbContextInactiveGames;
 
     protected override async Task OnInitializedAsync()
     {
-        _dbContext = await DbContextFactory.CreateDbContextAsync();
+        _dbContextActiveGames = await DbContextFactory.CreateDbContextAsync();
+        _dbContextInactiveGames = await DbContextFactory.CreateDbContextAsync();
 
-        Games = _dbContext.GetGamesForUser(await GetOrAddStorageId(), UserId);
+        var localStorageId = await LocalStorageUserService.GetOrAddLocalStorageId(_dbContextActiveGames);
+
+        ActiveGames = _dbContextActiveGames
+            .GetGamesForUser(localStorageId, UserId)
+            .Where(game => game.IsActive);
+
+        InactiveGames = _dbContextInactiveGames
+            .GetGamesForUser(localStorageId, UserId)
+            .Where(game => !game.IsActive);
     }
 
     protected void OpenGame(GameInfoDTO game)
@@ -39,9 +49,14 @@ public class GamesPageComponent : Component2Base, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (_dbContext is not null)
+        if (_dbContextActiveGames is not null)
         {
-            await _dbContext.DisposeAsync();
+            await _dbContextActiveGames.DisposeAsync();
+        }
+
+        if (_dbContextInactiveGames is not null)
+        {
+            await _dbContextInactiveGames.DisposeAsync();
         }
 
         GC.SuppressFinalize(this);

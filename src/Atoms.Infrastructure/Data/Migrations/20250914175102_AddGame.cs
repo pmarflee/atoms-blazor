@@ -17,8 +17,8 @@ namespace Atoms.Infrastructure.Data.Migrations
                 name: "LocalStorageUsers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,9 +29,9 @@ namespace Atoms.Infrastructure.Data.Migrations
                 name: "PlayerTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,19 +42,19 @@ namespace Atoms.Infrastructure.Data.Migrations
                 name: "Games",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
-                    LocalStorageUserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ColourScheme = table.Column<int>(type: "INTEGER", nullable: false),
-                    AtomShape = table.Column<int>(type: "INTEGER", nullable: false),
-                    Move = table.Column<int>(type: "INTEGER", nullable: false),
-                    Round = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreatedDateUtc = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    LastUpdatedDateUtc = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Board_Data = table.Column<string>(type: "TEXT", nullable: false),
-                    Rng_Iterations = table.Column<int>(type: "INTEGER", nullable: false),
-                    Rng_Seed = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    LocalStorageUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ColourScheme = table.Column<int>(type: "integer", nullable: false),
+                    AtomShape = table.Column<int>(type: "integer", nullable: false),
+                    Move = table.Column<int>(type: "integer", nullable: false),
+                    Round = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDateUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedDateUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Board_Data = table.Column<string>(type: "text", nullable: false),
+                    Rng_Iterations = table.Column<int>(type: "integer", nullable: false),
+                    Rng_Seed = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,16 +71,16 @@ namespace Atoms.Infrastructure.Data.Migrations
                 name: "Players",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Number = table.Column<int>(type: "INTEGER", nullable: false),
-                    PlayerTypeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    LocalStorageUserId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
-                    IsWinner = table.Column<bool>(type: "INTEGER", nullable: false),
-                    GameId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    AbbreviatedName = table.Column<string>(type: "TEXT", nullable: true),
-                    InviteCode = table.Column<string>(type: "TEXT", nullable: true),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Number = table.Column<int>(type: "integer", nullable: false),
+                    PlayerTypeId = table.Column<int>(type: "integer", nullable: false),
+                    LocalStorageUserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    IsWinner = table.Column<bool>(type: "boolean", nullable: false),
+                    GameId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AbbreviatedName = table.Column<string>(type: "text", nullable: true),
+                    InviteCode = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

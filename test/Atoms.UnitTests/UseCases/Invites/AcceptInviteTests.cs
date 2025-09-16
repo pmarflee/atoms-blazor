@@ -60,7 +60,7 @@ public class AcceptInviteTests : BaseDbTestFixture
             .ReturnValue(Task.CompletedTask);
 
         _localStorageUserServiceExpectations.Methods
-            .GetOrAddLocalStorageId(Arg.Any<CancellationToken>())
+            .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
             .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
 
         _validatorExpectations.Methods
