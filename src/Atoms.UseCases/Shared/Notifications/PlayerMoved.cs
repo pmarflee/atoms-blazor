@@ -6,18 +6,16 @@ public record PlayerMoved(
     Guid RequestPlayerId) 
     : GameStateChanged(GameId, PlayerId)
 {
-    public bool OriginatesFromRequestPlayer(
+    public bool CanHandle(
         Game game, UserId? userId, StorageId localStorageId)
     {
+        var requestPlayer = game.GetPlayer(RequestPlayerId);
+
+        if (!requestPlayer.IsHuman) return false;
+
         var player = game.GetPlayer(PlayerId);
 
-        if (!game.PlayerBelongsToUser(player, userId, localStorageId))
-        {
-            var requestPlayer = game.GetPlayer(RequestPlayerId);
-
-            return requestPlayer.LocalStorageId == localStorageId;
-        }
-
-        return true;
+        return !game.PlayerBelongsToUser(player, userId, localStorageId)
+               && requestPlayer.LocalStorageId != localStorageId;
     }
 }

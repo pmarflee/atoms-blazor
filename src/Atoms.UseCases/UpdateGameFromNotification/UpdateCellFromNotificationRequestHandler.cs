@@ -11,7 +11,7 @@ public abstract class UpdateCellFromNotificationRequestHandler<TRequest, TNotifi
         var notification = request.Notification;
         var player = game.GetPlayer(notification.PlayerId);
 
-        if (!notification.OriginatesFromRequestPlayer(
+        if (notification.CanHandle(
             game, request.UserId, request.LocalStorageId))
         {
             UpdateCell(game, notification, player);

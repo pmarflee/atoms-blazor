@@ -99,7 +99,7 @@ public class BoardComponent : Component2Base, IDisposable
         {
             await UpdateGame();
 
-            if (!notification.OriginatesFromRequestPlayer(game, UserId, LocalStorageId))
+            if (notification.CanHandle(game, UserId, LocalStorageId))
             {
                 var player = game.GetPlayer(notification.PlayerId);
 
@@ -128,7 +128,8 @@ public class BoardComponent : Component2Base, IDisposable
         {
             var player = game.GetPlayer(notification.PlayerId);    
 
-            if (!game.PlayerBelongsToUser(player, UserId, LocalStorageId))
+            if (!player.IsHuman
+                && !game.PlayerBelongsToUser(player, UserId, LocalStorageId))
             {
                 await ReloadGame();
             }
