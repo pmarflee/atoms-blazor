@@ -64,12 +64,12 @@ public class PlayerMoveRequestHandler(
             if (!request.Debug)
             {
                 await NotifyPlayerMoved(game, player, requestPlayer);
+                await SaveGame(game, cancellationToken);
             }    
         } while (!request.Debug && !game.HasWinner && !game.ActivePlayer.IsHuman);
 
         if (!request.Debug)
         {
-            await SaveGame(game, cancellationToken);
             await NotifyGameSaved(game, requestPlayer);
         }
 
