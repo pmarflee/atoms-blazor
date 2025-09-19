@@ -70,9 +70,9 @@ public partial class GameComponent : Component2Base, IDisposable
 
         StateContainer.SetLocalStorageId(localStorageId);
 
-        await StateContainer.SetGame(game, isReload);
         await SetDisplayColourScheme(game.ColourScheme);
         await SetDisplayAtomShape(game.AtomShape);
+        await StateContainer.SetGame(game, isReload);
     }
 
     protected void GoToHomePage()
