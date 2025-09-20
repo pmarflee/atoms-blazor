@@ -10,25 +10,25 @@ public static class NavigationExtensions
     public static void NavigateToGame(this NavigationManager navigation,
                                       Game game)
     {
-        navigation.NavigateToGame(game.Id);
+        navigation.NavigateToGameById(game.Id);
     }
 
     public static void NavigateToGame(this NavigationManager navigation,
                                       GameInfoDTO game)
     {
-        navigation.NavigateToGame(game.Id);
+        navigation.NavigateToGameById(game.Id);
     }
 
     public static void NavigateToGame(this NavigationManager navigation,
-                                      Invite invite)
+                                      Guid gameId)
     {
-        navigation.NavigateToGame(invite.GameId);
+        navigation.NavigateToGameById(gameId);
     }
 
     public static void NavigateToDebugGame(this NavigationManager navigation,
                                            int debug)
     {
-        navigation.NavigateToGame(debug: debug);
+        navigation.NavigateToGameById(debug: debug);
     }
 
     public static void NavigateToSetUserNamePage(
@@ -40,15 +40,15 @@ public static class NavigationExtensions
         navigation.NavigateTo(url);
     }
 
-    static void NavigateToGame(this NavigationManager navigation,
-                               Guid? gameId = null,
-                               int? debug = null)
+    static void NavigateToGameById(this NavigationManager navigation,
+                                   Guid? gameId = null,
+                                   int? debug = null)
     {
         var url = BaseUrl;
 
         if (gameId.HasValue)
         {
-            url = url.AppendPathSegment(gameId);
+            url = url.AppendPathSegment(gameId.Value.ToString("N"));
         }
 
         if (debug.HasValue)

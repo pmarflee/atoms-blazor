@@ -7,7 +7,6 @@ public static class GameFactory
     public static Game Create(
         CreateRng rngFactory,
         CreatePlayerStrategy playerStrategyFactory,
-        IInviteSerializer inviteSerializer,
         Guid gameId,
         GameMenuOptions options,
         StorageId localStorageId,
@@ -18,18 +17,6 @@ public static class GameFactory
             .Take(options.NumberOfPlayers)
             .ToList();
         var firstHumanPlayer = optionsPlayers.FirstOrDefault(p => p.Type == PlayerType.Human);
-
-        string? CreateInviteLink(Guid playerId, GameMenuOptions.Player player)
-        {
-            if (player.Type == PlayerType.Human && player != firstHumanPlayer)
-            {
-                var invite = new Invite(gameId, playerId);
-
-                return inviteSerializer.Serialize(invite);
-            }
-
-            return null;
-        }
 
         List<Game.Player> players =
             [.. optionsPlayers
@@ -43,8 +30,7 @@ public static class GameFactory
                         p == firstHumanPlayer ? userIdentity?.Name : null,
                         p == firstHumanPlayer ? userIdentity?.GetAbbreviatedName() : null,
                         playerStrategyFactory.Invoke(p.Type, rng),
-                        p == firstHumanPlayer ? localStorageId : null,
-                        CreateInviteLink(playerId, p));
+                        p == firstHumanPlayer ? localStorageId : null);
                 }) ];
 
         return new Game(gameId,

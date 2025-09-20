@@ -12,30 +12,23 @@ public class InviteValidator : AbstractValidator<Invite>
         RuleFor(x => x).CustomAsync(async (invite, ctx, token) =>
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync(token);
-            var game = await dbContext.GetGameById(invite.GameId, token);
+            var game = await dbContext.GetGameByPlayerId(invite.PlayerId, token);
 
             if (game is null)
             {
-                ctx.AddFailure(nameof(Invite.GameId), "Game not found");
+                ctx.AddFailure(nameof(Invite.PlayerId), "Game not found");
 
                 return;
             }
 
             if (!game.IsActive)
             {
-                ctx.AddFailure(nameof(Invite.GameId), "Game over");
+                ctx.AddFailure(nameof(Invite.PlayerId), "Game over");
 
                 return;
             }
 
-            var player = game.Players.FirstOrDefault(p => p.Id == invite.PlayerId);
-
-            if (player is null)
-            {
-                ctx.AddFailure(nameof(Invite.PlayerId), "Player not found");
-
-                return;
-            }
+            var player = game.Players.First(p => p.Id == invite.PlayerId);
 
             if (player.UserId is not null || player.LocalStorageUserId is not null)
             {

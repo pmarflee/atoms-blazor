@@ -1,7 +1,6 @@
 using Atoms.Core.Data.Identity;
 using Atoms.Core.Delegates;
 using Atoms.Core.Entities.Configuration;
-using Atoms.Core.Serialization;
 using Atoms.Infrastructure;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Email;
@@ -32,17 +31,14 @@ builder.Services.AddScoped<CreateGame>(sp =>
 {
     var rngFactory = sp.GetRequiredService<CreateRng>();
     var playerStrategyFactory = sp.GetRequiredService<CreatePlayerStrategy>();
-    var inviteSerializer = sp.GetRequiredService<IInviteSerializer>();
 
     return (gameId, options, localStorageId, userIdentity) => 
-        GameFactory.Create(rngFactory, playerStrategyFactory, inviteSerializer,
+        GameFactory.Create(rngFactory, playerStrategyFactory,
                            gameId, options, localStorageId, userIdentity);
 });
 builder.Services.AddSingleton<CreateLocalStorageId>(Guid.CreateVersion7);
 
 builder.Services.AddScoped<GameStateContainer>();
-
-builder.Services.AddScoped<IInviteSerializer, InviteSerializer>();
 
 builder.Services
     .AddMediatR(cfg =>

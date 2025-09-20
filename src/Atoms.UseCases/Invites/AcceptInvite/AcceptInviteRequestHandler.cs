@@ -21,13 +21,13 @@ public class AcceptInviteRequestHandler(
         {
             var errorMessage = validationResult.Errors.First().ErrorMessage;
 
-            return new(false, ErrorMessage: errorMessage);
+            return new(ErrorMessage: errorMessage);
         }
 
         using var dbContext = await dbContextFactory.CreateDbContextAsync(
             cancellationToken);
 
-        var game = await dbContext.GetGameById(invite.GameId, cancellationToken);
+        var game = await dbContext.GetGameByPlayerId(invite.PlayerId, cancellationToken);
         var player = game!.Players.First(p => p.Id == invite.PlayerId);
         var localStorageId = await localStorageUserService.GetOrAddLocalStorageId(cancellationToken);
 
@@ -47,6 +47,6 @@ public class AcceptInviteRequestHandler(
             new PlayerJoined(game.Id, player.Id),
             cancellationToken);
 
-        return new(true);
+        return new(game.Id);
     }
 }

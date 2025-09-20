@@ -12,11 +12,6 @@ internal static class ObjectMother
 {
     static ObjectMother()
     {
-        _inviteSerializerCreateExpectations = new IInviteSerializerCreateExpectations();
-        _inviteSerializerCreateExpectations.Methods.Serialize(Arg.Any<Invite>()).ReturnValue(string.Empty);
-
-        InviteSerializer = _inviteSerializerCreateExpectations.Instance();
-
         GameMenuOptions = CreateGameMenuOptions(Atoms.Core.Constants.MinPlayers);
     }
 
@@ -38,7 +33,7 @@ internal static class ObjectMother
     public static readonly DateTime LastUpdatedDateUtc = new(2025, 3, 12, 23, 30, 0);
     public static readonly DateTime NewLastUpdatedDateUtc = new(2025, 3, 22, 18, 15, 0);
 
-    public static Invite Invite = new(GameId, Player1Id);
+    public static Invite Invite = new(Player1Id);
 
     public const string BaseUrl = "https://www.atoms.com";
 
@@ -182,10 +177,6 @@ internal static class ObjectMother
             ? null
             : new IPlayerStrategyCreateExpectations().Instance();
     }
-
-    static readonly IInviteSerializerCreateExpectations _inviteSerializerCreateExpectations;
-
-    public static readonly IInviteSerializer InviteSerializer;
 
     public static ApplicationUser CreateApplicationUser(UserId userId)
     {

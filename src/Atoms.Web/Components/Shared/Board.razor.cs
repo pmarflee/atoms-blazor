@@ -18,9 +18,6 @@ public class BoardComponent : Component2Base, IDisposable
     GameStateContainer StateContainer { get; set; } = default!;
 
     [Inject]
-    protected IInviteSerializer InviteSerializer { get; set; } = default!;
-
-    [Inject]
     protected NavigationManager NavigationManager { get; set; } = default!;
 
     [Parameter]

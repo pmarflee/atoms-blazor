@@ -77,7 +77,6 @@ public class GameDTO
                 UserId = player.UserId?.Id,
                 AbbreviatedName = player.AbbreviatedName,
                 LocalStorageUserId = player.LocalStorageId?.Value,
-                InviteCode = player.InviteCode,
                 IsActive = game.ActivePlayer == player
             });
         }
@@ -131,8 +130,7 @@ public class GameDTO
                                     user?.Name ?? localStorageUser?.Name,
                                     playerDto.AbbreviatedName,
                                     playerStrategyFactory.Invoke(playerDto.PlayerTypeId, rng),
-                                    localStorageId,
-                                    playerDto.InviteCode);
+                                    localStorageId);
 
             if (playerDto.IsActive)
             {
@@ -202,7 +200,6 @@ public class PlayerDTO
     public bool IsWinner { get; set; }
     public Guid GameId { get; init; }
     public string? AbbreviatedName { get; set; }
-    public string? InviteCode { get; init; }
     public GameDTO Game { get; set; } = default!;
     public PlayerTypeDTO PlayerType { get; set; } = default!;
     public bool IsActive { get; set; }

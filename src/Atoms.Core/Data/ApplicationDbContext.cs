@@ -83,10 +83,18 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             """, localStorageIdParam, userIdParam);
     }
 
-    public async Task<GameDTO?> GetGameById(Guid id,
-                                            CancellationToken cancellationToken)
+    public async Task<GameDTO?> GetGameById(
+        Guid id, CancellationToken cancellationToken)
     {
         return await Games.FindAsync([id], cancellationToken);
+    }
+
+    public async Task<GameDTO?> GetGameByPlayerId(
+        Guid playerId, CancellationToken cancellationToken)
+    {
+        return await Games.FirstOrDefaultAsync(
+            game => game.Players.Any(player => player.Id == playerId), 
+            cancellationToken: cancellationToken);
     }
 
     public async Task AddOrUpdateLocalStorageId(

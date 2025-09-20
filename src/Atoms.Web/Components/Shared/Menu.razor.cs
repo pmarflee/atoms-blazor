@@ -8,9 +8,6 @@ public partial class MenuComponent : Component2Base
     [Inject]
     protected NavigationManager NavigationManager { get; set; } = default!;
 
-    [Inject]
-    protected IInviteSerializer InviteSerializer { get; set; } = default!;
-
     [Parameter]
     public EventCallback<Game> OnCreateGame { get; set; }
 

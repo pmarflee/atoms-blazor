@@ -28,18 +28,9 @@ public class InviteValidatorTests : BaseDbTestFixture
     }
 
     [Test]
-    public async Task ShouldHaveValidationErrorForGameIdWhenGameDoesNotExist()
-    {
-        var invite = new Invite(Guid.NewGuid(), ObjectMother.Player1Id);
-        var result = await _validator.TestValidateAsync(invite);
-
-        result.ShouldHaveValidationErrorFor(x => x.GameId);
-    }
-
-    [Test]
     public async Task ShouldHaveValidationErrorForPlayerIdWhenPlayerDoesNotExist()
     {
-        var invite = new Invite(ObjectMother.GameId, Guid.NewGuid());
+        var invite = new Invite(Guid.NewGuid());
         var result = await _validator.TestValidateAsync(invite);
 
         result.ShouldHaveValidationErrorFor(x => x.PlayerId);
@@ -59,7 +50,7 @@ public class InviteValidatorTests : BaseDbTestFixture
 
         await dbContext.SaveChangesAsync();
 
-        var invite = new Invite(ObjectMother.GameId, ObjectMother.Player2Id);
+        var invite = new Invite(ObjectMother.Player2Id);
         var result = await _validator.TestValidateAsync(invite);
 
         result.ShouldHaveValidationErrorFor(x => x.PlayerId);
@@ -73,9 +64,9 @@ public class InviteValidatorTests : BaseDbTestFixture
             .GetOrAddStorageId()
             .ReturnValue(ValueTask.FromResult(new StorageId(Guid.NewGuid())));
 
-        var validator = new InviteValidator(DbContextFactory,
-                                         browserStorageServiceExpectations.Instance());
-        var invite = new Invite(ObjectMother.GameId, ObjectMother.Player2Id);
+        var validator = new InviteValidator(
+            DbContextFactory, browserStorageServiceExpectations.Instance());
+        var invite = new Invite(ObjectMother.Player2Id);
         var result = await validator.ValidateAsync(invite);
 
         await Assert.That(result.IsValid).IsTrue();
@@ -84,7 +75,7 @@ public class InviteValidatorTests : BaseDbTestFixture
     [Test]
     public async Task ShouldHaveValidationErrorWhenPlayerHasTheSameLocalStorageIdAsThePlayerWhoStartedTheGame()
     {
-        var invite = new Invite(ObjectMother.GameId, ObjectMother.Player2Id);
+        var invite = new Invite(ObjectMother.Player2Id);
         var result = await _validator.TestValidateAsync(invite);
 
         result.ShouldHaveValidationErrorFor(x => x.PlayerId);

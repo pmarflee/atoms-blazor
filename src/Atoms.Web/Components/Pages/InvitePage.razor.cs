@@ -6,7 +6,7 @@ namespace Atoms.Web.Components.Pages;
 public class InvitePageComponent : Component2Base
 {
     protected string? ErrorMessage;
-    protected bool InviteCodeRead;
+    protected bool ShowForm;
 
     Invite _invite = default!;
     UserId? _userId;
@@ -25,8 +25,6 @@ public class InvitePageComponent : Component2Base
     {
         var response = await Mediator.Send(new ReadInviteCodeRequest(Code));
 
-        InviteCodeRead = response.IsSuccessful;
-
         if (response.IsSuccessful)
         {
             _invite = response.Invite!;
@@ -39,6 +37,10 @@ public class InvitePageComponent : Component2Base
                 Input.Name = username;
 
                 await AcceptInvite();
+            }
+            else
+            {
+                ShowForm = true;
             }
         }
         else
@@ -62,7 +64,7 @@ public class InvitePageComponent : Component2Base
 
         if (response.Success)
         {
-            Navigation.NavigateToGame(_invite);
+            Navigation.NavigateToGame(response.GameId!.Value);
         }
         else
         {

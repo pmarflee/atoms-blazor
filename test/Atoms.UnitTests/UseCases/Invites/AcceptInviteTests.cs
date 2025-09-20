@@ -54,7 +54,7 @@ public class AcceptInviteTests : BaseDbTestFixture
         _mediatorExpectations.Methods
             .Publish(
                 Arg.Validate<PlayerJoined>(
-                    x => x.GameId == invite.GameId
+                    x => x.GameId == ObjectMother.GameId
                     && x.PlayerId == invite.PlayerId),
                 CancellationToken.None)
             .ReturnValue(Task.CompletedTask);
@@ -81,7 +81,7 @@ public class AcceptInviteTests : BaseDbTestFixture
         using var dbContext = await DbContextFactory.CreateDbContextAsync(
             CancellationToken.None);
 
-        var game = await dbContext.GetGameById(invite.GameId,
+        var game = await dbContext.GetGameById(ObjectMother.GameId,
                                                CancellationToken.None);
 
         await Assert.That(game!.LastUpdatedDateUtc)

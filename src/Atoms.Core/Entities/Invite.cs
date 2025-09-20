@@ -1,3 +1,3 @@
 ﻿namespace Atoms.Core.Entities;
 
-public record Invite(Guid GameId, Guid PlayerId);
+public record Invite(Guid PlayerId);
