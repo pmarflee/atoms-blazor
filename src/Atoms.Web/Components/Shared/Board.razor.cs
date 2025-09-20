@@ -60,13 +60,11 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async Task AtomPlaced(AtomPlaced notification)
     {
-        var game = Game!;
-
-        if (notification.CanHandle(game))
+        if (Game is not null && notification.CanHandle(Game))
         {
             await Mediator.Send(
                 new UpdateGameFromAtomPlacedNotificationRequest(
-                    game, notification, UserId, LocalStorageId));
+                    Game, notification, UserId, LocalStorageId));
 
             await UpdateGame();
         }
@@ -74,13 +72,11 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async Task AtomExploded(AtomExploded notification)
     {
-        var game = Game!;
-
-        if (notification.CanHandle(game))
+        if (Game is not null && notification.CanHandle(Game))
         {
             await Mediator.Send(
                 new UpdateGameFromAtomExplodedNotificationRequest(
-                    game, notification, UserId, LocalStorageId));
+                    Game, notification, UserId, LocalStorageId));
 
             await UpdateGame();
 
@@ -90,27 +86,25 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async Task PlayerMoved(PlayerMoved notification)
     {
-        var game = Game!;
-
-        if (notification.CanHandle(game))
+        if (Game is not null && notification.CanHandle(Game))
         {
             await UpdateGame();
 
-            if (notification.CanHandle(game, UserId, LocalStorageId))
+            if (notification.CanHandle(Game, UserId, LocalStorageId))
             {
-                var player = game.GetPlayer(notification.PlayerId);
+                var player = Game.GetPlayer(notification.PlayerId);
 
                 await Notify($"{player} moved");
             }
 
             await SetCursor();
 
-            if (game.HasWinner)
+            if (Game.HasWinner)
             {
                 await JSRuntime.InvokeVoidAsync("App.stopMusic");
             }
 
-            if (!game.ActivePlayer.IsHuman)
+            if (!Game.ActivePlayer.IsHuman)
             {
                 await DelayBetweenMoves();
             }
@@ -119,14 +113,12 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async Task GameSaved(GameSaved notification)
     {
-        var game = Game!;
-
-        if (notification.CanHandle(game))
+        if (Game is not null && notification.CanHandle(Game))
         {
-            var player = game.GetPlayer(notification.PlayerId);
+            var player = Game.GetPlayer(notification.PlayerId);
 
             if (!player.IsHuman
-                || !game.PlayerBelongsToUser(player, UserId, LocalStorageId))
+                || !Game.PlayerBelongsToUser(player, UserId, LocalStorageId))
             {
                 await ReloadGame();
             }
@@ -135,15 +127,16 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async Task PlayerJoined(PlayerJoined notification)
     {
-        var game = Game!;
-
-        if (notification.CanHandle(game))
+        if (Game is not null && notification.CanHandle(Game))
         {
             await ReloadGame();
 
-            var player = game.GetPlayer(notification.PlayerId);
+            var player = Game.GetPlayer(notification.PlayerId);
 
-            await Notify($"{player} joined");
+            if (!Game.PlayerBelongsToUser(player, UserId, LocalStorageId))
+            {
+                await Notify($"{player} joined");
+            }
         }
     }
 
@@ -159,17 +152,21 @@ public class BoardComponent : Component2Base, IDisposable
 
     async Task PlayDebugGame()
     {
+        if (Game is null) return;
+
         try
         {
             _disableClicks = true;
 
             var moves = new Moves()
                 .TakeWhile((move, index) =>
-                    index < Debug!.Value && !Game!.HasWinner);
+                    index < Debug!.Value && Game?.HasWinner == false);
 
             foreach (var (row, column) in moves)
             {
-                await PlayMove(Game!.Board[row, column]);
+                if (Game is null) break;
+
+                await PlayMove(Game.Board[row, column]);
                 await DelayBetweenMoves();
             }
         }
