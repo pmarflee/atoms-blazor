@@ -1,6 +1,6 @@
 ﻿@inherits MenuComponent
 
-@if (State == MenuState.Menu)
+@if (Options is not null)
 {
     <div id="intro">
         <EditForm Model="Options" OnSubmit="SubmitAsync">
@@ -54,9 +54,9 @@
                     <tr>
                         <th>Colour scheme</th>
                         <td>
-                            <InputRadioGroup Value="Options.ColourScheme.Value" 
-                                             ValueChanged="@(e => ColourSchemeChanged(e))" 
-                                             TValue="int" 
+                            <InputRadioGroup Value="Options.ColourScheme.Value"
+                                             ValueChanged="@(e => ColourSchemeChanged(e))"
+                                             TValue="int"
                                              ValueExpression="() => Options.ColourScheme.Value">
                                 @foreach (var colourScheme in ColourSchemes)
                                 {
@@ -72,8 +72,8 @@
                         <th>Atom shapes</th>
                         <td>
                             <InputRadioGroup Value="Options.AtomShape.Value"
-                                             ValueChanged="@(e => AtomShapeChanged(e))" 
-                                             TValue="int" 
+                                             ValueChanged="@(e => AtomShapeChanged(e))"
+                                             TValue="int"
                                              ValueExpression="() => Options.AtomShape.Value">
                                 @foreach (var atomShape in AtomShapes)
                                 {
@@ -106,12 +106,8 @@
                 <button type="submit">Start game</button>
             </p>
             <p>
-                <a href="" @onclick="@ShowAbout" @onclick:preventDefault>About the game</a>
+                <a href="/about" target="_blank">About the game</a>
             </p>
         </EditForm>
     </div>
-}
-else if (State == MenuState.About)
-{
-    <About OnHide="@HideAbout" />
 }

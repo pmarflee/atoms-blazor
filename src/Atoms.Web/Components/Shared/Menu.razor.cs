@@ -11,7 +11,6 @@ public partial class MenuComponent : Component2Base
     [Parameter]
     public EventCallback<Game> OnCreateGame { get; set; }
 
-    protected MenuState State { get; set; }
     protected GameMenuOptions Options { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
@@ -23,7 +22,6 @@ public partial class MenuComponent : Component2Base
                 UserId));
 
         Options = response.Options;
-        State = MenuState.Menu;
 
         await SetDisplayColourScheme(Options.ColourScheme);
     }
@@ -37,16 +35,6 @@ public partial class MenuComponent : Component2Base
                 new(UserId, await GetUserName())));
 
         await OnCreateGame.InvokeAsync(response.Game);
-    }
-
-    protected void ShowAbout()
-    {
-        State = MenuState.About;
-    }
-
-    protected void HideAbout()
-    {
-        State = MenuState.Menu;
     }
 
     protected async Task CopyInviteToClipboard(Uri url)
