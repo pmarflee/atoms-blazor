@@ -1,4 +1,5 @@
 ﻿using Atoms.Core.Test;
+using Atoms.UseCases.CreateNewGame;
 using Atoms.UseCases.PlayerMove;
 using Atoms.UseCases.Shared.Notifications;
 using Atoms.UseCases.UpdateGameFromNotification;
@@ -19,9 +20,6 @@ public class BoardComponent : Component2Base, IDisposable
 
     [Inject]
     protected NavigationManager NavigationManager { get; set; } = default!;
-
-    [Parameter]
-    public EventCallback OnPlayAgainClicked { get; set; }
 
     [Parameter]
     public EventCallback<CellClickEventArgs> OnCellClicked { get; set; }
@@ -53,9 +51,19 @@ public class BoardComponent : Component2Base, IDisposable
         await OnCellClicked.InvokeAsync(eventArgs);
     }
 
-    protected async Task PlayAgainClick()
+    protected async Task RematchClick()
     {
-        await OnPlayAgainClicked.InvokeAsync();
+        if (Game is not null)
+        {
+            var hasSound = await BrowserStorageService.GetSound();
+            var options = Game.CreateOptionsForRematch(hasSound);
+            var userIdentity = new UserIdentity(UserId, await GetUserName());
+            var request = new CreateNewGameRequest(
+                Guid.NewGuid(), options, userIdentity);
+            var response = await Mediator.Send(request);
+
+            NavigationManager.NavigateToGame(response.Game);
+        }
     }
 
     protected async Task AtomPlaced(AtomPlaced notification)

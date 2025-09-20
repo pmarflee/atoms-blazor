@@ -1,5 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using MoreLinq;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
+
+using LinqIndex = System.Linq.Enumerable;
 
 namespace Atoms.Core.Entities;
 
@@ -154,7 +157,7 @@ public class Game
         var playerScoresIndexed = playerScores
             .GroupBy(score => score.Score)
             .OrderByDescending(group => group.Key)
-            .Index();
+            .Select((g, i) => new { Item = g, Index = i});
 
         var playerScoresRanked = from item in playerScoresIndexed
                                  let rank = item.Index + 1
@@ -170,6 +173,60 @@ public class Game
     public Player GetPlayer(Guid playerId)
     {
         return Players.First(p => p.Id == playerId);
+    }
+
+    public GameMenuOptions CreateOptionsForRematch(bool hasSound)
+    {
+        if (!HasWinner)
+        {
+            throw new InvalidOperationException("Game not finished");
+        }
+
+        var options = new GameMenuOptions
+        {
+            NumberOfPlayers = Players.Count,
+            AtomShape = AtomShape,
+            ColourScheme = ColourScheme,
+            HasSound = hasSound
+        };
+
+        List<Player> players = [];
+
+        var losingHumanPlayers = Players
+            .Where(p => p.IsDead && p.IsHuman)
+            .ToList();
+
+        if (losingHumanPlayers.Count > 0)
+        {
+            players.AddRange(losingHumanPlayers.RandomSubset(1));
+        }
+
+        if (players.Count == 0)
+        {
+            var losingCPUPlayers = Players
+                .Where(p => p.IsDead && !p.IsHuman)
+                .ToList();
+
+            if (losingCPUPlayers.Count > 0)
+            {
+                players.AddRange(losingCPUPlayers.RandomSubset(1));
+            }
+        }
+
+        var otherPlayers = Players
+            .Where(p => !players.Contains(p))
+            .Shuffle();
+
+        players.AddRange(otherPlayers);
+
+        var playerOptions = players
+            .Select((p, i) => new { Player = p, Number = i + 1 })
+            .Select(p => new GameMenuOptions.Player { Number = p.Number, Type = p.Player.Type })
+            .ToList();
+
+        options.Players = playerOptions;
+
+        return options;
     }
 
     internal void MarkCreated(DateTime createdDate)

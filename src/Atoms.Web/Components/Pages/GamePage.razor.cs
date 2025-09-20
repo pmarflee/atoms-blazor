@@ -75,11 +75,6 @@ public partial class GameComponent : Component2Base, IDisposable
         await StateContainer.SetGame(game, isReload);
     }
 
-    protected void GoToHomePage()
-    {
-        Navigation.NavigateTo("/");
-    }
-
     protected async Task CellClicked()
     {
         if (!_firstCellClicked)
