@@ -129,7 +129,7 @@ public class BoardComponent : Component2Base, IDisposable
             var player = game.GetPlayer(notification.PlayerId);    
 
             if (!player.IsHuman
-                && !game.PlayerBelongsToUser(player, UserId, LocalStorageId))
+                || !game.PlayerBelongsToUser(player, UserId, LocalStorageId))
             {
                 await ReloadGame();
             }
