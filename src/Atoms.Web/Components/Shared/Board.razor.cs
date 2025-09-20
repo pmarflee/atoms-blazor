@@ -126,7 +126,7 @@ public class BoardComponent : Component2Base, IDisposable
 
         if (notification.CanHandle(game))
         {
-            var player = game.GetPlayer(notification.PlayerId);    
+            var player = game.GetPlayer(notification.PlayerId);
 
             if (!player.IsHuman
                 || !game.PlayerBelongsToUser(player, UserId, LocalStorageId))
@@ -138,12 +138,16 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async Task PlayerJoined(PlayerJoined notification)
     {
-        await ReloadGame();
-
         var game = Game!;
-        var player = game.GetPlayer(notification.PlayerId);
 
-        await Notify($"{player} joined");
+        if (notification.CanHandle(game))
+        {
+            await ReloadGame();
+
+            var player = game.GetPlayer(notification.PlayerId);
+
+            await Notify($"{player} joined");
+        }
     }
 
     async Task UpdateGame()
