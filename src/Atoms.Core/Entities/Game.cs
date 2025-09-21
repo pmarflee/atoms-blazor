@@ -292,7 +292,8 @@ public class Game
                       string? name = null,
                       string? abbreviatedName = null,
                       IPlayerStrategy? strategy = null,
-                      StorageId? localStorageId = null)
+                      StorageId? localStorageId = null,
+                      bool isDead = false)
         {
             if (type != PlayerType.Human && strategy is null)
             {
@@ -306,6 +307,7 @@ public class Game
             Name = name;
             AbbreviatedName = abbreviatedName;
             LocalStorageId = localStorageId;
+            IsDead = isDead;
 
             _strategy = strategy;
         }
