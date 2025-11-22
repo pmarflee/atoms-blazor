@@ -1,17 +1,19 @@
-﻿using FluentValidation;
+﻿using Atoms.Core.DTOs.Notifications.SignalR;
+using Atoms.Core.Utilities;
+using FluentValidation;
 
 namespace Atoms.UseCases.Invites.AcceptInvite;
 
 public class AcceptInviteRequestHandler(
-    IMediator mediator,
     ILocalStorageUserService localStorageUserService,
     IValidator<Invite> inviteValidator,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
-    IDateTimeService dateTimeService) 
+    IDateTimeService dateTimeService,
+    CreateNotificationService notificationServiceFactory)
     : IRequestHandler<AcceptInviteRequest, AcceptInviteResponse>
 {
-    public async Task<AcceptInviteResponse> Handle(AcceptInviteRequest request,
-                                                   CancellationToken cancellationToken)
+    public async Task<AcceptInviteResponse> Handle(
+        AcceptInviteRequest request, CancellationToken cancellationToken)
     {
         var invite = request.Invite;
         var validationResult = await inviteValidator.ValidateAsync(
@@ -43,8 +45,17 @@ public class AcceptInviteRequestHandler(
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        await mediator.Publish(
-            new PlayerJoined(game.Id, player.Id),
+        var playerDescription = PlayerDescription.Build(
+            player.Number, player.PlayerTypeId, request.UserIdentity.Name);
+
+        await using var notificationService = notificationServiceFactory.Invoke();
+
+        await notificationService.Start(cancellationToken);
+
+        await notificationService.NotifyPlayerJoined(
+            new PlayerJoined(game.Id, player.Id, 
+                             player.UserId, localStorageId.Value,
+                             playerDescription),
             cancellationToken);
 
         return new(game.Id);

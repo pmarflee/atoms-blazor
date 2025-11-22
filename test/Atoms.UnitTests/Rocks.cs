@@ -1,6 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using FluentValidation;
 using Microsoft.AspNetCore.DataProtection;
+using Rebus.Bus;
 
 [assembly: Rock(typeof(IMediator), BuildType.Create)]
 [assembly: Rock(typeof(IRandomNumberGenerator), BuildType.Create)]
@@ -14,3 +15,5 @@ using Microsoft.AspNetCore.DataProtection;
 [assembly: Rock(typeof(ILocalStorageService), BuildType.Create)]
 [assembly: Rock(typeof(IProtectedBrowserStorageService), BuildType.Create)]
 [assembly: Rock(typeof(ILocalStorageUserService), BuildType.Create)]
+[assembly: Rock(typeof(INotificationService), BuildType.Create)]
+[assembly: Rock(typeof(IBus), BuildType.Create)]

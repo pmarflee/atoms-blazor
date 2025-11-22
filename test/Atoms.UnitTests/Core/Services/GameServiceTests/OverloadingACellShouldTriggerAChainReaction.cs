@@ -1,8 +1,8 @@
-﻿using Atoms.UseCases.PlayerMove;
+﻿using Atoms.Core.Services;
 
-namespace Atoms.UnitTests.UseCases.PlayerMove;
+namespace Atoms.UnitTests.Core.Services.GameServiceTests;
 
-public class OverloadingACellShouldTriggerAChainReaction : PlayerMoveAtomTestFixture
+public class OverloadingACellShouldTriggerAChainReaction
 {
     [Test, MethodDataSource(nameof(GetTestData))]
     public async Task Test(Game game,
@@ -10,11 +10,10 @@ public class OverloadingACellShouldTriggerAChainReaction : PlayerMoveAtomTestFix
                            int column,
                            Game expected)
     {
+        var service = new GameService();
         var cell = game.Board[row, column];
 
-        await Handler.Handle(
-            new PlayerMoveRequest(game, cell),
-            CancellationToken.None);
+        await service.PlayMove(game, cell);
 
         await Assert.That(game).IsEquivalentTo(expected);
     }
@@ -27,8 +26,7 @@ public class OverloadingACellShouldTriggerAChainReaction : PlayerMoveAtomTestFix
             ObjectMother.Game(
                 active: 2,
                 cells: [new(1, 2, 1, 1), new(2, 1, 1, 1)],
-                move: 2,
-                lastUpdatedDateUtc: ObjectMother.NewLastUpdatedDateUtc)
+                move: 2)
         );
 
         yield return () => (
@@ -38,8 +36,7 @@ public class OverloadingACellShouldTriggerAChainReaction : PlayerMoveAtomTestFix
                 active: 2,
                 cells: [ new(1, 1, 1, 1), new(1, 3, 1, 1),
                          new(2, 2, 1, 1) ],
-                move: 2,
-                lastUpdatedDateUtc: ObjectMother.NewLastUpdatedDateUtc)
+                move: 2)
         );
 
         yield return () => (
@@ -49,8 +46,7 @@ public class OverloadingACellShouldTriggerAChainReaction : PlayerMoveAtomTestFix
                 active: 2,
                 cells: [ new(1, 2, 1, 1), new(2, 1, 1, 1),
                          new(2, 3, 1, 1), new(3, 2, 1, 1) ],
-                move: 2,
-                lastUpdatedDateUtc: ObjectMother.NewLastUpdatedDateUtc)
+                move: 2)
         );
     }
 }
