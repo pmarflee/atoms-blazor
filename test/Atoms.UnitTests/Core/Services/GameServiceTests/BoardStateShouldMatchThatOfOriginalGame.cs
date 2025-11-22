@@ -1,9 +1,10 @@
-﻿using Atoms.Core.Test;
+﻿using Atoms.Core.Services;
+using Atoms.Core.Test;
 using Atoms.UseCases.PlayerMove;
 
-namespace Atoms.UnitTests.UseCases.PlayerMove;
+namespace Atoms.UnitTests.Core.Services.GameServiceTests;
 
-public class BoardStateShouldMatchThatOfOriginalGame : PlayerMoveAtomTestFixture
+public class BoardStateShouldMatchThatOfOriginalGame
 {
     [Test, MethodDataSource(nameof(GetTestData))]
     public async Task Test(int numberOfMoves,
@@ -12,12 +13,12 @@ public class BoardStateShouldMatchThatOfOriginalGame : PlayerMoveAtomTestFixture
     {
         var game = ObjectMother.Game();
         var moves = new Moves().Take(numberOfMoves);
+        var gameService = new GameService();
 
         foreach (var (row, column) in moves)
         {
-            await Handler.Handle(
-                new PlayerMoveRequest(game, game.Board[row, column]),
-                CancellationToken.None);
+            await gameService.PlayMove(
+                game, game.Board[row, column]);
         }
 
         using var _ = Assert.Multiple();

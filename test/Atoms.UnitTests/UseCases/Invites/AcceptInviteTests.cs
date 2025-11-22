@@ -1,6 +1,6 @@
-﻿using Atoms.Core.ValueObjects;
+﻿using Atoms.Core.DTOs.Notifications.SignalR;
+using Atoms.Core.ValueObjects;
 using Atoms.UseCases.Invites.AcceptInvite;
-using Atoms.UseCases.Shared.Notifications;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -10,14 +10,14 @@ public class AcceptInviteTests : BaseDbTestFixture
 {
     const string Player_Name = "Bob";
 
-    private IMediatorCreateExpectations _mediatorExpectations = default!;
+    private INotificationServiceCreateExpectations _notificationServiceExpectations = default!;
     private ILocalStorageUserServiceCreateExpectations _localStorageUserServiceExpectations = default!;
     private IValidatorCreateExpectations<Invite> _validatorExpectations = default!;
     private IDateTimeServiceCreateExpectations _dateServiceCreateExpectations = default!;
 
     protected override Task SetupInternal()
     {
-        _mediatorExpectations = new IMediatorCreateExpectations();
+        _notificationServiceExpectations = new INotificationServiceCreateExpectations();
         _localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
         _validatorExpectations = new IValidatorCreateExpectations<Invite>();
 
@@ -51,8 +51,8 @@ public class AcceptInviteTests : BaseDbTestFixture
     {
         var invite = ObjectMother.Invite;
 
-        _mediatorExpectations.Methods
-            .Publish(
+        _notificationServiceExpectations.Methods
+            .NotifyPlayerJoined(
                 Arg.Validate<PlayerJoined>(
                     x => x.GameId == ObjectMother.GameId
                     && x.PlayerId == invite.PlayerId),
@@ -109,11 +109,11 @@ public class AcceptInviteTests : BaseDbTestFixture
     }
 
     AcceptInviteRequestHandler CreateHandler() =>
-        new(_mediatorExpectations.Instance(),
-            _localStorageUserServiceExpectations.Instance(),
+        new(_localStorageUserServiceExpectations.Instance(),
             _validatorExpectations.Instance(),
             DbContextFactory,
-            _dateServiceCreateExpectations.Instance());
+            _dateServiceCreateExpectations.Instance(),
+            _notificationServiceExpectations.Instance());
 
     public static IEnumerable<Func<UserId?>> GetTestCaseUsers()
     {

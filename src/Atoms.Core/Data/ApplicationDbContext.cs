@@ -113,6 +113,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         }
     }
 
+    public ValueTask<LocalStorageUserDTO> GetLocalStorageUserById(
+        StorageId localStorageId) =>
+        FindAsync<LocalStorageUserDTO>(localStorageId.Value)!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<GameDTO>()

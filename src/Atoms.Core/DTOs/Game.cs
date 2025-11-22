@@ -226,6 +226,8 @@ public class RngDTO
         Func<int, int, IRandomNumberGenerator> rngFactory)
         => rngFactory.Invoke(Seed, Iterations);
 
+    public RngDTO Clone() => new() { Seed = Seed, Iterations = Iterations };
+
     public static RngDTO FromEntity(IRandomNumberGenerator rng) =>
         new() { Seed = rng.Seed, Iterations = rng.Iterations };
 }

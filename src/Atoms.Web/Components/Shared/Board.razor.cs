@@ -1,25 +1,26 @@
 ﻿using Atoms.Core.Test;
 using Atoms.UseCases.CreateNewGame;
 using Atoms.UseCases.PlayerMove;
-using Atoms.UseCases.Shared.Notifications;
+using Atoms.Core.DTOs.Notifications;
 using Atoms.UseCases.UpdateGameFromNotification;
-using MediatR.Courier;
+using Atoms.UseCases.UpdateGameFromPlayerMoveNotification;
+using Atoms.Core.DTOs.Notifications.SignalR;
 
 namespace Atoms.Web.Components.Shared;
 
-public class BoardComponent : Component2Base, IDisposable
+public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 {
     const int AtomExplodedDelay = 50;
     const int PlayerMovedDelay = 300;
-
-    [Inject]
-    ICourier Courier { get; set; } = default!;
 
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
     [Inject]
     protected NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    INotificationService NotificationService { get; set; } = default!;
 
     [Parameter]
     public EventCallback<CellClickEventArgs> OnCellClicked { get; set; }
@@ -28,19 +29,19 @@ public class BoardComponent : Component2Base, IDisposable
     public int? Debug { get; set; }
 
     bool _disableClicks;
+    readonly CancellationToken _cancellationToken = new();
+    bool _preventReload;
 
-    protected override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
-        StateContainer.OnChange += OnStateHasChanged;
-        StateContainer.OnGameSet += OnGameSet;
+        StateContainer.OnChange += StateChanged;
+        StateContainer.OnGameSet += GameSet;
+        StateContainer.OnGameStateChanged += GameStateChanged;
 
-        Courier.Subscribe<AtomPlaced>(AtomPlaced);
-        Courier.Subscribe<AtomExploded>(AtomExploded);
-        Courier.Subscribe<PlayerMoved>(PlayerMoved);
-        Courier.Subscribe<GameSaved>(GameSaved);
-        Courier.Subscribe<PlayerJoined>(PlayerJoined);
+        NotificationService.OnPlayerMoved += PlayerMoved;
+        NotificationService.OnGameReloadRequired += ReloadGame;
 
-        return Task.CompletedTask;
+        await NotificationService.Start(_cancellationToken);
     }
 
     protected async Task CellClicked(CellClickEventArgs eventArgs)
@@ -68,84 +69,107 @@ public class BoardComponent : Component2Base, IDisposable
 
     protected async Task AtomPlaced(AtomPlaced notification)
     {
-        if (Game is not null && notification.CanHandle(Game))
-        {
-            await Mediator.Send(
-                new UpdateGameFromAtomPlacedNotificationRequest(
-                    Game, notification, UserId, LocalStorageId));
+        if (Game is null) return;
 
-            await UpdateGame();
-        }
+        await Mediator.Send(
+            new UpdateGameFromAtomPlacedNotificationRequest(
+                Game, notification, UserId, LocalStorageId));
+
+        await UpdateGame();
     }
 
     protected async Task AtomExploded(AtomExploded notification)
     {
-        if (Game is not null && notification.CanHandle(Game))
-        {
-            await Mediator.Send(
-                new UpdateGameFromAtomExplodedNotificationRequest(
-                    Game, notification, UserId, LocalStorageId));
+        if (Game is null) return;
 
-            await UpdateGame();
+        await Mediator.Send(
+            new UpdateGameFromAtomExplodedNotificationRequest(
+                Game, notification, UserId, LocalStorageId));
 
-            await Task.Delay(AtomExplodedDelay);
-        }
+        await UpdateGame();
+
+        await Task.Delay(AtomExplodedDelay);
     }
 
-    protected async Task PlayerMoved(PlayerMoved notification)
+    protected async Task PlayerMoved(Core.DTOs.Notifications.PlayerMoved notification)
     {
-        if (Game is not null && notification.CanHandle(Game))
-        {
-            await UpdateGame();
+        if (Game is null) return;
 
-            if (notification.CanHandle(Game, UserId, LocalStorageId))
-            {
-                var player = Game.GetPlayer(notification.PlayerId);
+        await UpdateGame();
 
-                await Notify($"{player} moved");
-            }
-
-            await SetCursor();
-
-            if (Game.HasWinner)
-            {
-                await JSRuntime.InvokeVoidAsync("App.stopMusic");
-            }
-
-            if (!Game.ActivePlayer.IsHuman)
-            {
-                await DelayBetweenMoves();
-            }
-        }
-    }
-
-    protected async Task GameSaved(GameSaved notification)
-    {
-        if (Game is not null && notification.CanHandle(Game))
+        if (notification.CanHandle(Game, UserId, LocalStorageId))
         {
             var player = Game.GetPlayer(notification.PlayerId);
 
-            if (!player.IsHuman
-                || !Game.PlayerBelongsToUser(player, UserId, LocalStorageId))
-            {
-                await ReloadGame();
-            }
+            await Notify($"{player} moved");
+        }
+
+        await SetCursor();
+
+        if (Game.HasWinner)
+        {
+            await JSRuntime.InvokeVoidAsync("App.stopMusic");
+        }
+
+        if (!Game.ActivePlayer.IsHuman)
+        {
+            await DelayBetweenMoves();
         }
     }
 
     protected async Task PlayerJoined(PlayerJoined notification)
     {
-        if (Game is not null && notification.CanHandle(Game))
+        if (Game is null) return;
+
+        if (!Game.PlayerBelongsToUser(notification.UserId,
+                                      notification.LocalStorageId,
+                                      UserId,
+                                      LocalStorageId))
+        {
+            await Notify($"{notification.PlayerDescription} joined");
+        }
+
+        if (!_preventReload)
         {
             await ReloadGame();
+        }
+    }
 
-            var player = Game.GetPlayer(notification.PlayerId);
+    async Task PlayerMoved(Core.DTOs.Notifications.SignalR.PlayerMoved notification)
+    {
+        if (Game is null) return;
 
-            if (!Game.PlayerBelongsToUser(player, UserId, LocalStorageId))
+        try
+        {
+            _preventReload = true;
+
+            if (notification.LastUpdatedDateUtc == Game.LastUpdatedDateUtc)
             {
-                await Notify($"{player} joined");
+                await Mediator.Send(
+                    new UpdateGameFromPlayerMoveNotificationRequest(
+                        Game, notification));
+            }
+
+            if (notification.LastUpdatedDateUtc >= Game.LastUpdatedDateUtc)
+            {
+                await ReloadGame();
             }
         }
+        finally
+        {
+            _preventReload = false;
+        }
+    }
+
+    Task GameStateChanged(GameStateChanged notification)
+    {
+        return notification switch
+        {
+            AtomPlaced atomPlaced => AtomPlaced(atomPlaced),
+            AtomExploded atomExploded => AtomExploded(atomExploded),
+            Core.DTOs.Notifications.PlayerMoved playerMoved => PlayerMoved(playerMoved),
+            _ => Task.CompletedTask,
+        };
     }
 
     async Task UpdateGame()
@@ -170,11 +194,16 @@ public class BoardComponent : Component2Base, IDisposable
                 .TakeWhile((move, index) =>
                     index < Debug!.Value && Game?.HasWinner == false);
 
+            var gameService = new GameService();
+
             foreach (var (row, column) in moves)
             {
                 if (Game is null) break;
 
-                await PlayMove(Game.Board[row, column]);
+                await gameService.PlayMove(
+                    Game, Game.Board[row, column],
+                    debug: true, notify: GameStateChanged);
+
                 await DelayBetweenMoves();
             }
         }
@@ -277,29 +306,29 @@ public class BoardComponent : Component2Base, IDisposable
     {
         if (disposing)
         {
-            Courier.UnSubscribe<AtomPlaced>(AtomPlaced);
-            Courier.UnSubscribe<AtomExploded>(AtomExploded);
-            Courier.UnSubscribe<PlayerMoved>(PlayerMoved);
-            Courier.UnSubscribe<GameSaved>(GameSaved);
-            Courier.UnSubscribe<PlayerJoined>(PlayerJoined);
-
-            StateContainer.OnChange -= OnStateHasChanged;
-            StateContainer.OnGameSet -= OnGameSet;
+            StateContainer.OnChange -= StateChanged;
+            StateContainer.OnGameSet -= GameSet;
+            StateContainer.OnGameStateChanged -= GameStateChanged;
         }
     }
 
-    async Task OnStateHasChanged()
+    async Task StateChanged()
     {
         await InvokeAsync(StateHasChanged);
     }
 
-    async Task OnGameSet(bool isReload)
+    async Task GameSet(bool isReload)
     {
         if (Debug.HasValue)
         {
             await PlayDebugGame();
+
+            return;
         }
-        else if (!isReload && !Game!.HasWinner && !Game!.ActivePlayer.IsHuman)
+
+        await NotificationService.JoinGame(Game!, _cancellationToken);
+
+        if (!isReload && !Game!.HasWinner && !Game!.ActivePlayer.IsHuman)
         {
             await PlayMove();
         }
@@ -317,5 +346,23 @@ public class BoardComponent : Component2Base, IDisposable
     async Task Notify(string message)
     {
         await JSRuntime.InvokeVoidAsync("App.notify", message);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+
+        try
+        {
+            if (Game is not null)
+            {
+                await NotificationService.LeaveGame(Game, _cancellationToken);
+            }
+        }
+        catch
+        {
+        }
+
+        await NotificationService.DisposeAsync();
     }
 }
