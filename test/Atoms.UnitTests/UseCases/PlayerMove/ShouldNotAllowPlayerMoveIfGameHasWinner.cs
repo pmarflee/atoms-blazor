@@ -18,7 +18,16 @@ public class ShouldNotAllowPlayerMoveIfGameHasWinner : PlayerMoveAtomTestFixture
             ObjectMother.GetUserById,
             ObjectMother.GetLocalStorageUserById);
 
-        var result = await Handler.Handle(
+        LoggerExpectations.Methods
+            .IsEnabled(Arg.Is(LogLevel.Debug))
+            .ReturnValue(false);
+
+        var handler = new PlayerMoveRequestHandler(
+            DbContextFactory, 
+            BusExpectations.Instance(), 
+            LoggerExpectations.Instance());
+
+        var result = await handler.Handle(
             new PlayerMoveRequest(game, game.Board[1, 1]),
             CancellationToken.None);
 

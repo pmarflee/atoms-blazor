@@ -1,6 +1,9 @@
-﻿using Blazored.LocalStorage;
+﻿using Atoms.UseCases.PlayerMove;
+using Blazored.LocalStorage;
 using FluentValidation;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 [assembly: Rock(typeof(IMediator), BuildType.Create)]
 [assembly: Rock(typeof(IRandomNumberGenerator), BuildType.Create)]
@@ -14,3 +17,9 @@ using Microsoft.AspNetCore.DataProtection;
 [assembly: Rock(typeof(ILocalStorageService), BuildType.Create)]
 [assembly: Rock(typeof(IProtectedBrowserStorageService), BuildType.Create)]
 [assembly: Rock(typeof(ILocalStorageUserService), BuildType.Create)]
+[assembly: Rock(typeof(INotificationService), BuildType.Create)]
+[assembly: Rock(typeof(IBus), BuildType.Create)]
+[assembly: Rock(typeof(ILogger<>), BuildType.Create)]
+[assembly: Rock(typeof(IServiceScopeFactory), BuildType.Create)]
+[assembly: Rock(typeof(IServiceProvider), BuildType.Create)]
+[assembly: Rock(typeof(IServiceScope), BuildType.Create)]

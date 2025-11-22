@@ -1,15 +1,16 @@
-﻿namespace Atoms.UseCases.Shared.Notifications;
+﻿namespace Atoms.Core.DTOs.Notifications;
 
 public record PlayerMoved(
     Guid GameId,
     Guid PlayerId,
-    Guid RequestPlayerId) 
+    Guid? RequestPlayerId) 
     : GameStateChanged(GameId, PlayerId)
 {
-    public bool CanHandle(
-        Game game, UserId? userId, StorageId localStorageId)
+    public bool CanHandle(Game game, UserId? userId, StorageId localStorageId)
     {
-        var requestPlayer = game.GetPlayer(RequestPlayerId);
+        if (RequestPlayerId is null) return false;
+
+        var requestPlayer = game.GetPlayer(RequestPlayerId.Value);
 
         if (!requestPlayer.IsHuman) return false;
 

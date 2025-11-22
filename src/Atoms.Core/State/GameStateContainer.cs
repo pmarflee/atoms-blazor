@@ -1,4 +1,6 @@
 ﻿
+using Atoms.Core.DTOs.Notifications;
+
 namespace Atoms.Core.State;
 
 public class GameStateContainer
@@ -45,9 +47,18 @@ public class GameStateContainer
         await NotifyStateChanged();
     }
 
+    public async Task NotifyGameStateChanged(GameStateChanged notification)
+    {
+        if (OnGameStateChanged is not null) 
+        {
+            await OnGameStateChanged.Invoke(notification); 
+        }
+    }
+
     public event Func<Task> OnChange = default!;
     public event Func<bool, Task>? OnGameSet;
     public event Func<Task> OnGameReloadRequired = default!;
+    public event Func<GameStateChanged, Task>? OnGameStateChanged;
 
     async Task NotifyStateChanged() => await OnChange.Invoke();
 

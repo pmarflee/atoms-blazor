@@ -6,15 +6,20 @@ using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Email;
 using Atoms.Infrastructure.Factories;
 using Atoms.Infrastructure.Services;
+using Atoms.Infrastructure.SignalR;
 using Atoms.UseCases.CreateNewGame;
+using Atoms.UseCases.PlayerMove.Rebus;
 using Blazored.LocalStorage;
-using MediatR.Courier;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.FluentUI.AspNetCore.Components;
 using NReco.Logging.File;
+using Polly;
+using Polly.Retry;
+using Rebus.Config;
+using Rebus.Routing.TypeBased;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,10 +50,7 @@ builder.Services
     {
         cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>();
         cfg.LicenseKey = builder.Configuration["MediatR:LicenceKey"];
-    })
-    .AddCourier(
-        options => options.UseTaskWhenAll = true,
-        typeof(CreateNewGameRequest).Assembly);
+    });
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -97,12 +99,30 @@ builder.Services.AddScoped<ILocalStorageUserService, LocalStorageUserService>();
 builder.AddValidation();
 
 builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
+builder.Services.AddSingleton<IGameService, GameService>();
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddSignalR();
 
 builder.Services.AddResponseCompression(opts =>
 {
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
         ["application/octet-stream"]);
 });
+
+builder.Services.AddRebus(
+    configure => configure
+        .Transport(
+            t => t.UsePostgreSql(
+                atomsDbConnectionString, 
+                "Rebus_Messages", 
+                "message-queue"))
+        .Routing(
+            r => r.TypeBased()
+                .MapAssemblyOf<PlayerMoveMessage>("message-queue"))
+    );
+
+builder.Services.AutoRegisterHandlersFromAssemblyOf<PlayerMoveMessageHandler>();
 
 var loggingConfigurationSection = builder.Configuration.GetSection("Logging");
 
@@ -135,6 +155,39 @@ builder.Services.AddLogging(loggingBuilder =>
         });
 });
 
+builder.Services.AddResiliencePipeline("notify-player-moved", pipeline =>
+{
+    pipeline.AddRetry(new RetryStrategyOptions
+    {
+        ShouldHandle = args =>
+        {
+            bool result;
+
+            if (args.Outcome.Exception is not null)
+            {
+                result = false;
+            }
+            else if (args.Outcome.Result is bool boolResult)
+            {
+                result = boolResult;
+            }
+            else
+            {
+                result = false;
+            }
+
+            return ValueTask.FromResult(result);
+        },
+        Delay = TimeSpan.FromSeconds(1),
+        MaxRetryAttempts = int.MaxValue
+    });
+
+    pipeline.AddTimeout(TimeSpan.FromSeconds(90));
+});
+
+builder.Services.Configure<AppSettings>(
+    builder.Configuration.GetSection("AppSettings"));
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -166,6 +219,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapAdditionalIdentityEndpoints();
+
+app.MapHub<GameHub>(GameHub.HubUrl);
 
 app.RunDatabaseMigrations();
 

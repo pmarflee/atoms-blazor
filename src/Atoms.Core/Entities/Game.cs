@@ -1,8 +1,5 @@
 ﻿using MoreLinq;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
-
-using LinqIndex = System.Linq.Enumerable;
 
 namespace Atoms.Core.Entities;
 
@@ -83,16 +80,22 @@ public class Game
     public bool PlayerBelongsToUser(Player player, 
                                     UserId? userId, StorageId? localStorageId)
     {
-        if (!player.IsHuman) return false;
+        return player.IsHuman && PlayerBelongsToUser(
+            player.UserId, player.LocalStorageId,
+            userId, localStorageId);
+    }
 
-        if (userId is not null && player.UserId is not null)
+    public bool PlayerBelongsToUser(UserId? playerUserId, StorageId? playerLocalStorageId,
+                                    UserId? userId, StorageId? localStorageId)
+    {
+        if (userId is not null && playerUserId is not null)
         {
-            return userId.Id == player.UserId.Id;
+            return userId.Id == playerUserId.Id;
         }
 
-        if (localStorageId is not null && player.LocalStorageId is not null)
+        if (localStorageId is not null && playerLocalStorageId is not null)
         {
-            return localStorageId == player.LocalStorageId;
+            return localStorageId == playerLocalStorageId;
         }
 
         return userId is not null && userId.Id == UserId?.Id
@@ -351,24 +354,8 @@ public class Game
             return false;
         }
 
-        public override string ToString()
-        {
-            var builder = new StringBuilder($"Player {Number}");
-
-            if (IsHuman)
-            {
-                if (!string.IsNullOrEmpty(Name))
-                {
-                    builder.Append($" ({Name})");
-                }
-            }
-            else
-            {
-                builder.Append($" ({Type.Description})");
-            }
-
-                return builder.ToString();
-        }
+        public override string ToString() =>
+            PlayerDescription.Build(Number, Type, Name);
     }
 
     public class GameBoard

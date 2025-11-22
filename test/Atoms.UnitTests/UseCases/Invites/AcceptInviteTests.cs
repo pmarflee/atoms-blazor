@@ -1,8 +1,9 @@
-﻿using Atoms.Core.ValueObjects;
+﻿using Atoms.Core.DTOs.Notifications.SignalR;
+using Atoms.Core.ValueObjects;
 using Atoms.UseCases.Invites.AcceptInvite;
-using Atoms.UseCases.Shared.Notifications;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Atoms.UnitTests.UseCases.Invites;
 
@@ -10,14 +11,17 @@ public class AcceptInviteTests : BaseDbTestFixture
 {
     const string Player_Name = "Bob";
 
-    private IMediatorCreateExpectations _mediatorExpectations = default!;
+    private INotificationServiceCreateExpectations _notificationServiceExpectations = default!;
     private ILocalStorageUserServiceCreateExpectations _localStorageUserServiceExpectations = default!;
     private IValidatorCreateExpectations<Invite> _validatorExpectations = default!;
     private IDateTimeServiceCreateExpectations _dateServiceCreateExpectations = default!;
+    private IServiceScopeFactoryCreateExpectations _serviceScopeFactoryCreateExpectations = default!;
+    private IServiceProviderCreateExpectations _serviceProviderCreateExpectations = default!;
+    private IServiceScopeCreateExpectations _serviceScopeCreateExpectations = default!;
 
     protected override Task SetupInternal()
     {
-        _mediatorExpectations = new IMediatorCreateExpectations();
+        _notificationServiceExpectations = new INotificationServiceCreateExpectations();
         _localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
         _validatorExpectations = new IValidatorCreateExpectations<Invite>();
 
@@ -51,13 +55,21 @@ public class AcceptInviteTests : BaseDbTestFixture
     {
         var invite = ObjectMother.Invite;
 
-        _mediatorExpectations.Methods
-            .Publish(
+        _notificationServiceExpectations.Methods
+            .NotifyPlayerJoined(
                 Arg.Validate<PlayerJoined>(
                     x => x.GameId == ObjectMother.GameId
                     && x.PlayerId == invite.PlayerId),
                 CancellationToken.None)
             .ReturnValue(Task.CompletedTask);
+
+        _notificationServiceExpectations.Methods
+            .Start(Arg.Any<CancellationToken>())
+            .ReturnValue(Task.CompletedTask);
+
+        _notificationServiceExpectations.Methods
+            .DisposeAsync()
+            .ReturnValue(ValueTask.CompletedTask);
 
         _localStorageUserServiceExpectations.Methods
             .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
@@ -108,12 +120,29 @@ public class AcceptInviteTests : BaseDbTestFixture
         await dbContext.SaveChangesAsync();
     }
 
-    AcceptInviteRequestHandler CreateHandler() =>
-        new(_mediatorExpectations.Instance(),
-            _localStorageUserServiceExpectations.Instance(),
+    AcceptInviteRequestHandler CreateHandler()
+    {
+        _serviceProviderCreateExpectations = new IServiceProviderCreateExpectations();
+        _serviceProviderCreateExpectations.Methods
+            .GetService(Arg.Is(typeof(INotificationService)))
+            .ReturnValue(_notificationServiceExpectations.Instance());
+
+        _serviceScopeCreateExpectations = new IServiceScopeCreateExpectations();
+        _serviceScopeCreateExpectations.Properties.Getters.ServiceProvider()
+            .ReturnValue(_serviceProviderCreateExpectations.Instance());
+        _serviceScopeCreateExpectations.Methods.Dispose();
+
+        _serviceScopeFactoryCreateExpectations = new IServiceScopeFactoryCreateExpectations();
+        _serviceScopeFactoryCreateExpectations.Methods
+            .CreateScope()
+            .ReturnValue(_serviceScopeCreateExpectations.Instance());
+
+        return new(_localStorageUserServiceExpectations.Instance(),
             _validatorExpectations.Instance(),
             DbContextFactory,
-            _dateServiceCreateExpectations.Instance());
+            _dateServiceCreateExpectations.Instance(),
+            _serviceScopeFactoryCreateExpectations.Instance());
+    }
 
     public static IEnumerable<Func<UserId?>> GetTestCaseUsers()
     {

@@ -11,7 +11,16 @@ public class ReturnFailureResponseWhenAtomCannotBePlaced : PlayerMoveAtomTestFix
             active: 2,
             cells: [new(1, 1, 1, 1)]);
 
-        var response = await Handler.Handle(
+        LoggerExpectations.Methods
+            .IsEnabled(Arg.Is(LogLevel.Debug))
+            .ReturnValue(false);
+
+        var handler = new PlayerMoveRequestHandler(
+            DbContextFactory, 
+            BusExpectations.Instance(), 
+            LoggerExpectations.Instance());
+
+        var response = await handler.Handle(
             new PlayerMoveRequest(game, game.Board[1, 1]),
             CancellationToken.None);
 
