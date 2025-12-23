@@ -7,7 +7,7 @@ public class GainAdvantageOverNeighbouringCellTests : AIStrategyTestFixture
     public async Task ShouldNotChooseCornerCellWhenRngIsAboveThreshold(
         [Matrix(0.9, 0.95, 0.99)] double rnd)
     {
-        RandomNumberGeneratorExpectations.Methods.NextDouble().ReturnValue(rnd);
+        RandomNumberGeneratorExpectations.Setups.NextDouble().ReturnValue(rnd);
 
         await Assert.That(Strategy.Choose(ObjectMother.Game())).IsNull();
     }
@@ -16,8 +16,8 @@ public class GainAdvantageOverNeighbouringCellTests : AIStrategyTestFixture
     public async Task ShouldChooseCornerCellWhenRngIsBelowThreshold(
         Game game, Cell? cell, double nextDouble, int nextInt)
     {
-        RandomNumberGeneratorExpectations.Methods.NextDouble().ReturnValue(nextDouble);
-        RandomNumberGeneratorExpectations.Methods.Next(Arg.Any<int>()).ReturnValue(nextInt);
+        RandomNumberGeneratorExpectations.Setups.NextDouble().ReturnValue(nextDouble);
+        RandomNumberGeneratorExpectations.Setups.Next(Arg.Any<int>()).ReturnValue(nextInt);
 
         await Assert.That(Strategy.Choose(game)).IsEqualTo(cell);
     }

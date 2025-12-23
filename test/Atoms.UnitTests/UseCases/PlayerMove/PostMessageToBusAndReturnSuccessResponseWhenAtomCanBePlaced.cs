@@ -11,7 +11,7 @@ public class PostMessageToBusAndReturnSuccessResponseWhenAtomCanBePlaced : Playe
         var game = ObjectMother.Game();
         var cell = game.Board[1, 1];
 
-        BusExpectations.Methods
+        BusExpectations.Setups
             .Send(Arg.Validate<object>(
                 x =>
                 {
@@ -23,7 +23,7 @@ public class PostMessageToBusAndReturnSuccessResponseWhenAtomCanBePlaced : Playe
                 }))
             .ReturnValue(Task.CompletedTask);
 
-        LoggerExpectations.Methods
+        LoggerExpectations.Setups
             .IsEnabled(Arg.Is(LogLevel.Debug))
             .ReturnValue(false);
 

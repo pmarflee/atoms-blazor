@@ -216,11 +216,9 @@ public class Game
             }
         }
 
-        var otherPlayers = Players
-            .Where(p => !players.Contains(p))
-            .Shuffle();
+        var otherPlayers = Players.Where(p => !players.Contains(p));
 
-        players.AddRange(otherPlayers);
+        players.AddRange(Enumerable.Shuffle(otherPlayers));
 
         var playerOptions = players
             .Select((p, i) => new { Player = p, Number = i + 1 })

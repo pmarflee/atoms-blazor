@@ -6,7 +6,7 @@ public class ChooseCornerCellTests : AIStrategyTestFixture
     public async Task ShouldChooseCornerCellWhenRngIsBelowThreshold(
         double rnd, Game game, int row, int column)
     {
-        RandomNumberGeneratorExpectations.Methods.NextDouble().ReturnValue(rnd);
+        RandomNumberGeneratorExpectations.Setups.NextDouble().ReturnValue(rnd);
 
         await Assert.That(Strategy.Choose(game)).IsEqualTo(game.Board[row, column]);
     }
@@ -16,7 +16,7 @@ public class ChooseCornerCellTests : AIStrategyTestFixture
     public async Task ShouldNotChooseCornerCellWhenRngIsAboveThreshold(
         [Matrix(0.8, 0.9, 0.99)] double rnd)
     {
-        RandomNumberGeneratorExpectations.Methods.NextDouble().ReturnValue(rnd);
+        RandomNumberGeneratorExpectations.Setups.NextDouble().ReturnValue(rnd);
 
         await Assert.That(Strategy.Choose(ObjectMother.Game())).IsNull();
     }
@@ -24,7 +24,7 @@ public class ChooseCornerCellTests : AIStrategyTestFixture
     [Test]
     public async Task ShouldNotChooseCornerCellWhenAllCornerCellsAreTaken()
     {
-        RandomNumberGeneratorExpectations.Methods.NextDouble().ReturnValue(0);
+        RandomNumberGeneratorExpectations.Setups.NextDouble().ReturnValue(0);
 
         var game = ObjectMother.Game(
                     cells:
@@ -41,7 +41,7 @@ public class ChooseCornerCellTests : AIStrategyTestFixture
     [Test]
     public async Task ShouldNotChooseCornerCellsThatAreDangerCells()
     {
-        RandomNumberGeneratorExpectations.Methods.NextDouble().ReturnValue(0);
+        RandomNumberGeneratorExpectations.Setups.NextDouble().ReturnValue(0);
 
         var game = ObjectMother.Game(cells: [ new(1, 2, 2, 2), ]);
 

@@ -11,7 +11,7 @@ public class ReturnFailureResponseWhenAtomCannotBePlaced : PlayerMoveAtomTestFix
             active: 2,
             cells: [new(1, 1, 1, 1)]);
 
-        LoggerExpectations.Methods
+        LoggerExpectations.Setups
             .IsEnabled(Arg.Is(LogLevel.Debug))
             .ReturnValue(false);
 

@@ -1,9 +1,7 @@
-﻿using Atoms.UseCases.PlayerMove;
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
 using FluentValidation;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 [assembly: Rock(typeof(IMediator), BuildType.Create)]
 [assembly: Rock(typeof(IRandomNumberGenerator), BuildType.Create)]

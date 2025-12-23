@@ -15,7 +15,9 @@ public class OverloadingACellShouldTriggerAChainReaction
 
         await service.PlayMove(game, cell);
 
-        await Assert.That(game).IsEquivalentTo(expected);
+        await Assert.That(game.Board.Cells).IsEquivalentTo(expected.Board.Cells);
+        await Assert.That(game.ActivePlayer.Number).IsEquivalentTo(expected.ActivePlayer.Number);
+        await Assert.That(game.Move).IsEquivalentTo(expected.Move);
     }
 
     public static IEnumerable<Func<(Game, int, int, Game)>> GetTestData()

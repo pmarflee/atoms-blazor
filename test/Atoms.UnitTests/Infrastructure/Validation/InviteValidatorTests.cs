@@ -19,7 +19,7 @@ public class InviteValidatorTests : BaseDbTestFixture
         await dbContext.SaveChangesAsync();
 
         var browserStorageServiceExpectations = new IBrowserStorageServiceCreateExpectations();
-        browserStorageServiceExpectations.Methods
+        browserStorageServiceExpectations.Setups
             .GetOrAddStorageId()
             .ReturnValue(ValueTask.FromResult(ObjectMother.LocalStorageId));
 
@@ -60,7 +60,7 @@ public class InviteValidatorTests : BaseDbTestFixture
     public async Task ShouldNotHaveValidationErrorWhenGameAndPlayerExistsAndPlayerHasNotAcceptedInvite()
     {
         var browserStorageServiceExpectations = new IBrowserStorageServiceCreateExpectations();
-        browserStorageServiceExpectations.Methods
+        browserStorageServiceExpectations.Setups
             .GetOrAddStorageId()
             .ReturnValue(ValueTask.FromResult(new StorageId(Guid.NewGuid())));
 

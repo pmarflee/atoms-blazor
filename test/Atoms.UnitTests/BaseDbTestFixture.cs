@@ -32,7 +32,7 @@ public abstract class BaseDbTestFixture
             .Options;
 
         var dbContextFactoryExpectations = new IDbContextFactoryCreateExpectations<ApplicationDbContext>();
-        dbContextFactoryExpectations.Methods
+        dbContextFactoryExpectations.Setups
             .CreateDbContextAsync(Arg.Any<CancellationToken>())
             .Callback(token => Task.FromResult(
                 new ApplicationDbContext(dbContextOptions)));

@@ -8,7 +8,7 @@ public class ShouldAddNewGameToDatabase : BaseDbTestFixture
     public async Task Test()
     {
         var localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
-        localStorageUserServiceExpectations.Methods
+        localStorageUserServiceExpectations.Setups
             .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
             .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
 
@@ -31,6 +31,6 @@ public class ShouldAddNewGameToDatabase : BaseDbTestFixture
         var gameDto = await dbContext.Games.FindAsync(game.Id);
 
         await Assert.That(gameDto).IsNotNull()
-             .And.HasMember(x => x!.Id).EqualTo(game.Id);
+             .And.Member(x => x!.Id, x => x.EqualTo(game.Id));
     }
 }

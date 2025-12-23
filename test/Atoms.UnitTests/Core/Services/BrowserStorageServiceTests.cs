@@ -21,7 +21,7 @@ public class BrowserStorageServiceTests
     [Test]
     public async Task GetOrAddStorageIdShouldReturnCurrentValueIfValueIsStoredInLocalStorage()
     {
-        _protectedBrowserStorageService.Methods
+        _protectedBrowserStorageService.Setups
             .GetAsync<Guid?>(Arg.Is(Constants.StorageKeys.LocalStorageId))
             .ReturnValue(ValueTask.FromResult<Guid?>(ObjectMother.LocalStorageId.Value));
 
@@ -34,11 +34,11 @@ public class BrowserStorageServiceTests
     [Test]
     public async Task GetOrAddStorageIdShouldGenerateANewValueIfValueIsCurrentlyNotStoredInLocalStorage()
     {
-        _protectedBrowserStorageService.Methods
+        _protectedBrowserStorageService.Setups
             .GetAsync<Guid?>(Arg.Is(Constants.StorageKeys.LocalStorageId))
             .ReturnValue(ValueTask.FromResult<Guid?>(null));
 
-        _protectedBrowserStorageService.Methods
+        _protectedBrowserStorageService.Setups
             .SetAsync(
                 Arg.Is(Constants.StorageKeys.LocalStorageId),
                 Arg.Is<object>(ObjectMother.LocalStorageId.Value))

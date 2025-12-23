@@ -10,7 +10,7 @@ public class CreateGameMenuOptionsTests
     public async Task OptionsCreatedShouldMatchSpecification()
     {
         var browserStorageServiceExpectations = new IBrowserStorageServiceCreateExpectations();
-        browserStorageServiceExpectations.Methods
+        browserStorageServiceExpectations.Setups
             .GetGameMenuOptions()
             .ReturnValue(
                 ValueTask.FromResult<GameMenuOptions?>(

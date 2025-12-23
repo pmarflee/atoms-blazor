@@ -22,7 +22,7 @@ public class ShouldNotAllowPlayerMoveIfGameStateHasChanged : PlayerMoveAtomTestF
 
         await dbContext.SaveChangesAsync(CancellationToken.None);
 
-        LoggerExpectations.Methods
+        LoggerExpectations.Setups
             .IsEnabled(Arg.Is(LogLevel.Debug))
             .ReturnValue(false);
 

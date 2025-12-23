@@ -26,8 +26,8 @@ public class AcceptInviteTests : BaseDbTestFixture
         _validatorExpectations = new IValidatorCreateExpectations<Invite>();
 
         _dateServiceCreateExpectations = new IDateTimeServiceCreateExpectations();
-        _dateServiceCreateExpectations.Properties
-            .Getters.UtcNow()
+        _dateServiceCreateExpectations.Setups
+            .UtcNow.Gets()
             .ReturnValue(ObjectMother.NewLastUpdatedDateUtc);
 
         return Task.CompletedTask;
@@ -38,7 +38,7 @@ public class AcceptInviteTests : BaseDbTestFixture
     {
         var invite = ObjectMother.Invite;
 
-        _validatorExpectations.Methods
+        _validatorExpectations.Setups
             .ValidateAsync(Arg.Is(invite), CancellationToken.None)
             .ReturnValue(Task.FromResult(new ValidationResult([new ValidationFailure()])));
 
@@ -55,7 +55,7 @@ public class AcceptInviteTests : BaseDbTestFixture
     {
         var invite = ObjectMother.Invite;
 
-        _notificationServiceExpectations.Methods
+        _notificationServiceExpectations.Setups
             .NotifyPlayerJoined(
                 Arg.Validate<PlayerJoined>(
                     x => x.GameId == ObjectMother.GameId
@@ -63,19 +63,19 @@ public class AcceptInviteTests : BaseDbTestFixture
                 CancellationToken.None)
             .ReturnValue(Task.CompletedTask);
 
-        _notificationServiceExpectations.Methods
+        _notificationServiceExpectations.Setups
             .Start(Arg.Any<CancellationToken>())
             .ReturnValue(Task.CompletedTask);
 
-        _notificationServiceExpectations.Methods
+        _notificationServiceExpectations.Setups
             .DisposeAsync()
             .ReturnValue(ValueTask.CompletedTask);
 
-        _localStorageUserServiceExpectations.Methods
+        _localStorageUserServiceExpectations.Setups
             .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
             .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
 
-        _validatorExpectations.Methods
+        _validatorExpectations.Setups
             .ValidateAsync(Arg.Is(invite), CancellationToken.None)
             .ReturnValue(Task.FromResult(new ValidationResult()));
 
@@ -123,17 +123,17 @@ public class AcceptInviteTests : BaseDbTestFixture
     AcceptInviteRequestHandler CreateHandler()
     {
         _serviceProviderCreateExpectations = new IServiceProviderCreateExpectations();
-        _serviceProviderCreateExpectations.Methods
+        _serviceProviderCreateExpectations.Setups
             .GetService(Arg.Is(typeof(INotificationService)))
             .ReturnValue(_notificationServiceExpectations.Instance());
 
         _serviceScopeCreateExpectations = new IServiceScopeCreateExpectations();
-        _serviceScopeCreateExpectations.Properties.Getters.ServiceProvider()
+        _serviceScopeCreateExpectations.Setups.ServiceProvider.Gets()
             .ReturnValue(_serviceProviderCreateExpectations.Instance());
-        _serviceScopeCreateExpectations.Methods.Dispose();
+        _serviceScopeCreateExpectations.Setups.Dispose();
 
         _serviceScopeFactoryCreateExpectations = new IServiceScopeFactoryCreateExpectations();
-        _serviceScopeFactoryCreateExpectations.Methods
+        _serviceScopeFactoryCreateExpectations.Setups
             .CreateScope()
             .ReturnValue(_serviceScopeCreateExpectations.Instance());
 

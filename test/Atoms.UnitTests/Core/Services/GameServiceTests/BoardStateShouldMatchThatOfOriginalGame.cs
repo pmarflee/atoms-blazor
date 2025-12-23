@@ -1,6 +1,5 @@
 ﻿using Atoms.Core.Services;
 using Atoms.Core.Test;
-using Atoms.UseCases.PlayerMove;
 
 namespace Atoms.UnitTests.Core.Services.GameServiceTests;
 
@@ -23,7 +22,9 @@ public class BoardStateShouldMatchThatOfOriginalGame
 
         using var _ = Assert.Multiple();
 
-        await Assert.That(game.Board).IsEquivalentTo(expected);
+        await Assert.That(game.Board.Cells).IsEquivalentTo(expected.Cells);
+        await Assert.That(game.Board.Rows).IsEquivalentTo(expected.Rows);
+        await Assert.That(game.Board.Columns).IsEquivalentTo(expected.Columns);
         await Assert.That(game.Winner?.Number).IsEqualTo(winner);
     }
 

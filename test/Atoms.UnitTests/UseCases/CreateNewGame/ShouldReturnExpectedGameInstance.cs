@@ -8,7 +8,7 @@ public class ShouldReturnExpectedGameInstance : BaseDbTestFixture
     public async Task Test()
     {
         var localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
-        localStorageUserServiceExpectations.Methods
+        localStorageUserServiceExpectations.Setups
             .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
             .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
 

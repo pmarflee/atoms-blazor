@@ -38,7 +38,7 @@ public abstract class AIStrategyTestFixture
     {
         int i = 0;
 
-        RandomNumberGeneratorExpectations.Methods.Next(
+        RandomNumberGeneratorExpectations.Setups.Next(
             Arg.Any<int>(), Arg.Any<int>())
             .Callback((_, _) => values[i++]);
     }

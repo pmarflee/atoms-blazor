@@ -9,7 +9,8 @@ public class CreateOptionsForRematch
     {
         var game = ObjectMother.Game();
 
-        Assert.Throws(() => game.CreateOptionsForRematch(false));
+        Assert.Throws<InvalidOperationException>(
+            () => game.CreateOptionsForRematch(false));
     }
 
     [Test, MethodDataSource(nameof(GetTestData))]

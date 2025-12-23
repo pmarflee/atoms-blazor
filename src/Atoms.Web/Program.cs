@@ -15,9 +15,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.FluentUI.AspNetCore.Components;
-using NReco.Logging.File;
-using Polly;
-using Polly.Retry;
 using Rebus.Config;
 using Rebus.Routing.TypeBased;
 
