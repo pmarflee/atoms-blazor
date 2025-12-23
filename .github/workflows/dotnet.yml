@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: dotnet build Atoms.sln --no-restore
     - name: Test
-      run: dotnet test Atoms.sln --no-build --verbosity normal
+      run: dotnet test --solution Atoms.sln --no-build --verbosity normal
