@@ -62,14 +62,6 @@ public class GameHub : Hub<IGameClient>
         return GetGameConnections(notification.GameId);
     }
 
-    public async Task AcknowledgePlayerMoved(AcknowledgePlayerMoved notification)
-    {
-        await Clients
-            .Group(GroupName(notification.GameId))
-            .AcknowledgePlayerMoved(
-                new(notification.GameId, Context.ConnectionId));
-    }
-
     public async Task NotifyGameReloadRequired(GameReloadRequired notification)
     {
         await Clients.Group(GroupName(notification.GameId)).GameReloadRequired();

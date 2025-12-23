@@ -13,7 +13,6 @@ public class NotificationService : INotificationService, IAsyncDisposable
     readonly HubConnection _connection;
 
     public event Func<PlayerMoved, Task>? OnPlayerMoved;
-    public event Func<AcknowledgePlayerMoved, Task>? OnAcknowledgePlayerMoved;
     public event Func<ClientDisconnected, Task>? OnClientDisconnected;
     public event Func<GameReloadRequired, Task>? OnGameReloadRequired;
     public event Func<PlayerJoined, Task>? OnPlayerJoined;
@@ -37,16 +36,6 @@ public class NotificationService : INotificationService, IAsyncDisposable
                 if (OnPlayerMoved is not null)
                 {
                     await OnPlayerMoved.Invoke(notification);
-                }
-            });
-
-        _connection.On<AcknowledgePlayerMoved>(
-            nameof(IGameClient.AcknowledgePlayerMoved),
-            async notification =>
-            {
-                if (OnAcknowledgePlayerMoved is not null)
-                {
-                    await OnAcknowledgePlayerMoved.Invoke(notification);
                 }
             });
 
@@ -93,14 +82,6 @@ public class NotificationService : INotificationService, IAsyncDisposable
             cancellationToken: cancellationToken);
 
         return [.. connections.Where(c => c != _connection.ConnectionId)];
-    }
-
-    public async Task AcknowledgePlayerMoved(Guid gameId,
-                                             CancellationToken cancellationToken = default)
-    {
-        await _connection.InvokeAsync(nameof(GameHub.AcknowledgePlayerMoved),
-                                      new AcknowledgePlayerMoved(gameId, _connection.ConnectionId!),
-                                      cancellationToken: cancellationToken);
     }
 
     public async Task NotifyGameReloadRequired(

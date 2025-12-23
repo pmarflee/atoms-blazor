@@ -5,14 +5,11 @@ namespace Atoms.Core.Interfaces;
 public interface INotificationService : IAsyncDisposable
 {
     event Func<PlayerMoved, Task>? OnPlayerMoved;
-    event Func<AcknowledgePlayerMoved, Task>? OnAcknowledgePlayerMoved;
     event Func<ClientDisconnected, Task>? OnClientDisconnected;
     event Func<GameReloadRequired, Task>? OnGameReloadRequired;
     event Func<PlayerJoined, Task>? OnPlayerJoined;
 
     Task<List<string>> NotifyPlayerMoved(PlayerMoved notification, CancellationToken cancellationToken = default);
-    Task AcknowledgePlayerMoved(Guid gameId,
-                                CancellationToken cancellationToken = default);
     Task NotifyGameReloadRequired(GameReloadRequired notification,
                                   CancellationToken cancellationToken = default);
     Task NotifyPlayerJoined(PlayerJoined notification,

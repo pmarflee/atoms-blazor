@@ -37,7 +37,7 @@ builder.Services.AddScoped<CreateGame>(sp =>
     var rngFactory = sp.GetRequiredService<CreateRng>();
     var playerStrategyFactory = sp.GetRequiredService<CreatePlayerStrategy>();
 
-    return (gameId, options, localStorageId, userIdentity) => 
+    return (gameId, options, localStorageId, userIdentity) =>
         GameFactory.Create(rngFactory, playerStrategyFactory,
                            gameId, options, localStorageId, userIdentity);
 });
@@ -114,8 +114,8 @@ builder.Services.AddRebus(
     configure => configure
         .Transport(
             t => t.UsePostgreSql(
-                atomsDbConnectionString, 
-                "Rebus_Messages", 
+                atomsDbConnectionString,
+                "Rebus_Messages",
                 "message-queue"))
         .Routing(
             r => r.TypeBased()
@@ -153,36 +153,6 @@ builder.Services.AddLogging(loggingBuilder =>
                 }
             }
         });
-});
-
-builder.Services.AddResiliencePipeline("notify-player-moved", pipeline =>
-{
-    pipeline.AddRetry(new RetryStrategyOptions
-    {
-        ShouldHandle = args =>
-        {
-            bool result;
-
-            if (args.Outcome.Exception is not null)
-            {
-                result = false;
-            }
-            else if (args.Outcome.Result is bool boolResult)
-            {
-                result = boolResult;
-            }
-            else
-            {
-                result = false;
-            }
-
-            return ValueTask.FromResult(result);
-        },
-        Delay = TimeSpan.FromSeconds(1),
-        MaxRetryAttempts = int.MaxValue
-    });
-
-    pipeline.AddTimeout(TimeSpan.FromSeconds(90));
 });
 
 builder.Services.Configure<AppSettings>(

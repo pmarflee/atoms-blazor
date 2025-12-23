@@ -190,9 +190,6 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
                 _preventReload = false;
             }
         }
-
-        await NotificationService.AcknowledgePlayerMoved(
-            notification.GameId, _cancellationToken);
     }
 
     Task GameStateChanged(GameStateChanged notification)
