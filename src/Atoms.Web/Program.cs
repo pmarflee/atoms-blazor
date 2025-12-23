@@ -126,35 +126,6 @@ builder.Services.AutoRegisterHandlersFromAssemblyOf<PlayerMoveMessageHandler>();
 
 var loggingConfigurationSection = builder.Configuration.GetSection("Logging");
 
-builder.Services.AddLogging(loggingBuilder =>
-{
-    loggingBuilder.AddFile(loggingConfigurationSection,
-        fileLoggerOpts =>
-        {
-            var logsPath = Path.Combine(builder.Environment.ContentRootPath, "logs");
-
-            Directory.CreateDirectory(logsPath);
-
-            fileLoggerOpts.FormatLogFileName =
-                fName => string.Format(fName, DateTime.UtcNow);
-
-            var logFileRetentionDays = loggingConfigurationSection
-                .GetValue<int>("File:RetentionDays");
-            var lastRetentionDate = DateTime.UtcNow.Date.Subtract(
-                TimeSpan.FromDays(logFileRetentionDays));
-
-            foreach (var filename in Directory.GetFiles(logsPath, "*.log"))
-            {
-                var file = new FileInfo(filename);
-
-                if (file.CreationTimeUtc.Date < lastRetentionDate)
-                {
-                    file.Delete();
-                }
-            }
-        });
-});
-
 builder.Services.Configure<AppSettings>(
     builder.Configuration.GetSection("AppSettings"));
 
