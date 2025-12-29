@@ -15,7 +15,7 @@ public partial class ForgotPasswordComponent : ComponentBase
     public IdentityRedirectManager RedirectManager { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    protected InputModel Input { get; set; } = new();
+    protected InputModel Input { get; set; } = default!;
 
     protected async Task OnValidSubmit()
     {

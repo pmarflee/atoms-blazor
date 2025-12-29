@@ -17,7 +17,7 @@ public partial class ResendEmailConfirmationComponent : ComponentBase
     protected string? Message;
 
     [SupplyParameterFromForm]
-    protected InputModel Input { get; set; } = new();
+    protected InputModel Input { get; set; } = default!;
 
     protected async Task OnValidSubmit()
     {

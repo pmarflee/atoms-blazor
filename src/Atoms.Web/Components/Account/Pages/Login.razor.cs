@@ -22,7 +22,7 @@ public partial class LoginComponent : ComponentBase
     protected HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    protected InputModel Input { get; set; } = new();
+    protected InputModel Input { get; set; } = default!;
 
     [SupplyParameterFromQuery]
     protected string? ReturnUrl { get; set; }

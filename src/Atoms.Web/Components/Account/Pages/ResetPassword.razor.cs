@@ -11,7 +11,7 @@ public partial class ResetPasswordComponent : ComponentBase
     private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
-    protected InputModel Input { get; set; } = new();
+    protected InputModel Input { get; set; } = default!;
 
     [SupplyParameterFromQuery]
     protected string? Code { get; set; }

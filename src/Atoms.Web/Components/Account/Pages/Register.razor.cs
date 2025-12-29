@@ -28,7 +28,7 @@ public partial class RegisterComponent : ComponentBase
     private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
-    protected InputModel Input { get; set; } = new();
+    protected InputModel Input { get; set; } = default!;
 
     [SupplyParameterFromQuery]
     protected string? ReturnUrl { get; set; }
