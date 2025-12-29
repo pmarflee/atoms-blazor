@@ -1,8 +1,6 @@
 ﻿using Atoms.Core.Data.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Timeout;
 using Rebus.Extensions;
 using Rebus.Handlers;
 using Rebus.Pipeline;
