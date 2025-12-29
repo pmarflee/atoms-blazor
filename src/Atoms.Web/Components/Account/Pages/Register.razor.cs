@@ -35,7 +35,7 @@ public partial class RegisterComponent : ComponentBase
 
     protected string? ErrorMessage => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
 
-    public async Task RegisterUser(EditContext editContext)
+    public async Task RegisterUser()
     {
         var user = CreateUser();
 

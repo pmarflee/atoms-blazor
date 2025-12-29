@@ -94,12 +94,15 @@ public class PlayerMoveMessageHandler(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, 
-                "Exception thrown when handling message. " +
-                "GameId='{GameId}', Row='{Row}', Column='{Column}', " +
-                "LastUpdatedDateUtc='{LastUpdatedDateUtc}'.",
-                message.GameId, message.Row, message.Column,
-                message.LastUpdatedDateUtc);
+            if (logger.IsEnabled(LogLevel.Error))
+            {
+                logger.LogError(ex,
+                    "Exception thrown when handling message. " +
+                    "GameId='{GameId}', Row='{Row}', Column='{Column}', " +
+                    "LastUpdatedDateUtc='{LastUpdatedDateUtc}'.",
+                    message.GameId, message.Row, message.Column,
+                    message.LastUpdatedDateUtc);
+            }
         }
     }
 }
