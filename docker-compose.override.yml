@@ -1,5 +1,7 @@
 services:
   atoms.web:
+    labels:
+      com.microsoft.visual-studio.project-name: "Atoms.Web"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080

@@ -1,0 +1,37 @@
+stages:
+  - test
+  - build
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+
+# Run unit tests first
+test:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  before_script:
+    - dotnet restore Atoms.sln
+  script:
+    - dotnet test Atoms.sln --no-build --verbosity normal
+
+# Build and publish Docker image only if tests succeed
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    # Authenticate with GitLab Container Registry
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    
+    # Build image tagged with commit SHA
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    
+    # Push image to GitLab Container Registry
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    
+    # Optionally also push a 'latest' tag
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
