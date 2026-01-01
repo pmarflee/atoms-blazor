@@ -11,7 +11,7 @@ COPY ["src/Atoms.Core/Atoms.Core.csproj", "Atoms.Core/"]
 COPY ["src/Atoms.Infrastructure/Atoms.Infrastructure.csproj", "Atoms.Infrastructure/"]
 COPY ["src/Atoms.UseCases/Atoms.UseCases.csproj", "Atoms.UseCases/"]
 RUN dotnet restore "Atoms.Web/Atoms.Web.csproj"
-COPY . .
+COPY src/ .
 WORKDIR "/src/Atoms.Web"
 RUN dotnet publish "Atoms.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
