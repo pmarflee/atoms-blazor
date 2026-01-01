@@ -14,7 +14,7 @@ test:
   before_script:
     - dotnet restore Atoms.sln
   script:
-    - dotnet test Atoms.sln --no-build --verbosity normal
+    - dotnet test --solution Atoms.sln --no-build --verbosity normal
 
 # Build and publish Docker image only if tests succeed
 build:
