@@ -1,5 +1,7 @@
 # Atoms-Blazor
 
+![Game board](https://atoms-blazor.app/images/screenshot.png "Game board")
+
 An ASP.NET / Blazor implemention of the Amiga Atoms game.
 
 Based on the original web implementation by Thomas Pike: https://github.com/thomas-pike/atoms-www

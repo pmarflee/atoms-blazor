@@ -28,7 +28,7 @@ public static class NavigationExtensions
     public static void NavigateToDebugGame(this NavigationManager navigation,
                                            int debug)
     {
-        navigation.NavigateToGameById(debug: debug);
+        navigation.NavigateToGameById(Guid.NewGuid(), debug);
     }
 
     public static void NavigateToSetUserNamePage(
@@ -41,15 +41,10 @@ public static class NavigationExtensions
     }
 
     static void NavigateToGameById(this NavigationManager navigation,
-                                   Guid? gameId = null,
+                                   Guid gameId,
                                    int? debug = null)
     {
-        var url = BaseUrl;
-
-        if (gameId.HasValue)
-        {
-            url = url.AppendPathSegment(gameId.Value.ToString("N"));
-        }
+        var url = BaseUrl.AppendPathSegment(gameId.ToString("N"));
 
         if (debug.HasValue)
         {

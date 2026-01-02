@@ -14,7 +14,7 @@ public partial class GameComponent : Component2Base, IDisposable
     GameStateContainer StateContainer { get; set; } = default!;
 
     [Parameter]
-    public Guid? GameId { get; set; }
+    public Guid GameId { get; set; }
 
     [SupplyParameterFromQuery]
     protected int? Debug { get; set; }
@@ -24,15 +24,11 @@ public partial class GameComponent : Component2Base, IDisposable
         StateContainer.OnChange += StateHasChangedAsync;
         StateContainer.OnGameReloadRequired += ReloadGame;
 
-        if (GameId.HasValue)
-        {
-            await LoadGame();
-        }
-        else if (Debug.HasValue)
+        if (Debug.HasValue)
         {
             var response = await Mediator.Send(
                 new CreateDebugGameRequest(
-                    Guid.NewGuid(), Debug.Value,
+                    GameId, Debug.Value,
                     await GetOrAddStorageId()));
 
             await Task.Delay(10);
@@ -40,7 +36,7 @@ public partial class GameComponent : Component2Base, IDisposable
         }
         else
         {
-            Navigation.NavigateTo("/");
+            await LoadGame();
         }
     }
 
@@ -48,7 +44,7 @@ public partial class GameComponent : Component2Base, IDisposable
     {
         var storageId = await GetOrAddStorageId();
         var response = await Mediator.Send(
-            new GetGameRequest(GameId!.Value, storageId, UserId));
+            new GetGameRequest(GameId, storageId, UserId));
 
         if (response.Success)
         {
