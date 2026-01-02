@@ -1,6 +1,8 @@
 # Atoms-Blazor
 
-![Game board](https://atoms-blazor.app/images/screenshot.png "Game board")
+<p align="center">
+    <img src="https://atoms-blazor.app/images/screenshot.png" alt="Screenshot of Atoms game board" title="Game board" height="400">
+</p>
 
 An ASP.NET / Blazor implemention of the Amiga Atoms game.
 
