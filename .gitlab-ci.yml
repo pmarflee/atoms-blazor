@@ -2,6 +2,11 @@ stages:
   - test
   - build
 
+variables: 
+  IMAGE_NAME: atoms-blazor
+  IMAGE_TAG: $CI_COMMIT_SHA
+  DO_IMAGE: registry.digitalocean.com/$DO_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
@@ -22,16 +27,18 @@ build:
   image: docker:latest
   services:
     - docker:dind
+  before_script:
+    # Install doctl
+    - apk add --no-cache curl tar
+    - curl -sL https://github.com/digitalocean/doctl/releases/download/v1.148.0/doctl-1.148.0-linux-amd64.tar.gz -o doctl.tar.gz
+    - tar -xzf doctl.tar.gz
+    - mv doctl /usr/local/bin/
+    # Authenticate with DigitalOcean using your access token
+    - doctl auth init -t "$DO_ACCESS_TOKEN"
+    # Login to DOCR (injects Docker credentials)
+    - doctl registry login
   script:
-    # Authenticate with GitLab Container Registry
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-    
-    # Build image tagged with commit SHA
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
-    
-    # Push image to GitLab Container Registry
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    
-    # Optionally also push a 'latest' tag
-    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
-    - docker push $CI_REGISTRY_IMAGE:latest
+    # Build image
+    - docker build -t $DO_IMAGE .
+    # Push directly to DOCR
+    - docker push $DO_IMAGE
