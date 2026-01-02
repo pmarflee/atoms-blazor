@@ -4,7 +4,7 @@ stages:
 
 variables: 
   IMAGE_NAME: atoms-blazor
-  IMAGE_TAG: $CI_COMMIT_SHA
+  IMAGE_TAG: latest
   DO_IMAGE: registry.digitalocean.com/$DO_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
 workflow:
