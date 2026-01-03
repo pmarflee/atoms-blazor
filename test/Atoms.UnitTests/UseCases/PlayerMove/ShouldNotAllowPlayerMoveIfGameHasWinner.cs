@@ -28,7 +28,7 @@ public class ShouldNotAllowPlayerMoveIfGameHasWinner : PlayerMoveAtomTestFixture
             LoggerExpectations.Instance());
 
         var result = await handler.Handle(
-            new PlayerMoveRequest(game, game.Board[1, 1]),
+            new PlayerMoveRequest(game, new(1, 1)),
             CancellationToken.None);
 
         using var _ = Assert.Multiple();

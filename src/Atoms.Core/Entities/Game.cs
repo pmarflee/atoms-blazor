@@ -458,6 +458,8 @@ public class Game
                 if (Atoms == 0) Player = null;
             }
 
+            public Position Position => new(Row, Column);
+
             public override string ToString()
             {
                 return $"Cell: {{ Row: {Row}, Column: {Column}, MaxAtoms: {MaxAtoms}, Player: {Player}, Atoms: {Atoms} }}";

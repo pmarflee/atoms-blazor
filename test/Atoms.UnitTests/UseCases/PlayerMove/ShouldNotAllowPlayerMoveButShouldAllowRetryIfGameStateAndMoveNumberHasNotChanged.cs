@@ -2,23 +2,14 @@
 
 namespace Atoms.UnitTests.UseCases.PlayerMove;
 
-public class ShouldNotAllowPlayerMoveIfGameStateHasChanged : PlayerMoveAtomTestFixture
+public class ShouldNotAllowPlayerMoveButShouldAllowRetryIfGameStateAndMoveNumberHasNotChanged : PlayerMoveAtomTestFixture
 {
     [Test]
     public async Task Test()
     {
         using var dbContext = await DbContextFactory.CreateDbContextAsync(CancellationToken.None);
 
-        var gameDto = await dbContext.GetGameById(
-            ObjectMother.GameId, CancellationToken.None);
-
-        var game = await gameDto!.ToEntity(
-            ObjectMother.CreateRng, 
-            ObjectMother.CreatePlayerStrategy, 
-            ObjectMother.GetUserById,
-            ObjectMother.GetLocalStorageUserById);
-
-        gameDto.LastUpdatedDateUtc = DateTime.UtcNow;
+        var game = ObjectMother.Game();
 
         await dbContext.SaveChangesAsync(CancellationToken.None);
 
@@ -32,7 +23,7 @@ public class ShouldNotAllowPlayerMoveIfGameStateHasChanged : PlayerMoveAtomTestF
             LoggerExpectations.Instance());
 
         var result = await handler.Handle(
-            new PlayerMoveRequest(game, game.Board[1, 1]),
+            new PlayerMoveRequest(game, new(1, 1)),
             CancellationToken.None);
 
         using var _ = Assert.Multiple();
@@ -40,5 +31,11 @@ public class ShouldNotAllowPlayerMoveIfGameStateHasChanged : PlayerMoveAtomTestF
         await Assert.That(result.IsSuccessful).IsFalse();
         await Assert.That(result.Result)
             .IsEqualTo(PlayerMoveResult.GameStateHasChanged);
+        await Assert.That(result.AllowRetry).IsTrue();
     }
+
+    protected override GameDTO GameState =>
+        ObjectMother.GameDTO(
+            lastUpdatedDateUtc: ObjectMother.LastUpdatedDateUtc.AddMinutes(5)
+        );
 }

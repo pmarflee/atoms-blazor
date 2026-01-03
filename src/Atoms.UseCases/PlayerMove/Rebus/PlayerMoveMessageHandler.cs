@@ -26,7 +26,7 @@ public class PlayerMoveMessageHandler(
                 "Bus received message. GameId='{GameId}', Row='{Row}', Column='{Column}', " +
                 "LastUpdatedDateUtc='{LastUpdatedDateUtc}'.",
                 message.GameId, message.Row, message.Column,
-                message.LastUpdatedDateUtc);
+                message.GameLastUpdatedDateUtc);
         }
 
         try
@@ -37,18 +37,18 @@ public class PlayerMoveMessageHandler(
                 await applicationDbContextFactory.CreateDbContextAsync(
                     cancellationToken);
 
-            using var applicationIdentityDbContext =
-                await applicationIdentityDbContextFactory.CreateDbContextAsync(
-                    cancellationToken);
-
             var gameDto = await applicationDbContext.GetGameById(
                 message.GameId, cancellationToken);
 
             if (gameDto is null
-                || gameDto.LastUpdatedDateUtc > message.LastUpdatedDateUtc)
+                || gameDto.LastUpdatedDateUtc > message.GameLastUpdatedDateUtc)
             {
                 return;
             }
+
+            using var applicationIdentityDbContext =
+                await applicationIdentityDbContextFactory.CreateDbContextAsync(
+                    cancellationToken);
 
             var lastUpdatedDateUtc = gameDto.LastUpdatedDateUtc;
 
@@ -101,7 +101,7 @@ public class PlayerMoveMessageHandler(
                     "GameId='{GameId}', Row='{Row}', Column='{Column}', " +
                     "LastUpdatedDateUtc='{LastUpdatedDateUtc}'.",
                     message.GameId, message.Row, message.Column,
-                    message.LastUpdatedDateUtc);
+                    message.GameLastUpdatedDateUtc);
             }
         }
     }

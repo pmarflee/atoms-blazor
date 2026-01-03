@@ -112,7 +112,8 @@ internal static class ObjectMother
         List<PlayerDTO>? players = null,
         int move = 1,
         int round = 1,
-        BoardDTO? board = null)
+        BoardDTO? board = null,
+        DateTime? lastUpdatedDateUtc = null)
     {
         var gameDto = new GameDTO
         {
@@ -127,7 +128,7 @@ internal static class ObjectMother
             IsActive = true,
             Rng = new RngDTO { Seed = 1, Iterations = 0 },
             CreatedDateUtc = CreatedDateUtc,
-            LastUpdatedDateUtc = LastUpdatedDateUtc
+            LastUpdatedDateUtc = lastUpdatedDateUtc ?? LastUpdatedDateUtc
         };
 
         players ??=

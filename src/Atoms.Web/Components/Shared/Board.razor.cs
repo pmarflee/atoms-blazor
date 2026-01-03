@@ -32,7 +32,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
     bool _disableClicks;
     readonly CancellationToken _cancellationToken = new();
-    bool _preventReload;
+    bool _handlingPlayerMove;
 
     protected async override Task OnInitializedAsync()
     {
@@ -49,10 +49,19 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
     protected async Task CellClicked(CellClickEventArgs eventArgs)
     {
-        if (!CanPlayMove()) return;
+        try
+        {
+            if (!CanPlayMove()) return;
 
-        await PlayMove(eventArgs.Cell);
-        await OnCellClicked.InvokeAsync(eventArgs);
+            _disableClicks = true;
+
+            await PlayMove(eventArgs.Position);
+            await OnCellClicked.InvokeAsync(eventArgs);
+        }
+        finally
+        {
+            _disableClicks = false;
+        }
     }
 
     protected async Task RematchClick()
@@ -136,7 +145,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
             await Notify($"{notification.PlayerDescription} joined");
         }
 
-        if (!_preventReload)
+        if (!_handlingPlayerMove)
         {
             await ReloadGame();
         }
@@ -151,17 +160,17 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
                 notification.GameId,
                 notification.Row,
                 notification.Column,
-                notification.LastUpdatedDateUtc,
+                notification.GameLastUpdatedDateUtc,
                 notification.Id);
         }
 
-        if (Game is not null)
+        if (Game is not null && !_handlingPlayerMove)
         {
             try
             {
-                _preventReload = true;
+                _handlingPlayerMove = true;
 
-                if (notification.LastUpdatedDateUtc == Game.LastUpdatedDateUtc)
+                if (notification.GameLastUpdatedDateUtc == Game.LastUpdatedDateUtc)
                 {
                     if (Logger.IsEnabled(LogLevel.Debug))
                     {
@@ -174,7 +183,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
                             Game, notification));
                 }
 
-                if (notification.LastUpdatedDateUtc >= Game.LastUpdatedDateUtc)
+                if (notification.GameLastUpdatedDateUtc >= Game.LastUpdatedDateUtc)
                 {
                     if (Logger.IsEnabled(LogLevel.Debug))
                     {
@@ -187,7 +196,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
             }
             finally
             {
-                _preventReload = false;
+                _handlingPlayerMove = false;
             }
         }
     }
@@ -216,7 +225,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
     async Task ReloadGameIfRequired(GameReloadRequired notification)
     {
         if (Game is not null
-            && notification.LastUpdatedDateUtc > Game.LastUpdatedDateUtc)
+            && notification.GameLastUpdatedDateUtc > Game.LastUpdatedDateUtc)
         {
             await ReloadGame();
         }
@@ -303,18 +312,23 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         await JSRuntime.InvokeVoidAsync("App.copyToClipboard", url.ToString());
     }
 
-    async Task PlayMove(Game.GameBoard.Cell? cell = null)
+    async Task PlayMove(Position? position = null)
     {
-        var response = await Mediator.Send(
-            new PlayerMoveRequest(
-                Game!, cell, Debug.HasValue,
-                UserId,
-                LocalStorageId));
+        PlayerMoveResponse response;
 
-        if (response.Result == PlayerMoveResult.GameStateHasChanged)
+        do
         {
-            await ReloadGame();
-        }
+            response = await Mediator.Send(
+                new PlayerMoveRequest(
+                    Game!, position, Debug.HasValue,
+                    UserId,
+                    LocalStorageId));
+
+            if (response.Result == PlayerMoveResult.GameStateHasChanged)
+            {
+                await ReloadGame();
+            }
+        } while (response.AllowRetry);
     }
 
     async Task SetCursor()

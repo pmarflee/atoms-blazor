@@ -1,3 +1,3 @@
 ﻿namespace Atoms.UseCases.PlayerMove.Rebus;
 
-public record PlayerMoveMessage(Guid GameId, int? Row, int? Column, DateTime LastUpdatedDateUtc);
+public record PlayerMoveMessage(Guid GameId, int? Row, int? Column, DateTime GameLastUpdatedDateUtc);

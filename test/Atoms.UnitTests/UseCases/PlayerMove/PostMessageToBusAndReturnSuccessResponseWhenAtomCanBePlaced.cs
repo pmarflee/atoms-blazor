@@ -1,4 +1,5 @@
-﻿using Atoms.UseCases.PlayerMove;
+﻿using Atoms.Core.ValueObjects;
+using Atoms.UseCases.PlayerMove;
 using Atoms.UseCases.PlayerMove.Rebus;
 
 namespace Atoms.UnitTests.UseCases.PlayerMove;
@@ -9,7 +10,7 @@ public class PostMessageToBusAndReturnSuccessResponseWhenAtomCanBePlaced : Playe
     public async Task Test()
     {
         var game = ObjectMother.Game();
-        var cell = game.Board[1, 1];
+        var position = new Position(1, 1);
 
         BusExpectations.Setups
             .Send(Arg.Validate<object>(
@@ -18,8 +19,8 @@ public class PostMessageToBusAndReturnSuccessResponseWhenAtomCanBePlaced : Playe
                     if (x is not PlayerMoveMessage msg) return false;
 
                     return msg.GameId == game.Id
-                        && msg.Row == cell.Row
-                        && msg.Column == cell.Column;
+                        && msg.Row == position.Row
+                        && msg.Column == position.Column;
                 }))
             .ReturnValue(Task.CompletedTask);
 
@@ -33,7 +34,7 @@ public class PostMessageToBusAndReturnSuccessResponseWhenAtomCanBePlaced : Playe
             LoggerExpectations.Instance());
 
         var response = await handler.Handle(
-            new PlayerMoveRequest(game, cell),
+            new PlayerMoveRequest(game, position),
             CancellationToken.None);
 
         await Assert.That(response.IsSuccessful).IsTrue();

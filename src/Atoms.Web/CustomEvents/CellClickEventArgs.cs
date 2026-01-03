@@ -1,8 +1,6 @@
-﻿using static Atoms.Core.Entities.Game;
+﻿namespace Atoms.Web.CustomEvents;
 
-namespace Atoms.Web.CustomEvents;
-
-public class CellClickEventArgs(Game.GameBoard.Cell cell) : EventArgs
+public class CellClickEventArgs(Position position) : EventArgs
 {
-    public GameBoard.Cell Cell { get; } = cell;
+    public Position Position { get; } = position;
 }

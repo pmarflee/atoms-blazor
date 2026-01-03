@@ -14,7 +14,9 @@ public class PlayerMoveRequestHandler(
         CancellationToken cancellationToken)
     {
         var game = request.Game;
-        var cell = request.Cell;
+        var cell = request.Position is not null 
+            ? game.Board[request.Position.Row, request.Position.Column]
+            : null;
 
         if (game.HasWinner)
         {
@@ -28,9 +30,11 @@ public class PlayerMoveRequestHandler(
                 return new PlayerMoveResponse(PlayerMoveResult.InvalidMove);
             }
 
-            if (await GameStateHasChanged(game, cancellationToken))
+            var (gameStateHasChanged, allowRetry) = await GameStateHasChanged(game, cancellationToken);
+
+            if (gameStateHasChanged)
             {
-                return new PlayerMoveResponse(PlayerMoveResult.GameStateHasChanged);
+                return new PlayerMoveResponse(PlayerMoveResult.GameStateHasChanged, allowRetry);
             }
         }
 
@@ -41,7 +45,8 @@ public class PlayerMoveRequestHandler(
 
         await bus.Send(
             new PlayerMoveMessage(
-                game.Id, cell?.Row, cell?.Column, game.LastUpdatedDateUtc));
+                game.Id, cell?.Row, cell?.Column, 
+                game.LastUpdatedDateUtc));
 
         return new PlayerMoveResponse(PlayerMoveResult.Ok);
     }
@@ -54,14 +59,16 @@ public class PlayerMoveRequestHandler(
             ?? throw new Exception("Game not found");
     }
 
-    async Task<bool> GameStateHasChanged(Game game,
-                                         CancellationToken cancellationToken)
+    async Task<(bool HasChanged, bool AllowRetry)> GameStateHasChanged(
+        Game game, CancellationToken cancellationToken)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync(
             cancellationToken);
 
         var gameDto = await GetGameDTO(game, dbContext, cancellationToken);
+        var changed = gameDto.LastUpdatedDateUtc != game.LastUpdatedDateUtc;
+        var allowRetry = changed && game.Move == gameDto.Move;
 
-        return gameDto.LastUpdatedDateUtc != game.LastUpdatedDateUtc;
+        return new(changed, allowRetry);
     }
 }

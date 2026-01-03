@@ -1,6 +1,4 @@
-﻿using Atoms.Web.CustomEvents;
-
-namespace Atoms.Web.Components.Shared;
+﻿namespace Atoms.Web.Components.Shared;
 
 public partial class CellComponent : Component2Base
 {
@@ -26,7 +24,8 @@ public partial class CellComponent : Component2Base
 
     protected async Task CellClick()
     {
-        await OnCellClicked.InvokeAsync(new CellClickEventArgs(Data));
+        await OnCellClicked.InvokeAsync(
+            new CellClickEventArgs(Data.Position));
     }
 
     protected string AtomClasses(int atom)

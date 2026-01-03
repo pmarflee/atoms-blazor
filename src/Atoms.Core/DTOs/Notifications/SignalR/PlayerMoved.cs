@@ -3,7 +3,7 @@
 public record PlayerMoved(Guid GameId,
                           int? Row,
                           int? Column,
-                          DateTime LastUpdatedDateUtc)
+                          DateTime GameLastUpdatedDateUtc)
 {
     public Guid Id { get; init; } = Guid.NewGuid();
 }
