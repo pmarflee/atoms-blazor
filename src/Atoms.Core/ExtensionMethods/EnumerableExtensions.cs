@@ -2,8 +2,8 @@
 
 internal static class EnumerableExtensions
 {
-    public static string ToCsv<T>(this IEnumerable<T> values, char separator)
+    extension<T>(IEnumerable<T> values)
     {
-        return string.Join(separator, values);
+        public string ToCsv(char separator) => string.Join(separator, values);
     }
 }

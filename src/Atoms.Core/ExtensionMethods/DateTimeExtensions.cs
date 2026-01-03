@@ -2,13 +2,16 @@
 
 public static class DateTimeExtensions
 {
-    public static DateTime TruncateToMicroseconds(this DateTime dateTime)
+    extension(DateTime dateTime)
     {
-        // Postgres stores dates to microsecond precision,
-        // so truncate the sub-microsecond portion of the DateTime value
+        public DateTime TruncateToMicroseconds()
+        {
+            /* Postgres stores dates to microsecond precision,
+               so truncate the sub-microsecond portion of the DateTime value */
 
-        var ticks = dateTime.Ticks - (dateTime.Ticks % 10); // 10 ticks = 1 microsecond
+            var ticks = dateTime.Ticks - (dateTime.Ticks % 10); // 10 ticks = 1 microsecond
 
-        return new DateTime(ticks, dateTime.Kind);
+            return new DateTime(ticks, dateTime.Kind);
+        }
     }
 }
