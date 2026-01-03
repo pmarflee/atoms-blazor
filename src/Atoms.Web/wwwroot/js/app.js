@@ -40,15 +40,6 @@ window.App = class {
             document.getElementById('music').load();
         }
     }
-    static copyToClipboard(text) {
-        navigator.clipboard.writeText(text)
-            .then(function () {
-                vNotify.success({ text: "Link Copied to Clipboard!", title: "Send Invite" });
-            })
-            .catch(function (error) {
-                vNotify.error({ text: error, title: "Send Invite" });
-            });
-    }
     static notify(message) {
         vNotify.info({ text: message })
     }

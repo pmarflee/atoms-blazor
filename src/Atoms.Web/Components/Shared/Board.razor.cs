@@ -307,11 +307,6 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
     protected StorageId LocalStorageId => StateContainer.LocalStorageId;
 
-    protected async Task CopyInviteToClipboard(Uri url)
-    {
-        await JSRuntime.InvokeVoidAsync("App.copyToClipboard", url.ToString());
-    }
-
     async Task PlayMove(Position? position = null)
     {
         PlayerMoveResponse response;

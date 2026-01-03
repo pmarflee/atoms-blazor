@@ -1,8 +1,17 @@
 ﻿using Flurl;
+using System.Net;
 
 namespace Atoms.Core.ValueObjects;
 
-public class InviteLink(string code, string baseUrl)
+public class InviteLink
 {
-    public Uri Url { get; } = new(baseUrl.AppendPathSegments("invites", code));
+    public InviteLink(string code, string baseUrl)
+    {
+        var inviteUrl = baseUrl.AppendPathSegments("invites", code);
+        var message = $"Please join my game!%0A%0A{WebUtility.UrlEncode(inviteUrl)}";
+
+        Url = new("https://wa.me/".SetQueryParam("text", message, true));
+    }
+
+    public Uri Url { get; }
 }

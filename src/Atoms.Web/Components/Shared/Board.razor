@@ -51,8 +51,8 @@
                             }
                             else if (!Game.HasWinner && player.TryCreateInviteLink(NavigationManager.BaseUri, out var inviteLink))
                             {
-                                <a href="" @onclick="() => CopyInviteToClipboard(inviteLink.Url)" @onclick:preventDefault>
-                                    <img src="images/copy.png" title="Copy invite to clipboard" alt="Copy invite to clipboard" />
+                                <a href="@inviteLink.Url" target="_blank">
+                                    <img src="images/Digital_Glyph_Green.png" title="Invite player via WhatsApp" alt="Invite player via WhatsApp" width="20" height="20" />
                                 </a>
                             }
                         </div>
