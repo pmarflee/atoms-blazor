@@ -1,4 +1,6 @@
-﻿window.App = class {
+﻿vNotify.options.position = vNotify.positionOption.bottomRight;
+
+window.App = class {
     static setDefaultColourScheme() {
         document.documentElement.classList.remove('high-contrast');
     }
