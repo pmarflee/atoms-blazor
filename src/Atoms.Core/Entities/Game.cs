@@ -1,5 +1,4 @@
-﻿using MoreLinq;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Atoms.Core.Entities;
 
@@ -77,7 +76,7 @@ public class Game
                && PlayerBelongsToUser(ActivePlayer, userId, localStorageId);
     }
 
-    public bool PlayerBelongsToUser(Player player, 
+    public bool PlayerBelongsToUser(Player player,
                                     UserId? userId, StorageId? localStorageId)
     {
         return player.IsHuman && PlayerBelongsToUser(
@@ -160,7 +159,7 @@ public class Game
         var playerScoresIndexed = playerScores
             .GroupBy(score => score.Score)
             .OrderByDescending(group => group.Key)
-            .Select((g, i) => new { Item = g, Index = i});
+            .Select((g, i) => new { Item = g, Index = i });
 
         var playerScoresRanked = from item in playerScoresIndexed
                                  let rank = item.Index + 1
@@ -190,18 +189,18 @@ public class Game
             NumberOfPlayers = Players.Count,
             AtomShape = AtomShape,
             ColourScheme = ColourScheme,
-            HasSound = hasSound
+            HasSound = hasSound,
+            IsRematch = true
         };
 
         List<Player> players = [];
-
-        var losingHumanPlayers = Players
-            .Where(p => p.IsDead && p.IsHuman)
-            .ToList();
+        List<Player> losingHumanPlayers = [..
+            Players.Where(p => p.IsDead && p.IsHuman)
+        ];
 
         if (losingHumanPlayers.Count > 0)
         {
-            players.AddRange(losingHumanPlayers.RandomSubset(1));
+            players.AddRange(losingHumanPlayers.SingleRandom());
         }
 
         if (players.Count == 0)
@@ -212,20 +211,28 @@ public class Game
 
             if (losingCPUPlayers.Count > 0)
             {
-                players.AddRange(losingCPUPlayers.RandomSubset(1));
+                players.AddRange(losingCPUPlayers.SingleRandom());
             }
         }
 
-        var otherPlayers = Players.Where(p => !players.Contains(p));
+        var otherPlayers = Players
+            .Where(p => !players.Contains(p))
+            .Shuffle();
 
-        players.AddRange(Enumerable.Shuffle(otherPlayers));
+        players.AddRange(otherPlayers);
 
-        var playerOptions = players
-            .Select((p, i) => new { Player = p, Number = i + 1 })
-            .Select(p => new GameMenuOptions.Player { Number = p.Number, Type = p.Player.Type })
-            .ToList();
-
-        options.Players = playerOptions;
+        options.Players = [.. players
+            .Index()
+            .Select(p => new GameMenuOptions.Player
+            {
+                Number = p.Index + 1,
+                Type = p.Item.Type,
+                UserIdentity = p.Item.Type == PlayerType.Human
+                    ? new(p.Item.UserId, p.Item.Name)
+                    : null,
+                LocalStorageId = p.Item.LocalStorageId
+            })
+        ];
 
         return options;
     }

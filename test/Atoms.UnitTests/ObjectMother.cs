@@ -89,12 +89,14 @@ internal static class ObjectMother
     public static Player CreateHumanPlayer(
         Guid id, int number,
         UserId? userId = null,
-        StorageId? localStorageId = null)
+        StorageId? localStorageId = null,
+        string? name = null)
     {
         return new(
             id, number, PlayerType.Human,
             userId: userId,
-            localStorageId: localStorageId);
+            localStorageId: localStorageId,
+            name: name);
     }
 
     public static Player CreateCPUPlayer(Guid id,

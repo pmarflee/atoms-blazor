@@ -16,22 +16,39 @@ public static class GameFactory
         var optionsPlayers = options.Players
             .Take(options.NumberOfPlayers)
             .ToList();
-        var firstHumanPlayer = optionsPlayers.FirstOrDefault(p => p.Type == PlayerType.Human);
+        var foundHumanPlayer = false;
 
-        List<Game.Player> players =
-            [.. optionsPlayers
-                .Select(p =>
+        List<Game.Player> players = [.. optionsPlayers
+            .Select(optionsPlayer =>
+            {
+                var playerId = Guid.NewGuid();
+                UserIdentity? playerIdentity;
+                StorageId? playerLocalStorageId;
+
+                if (!options.IsRematch
+                    && !foundHumanPlayer
+                    && optionsPlayer.Type == PlayerType.Human)
                 {
-                    var playerId = Guid.NewGuid();
+                    playerIdentity = userIdentity;
+                    playerLocalStorageId = localStorageId;
+                    foundHumanPlayer = true;
+                }
+                else
+                {
+                    playerIdentity = optionsPlayer.UserIdentity;
+                    playerLocalStorageId = optionsPlayer.LocalStorageId;
+                }
 
-                    return new Game.Player(
-                        playerId, p.Number, p.Type,
-                        p == firstHumanPlayer ? userIdentity?.Id : null,
-                        p == firstHumanPlayer ? userIdentity?.Name : null,
-                        p == firstHumanPlayer ? userIdentity?.GetAbbreviatedName() : null,
-                        playerStrategyFactory.Invoke(p.Type, rng),
-                        p == firstHumanPlayer ? localStorageId : null);
-                }) ];
+                return new Game.Player(
+                    playerId,
+                    optionsPlayer.Number,
+                    optionsPlayer.Type,
+                    playerIdentity?.Id,
+                    playerIdentity?.Name,
+                    playerIdentity?.GetAbbreviatedName(),
+                    playerStrategyFactory.Invoke(optionsPlayer.Type, rng),
+                    playerLocalStorageId);
+            })];
 
         return new Game(gameId,
                         Constants.Rows,

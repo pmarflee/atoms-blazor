@@ -14,10 +14,12 @@ public class CreateOptionsForRematch
     }
 
     [Test, MethodDataSource(nameof(GetTestData))]
-    public async Task Test(GameEntity game, bool hasSound, GameMenuOptions expected)
+    public async Task TestCreateOptions(
+        GameEntity game, bool hasSound, GameMenuOptions expected)
     {
-        await Assert.That(game.CreateOptionsForRematch(hasSound))
-            .IsEquivalentTo(expected);
+        var options = game.CreateOptionsForRematch(hasSound);
+
+        await Assert.That(options).IsEquivalentTo(expected);
     }
 
     [Test]
@@ -79,16 +81,36 @@ public class CreateOptionsForRematch
                 NumberOfPlayers = game1.Players.Count,
                 Players =
                 [
-                    new GameMenuOptions.Player { Number = 1, Type = PlayerType.Human },
-                    new GameMenuOptions.Player { Number = 2, Type = PlayerType.Human }
-                ]
+                    new GameMenuOptions.Player
+                    {
+                        Number = 1,
+                        Type = PlayerType.Human,
+                        UserIdentity = new Atoms.Core.Entities.UserIdentity()
+                    },
+                    new GameMenuOptions.Player
+                    {
+                        Number = 2,
+                        Type = PlayerType.Human,
+                        UserIdentity = new Atoms.Core.Entities.UserIdentity(),
+                        LocalStorageId = game1.Players[0].LocalStorageId
+                    }
+                ],
+                IsRematch = true
             }
         );
 
         var game2 = ObjectMother.Game(
             players: [
-                ObjectMother.CreateHumanPlayer(Guid.NewGuid(), 1),
-                ObjectMother.CreateCPUPlayer(Guid.NewGuid(), 2, PlayerType.CPU_Easy)
+                ObjectMother.CreateHumanPlayer(
+                    Guid.NewGuid(),
+                    1,
+                    new(Guid.NewGuid().ToString()),
+                    ObjectMother.LocalStorageId,
+                    "Paul"),
+                ObjectMother.CreateCPUPlayer(
+                    Guid.NewGuid(),
+                    2,
+                    PlayerType.CPU_Easy)
             ],
             cells: [new CellState(2, 1, 1, 2), new CellState(1, 2, 1, 1)],
             move: 4, round: 2);
@@ -106,9 +128,22 @@ public class CreateOptionsForRematch
                 NumberOfPlayers = game2.Players.Count,
                 Players =
                 [
-                    new GameMenuOptions.Player { Number = 1, Type = PlayerType.CPU_Easy },
-                    new GameMenuOptions.Player { Number = 2, Type = PlayerType.Human }
-                ]
+                    new GameMenuOptions.Player
+                    {
+                        Number = 1,
+                        Type = PlayerType.CPU_Easy
+                    },
+                    new GameMenuOptions.Player
+                    {
+                        Number = 2,
+                        Type = PlayerType.Human,
+                        UserIdentity = new Atoms.Core.Entities.UserIdentity(
+                            game2.Players[0].UserId,
+                            game2.Players[0].Name),
+                        LocalStorageId = game2.Players[0].LocalStorageId
+                    }
+                ],
+                IsRematch = true
             }
         );
     }

@@ -17,6 +17,8 @@ public class GameMenuOptions
 
     public bool HasSound { get; set; }
 
+    public bool IsRematch { get; set; }
+
     public static GameMenuOptions CreateForDebug() =>
         new()
         {
@@ -34,5 +36,9 @@ public class GameMenuOptions
 
         [JsonConverter(typeof(SmartEnumNameConverter<PlayerType, int>))]
         public required PlayerType Type { get; set; }
+
+        public UserIdentity? UserIdentity { get; set; }
+
+        public StorageId? LocalStorageId { get; set; }
     }
 }

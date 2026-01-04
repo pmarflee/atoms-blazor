@@ -2,7 +2,7 @@
 
 namespace Atoms.Core.Entities;
 
-public record UserIdentity(UserId? Id, string? Name)
+public record UserIdentity(UserId? Id = null, string? Name = null)
 {
     public UserIdentity(string? name) : this(null, name) { }
 
