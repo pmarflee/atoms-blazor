@@ -78,6 +78,8 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
                 Guid.NewGuid(), options, userIdentity);
             var response = await Mediator.Send(request);
 
+            _opponentConnectionIds ??= await GetGameConnections();
+
             if (_opponentConnectionIds?.Count > 0)
             {
                 var challengePlayer = Game.Players

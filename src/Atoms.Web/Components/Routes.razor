@@ -51,7 +51,7 @@
         builder.Append($"<p>{notification.PlayerName} challenged you to a game!</p>");
         builder.Append($"<p>Click <a href=\"{Navigation.GetAbsoluteGameUrl(notification.GameId)}\" target=\"_blank\">here</a> to play</p>");
 
-        await JSRuntime.InvokeVoidAsync("App.notify", builder.ToString(), 60000);
+        await JSRuntime.InvokeVoidAsync("App.notify", builder.ToString(), 20000);
     }
 
     public async ValueTask DisposeAsync()
