@@ -12,13 +12,16 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
     const int AtomExplodedDelay = 50;
     const int PlayerMovedDelay = 300;
 
+    [CascadingParameter]
+    Guid GameId { get; set; }
+
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
     [Inject]
     protected NavigationManager NavigationManager { get; set; } = default!;
 
-    [Inject]
+    [CascadingParameter]
     INotificationService NotificationService { get; set; } = default!;
 
     [Inject]
@@ -33,6 +36,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
     bool _disableClicks;
     readonly CancellationToken _cancellationToken = new();
     bool _handlingPlayerMove;
+    List<string>? _opponentConnectionIds;
 
     protected async override Task OnInitializedAsync()
     {
@@ -43,8 +47,6 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         NotificationService.OnPlayerMoved += PlayerMoved;
         NotificationService.OnGameReloadRequired += ReloadGameIfRequired;
         NotificationService.OnPlayerJoined += PlayerJoined;
-
-        await NotificationService.Start(_cancellationToken);
     }
 
     protected async Task CellClicked(CellClickEventArgs eventArgs)
@@ -70,10 +72,33 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         {
             var hasSound = await BrowserStorageService.GetSound();
             var options = Game.CreateOptionsForRematch(hasSound);
-            var userIdentity = new UserIdentity(UserId, await GetUserName());
+            var username = await GetUserName();
+            var userIdentity = new UserIdentity(UserId, username);
             var request = new CreateNewGameRequest(
                 Guid.NewGuid(), options, userIdentity);
             var response = await Mediator.Send(request);
+
+            if (_opponentConnectionIds?.Count > 0)
+            {
+                var challengePlayer = Game.Players
+                    .Where(
+                        player => Game.PlayerBelongsToUser(
+                            player, UserId, LocalStorageId))
+                    .OrderByDescending(player => !string.IsNullOrEmpty(player.Name))
+                    .FirstOrDefault();
+
+                if (challengePlayer is not null)
+                {
+                    Rematch notification = new(
+                        request.GameId,
+                        _opponentConnectionIds,
+                        challengePlayer.Name ?? $"Player {challengePlayer.Number}");
+
+                    await NotificationService.NotifyRematch(
+                        notification,
+                        _cancellationToken);
+                }
+            }
 
             NavigationManager.NavigateToGame(response.Game);
         }
@@ -124,6 +149,8 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
         if (Game.HasWinner)
         {
+            _opponentConnectionIds = await GetGameConnections();
+
             await JSRuntime.InvokeVoidAsync("App.stopMusic");
         }
 
@@ -375,9 +402,11 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
             return;
         }
 
-        await NotificationService.JoinGame(Game!, _cancellationToken);
+        var game = Game!;
 
-        if (!isReload && !Game!.HasWinner && !Game!.ActivePlayer.IsHuman)
+        await NotificationService.JoinGame(game.Id, _cancellationToken);
+
+        if (!isReload && !Game!.HasWinner && !game.ActivePlayer.IsHuman)
         {
             await PlayMove();
         }
@@ -397,21 +426,26 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         await JSRuntime.InvokeVoidAsync("App.notify", message);
     }
 
+    async Task<List<string>> GetGameConnections()
+    {
+        return await NotificationService.GetOpponentConnections(GameId);
+    }
+
     public async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
 
         try
         {
-            if (Game is not null)
-            {
-                await NotificationService.LeaveGame(Game, _cancellationToken);
-            }
+            await NotificationService.LeaveGame(GameId, _cancellationToken);
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "NotificationService.LeaveGame");
         }
 
-        await NotificationService.DisposeAsync();
+        NotificationService.OnPlayerMoved -= PlayerMoved;
+        NotificationService.OnGameReloadRequired -= ReloadGameIfRequired;
+        NotificationService.OnPlayerJoined -= PlayerJoined;
     }
 }

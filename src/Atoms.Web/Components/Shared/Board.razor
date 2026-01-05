@@ -1,4 +1,5 @@
-﻿@inherits BoardComponent
+﻿@using System.Threading.Tasks
+@inherits BoardComponent
 
 @if (Game is not null)
 {
@@ -18,7 +19,11 @@
                 }
             </span>
             @(" wins! ")
-            <button @onclick="@RematchClick">Rematch</button>
+
+            @if (!Debug.HasValue)
+            {
+                <button @onclick="@RematchClick">Rematch</button>
+            }
         }
     </div>
     <div id="board">

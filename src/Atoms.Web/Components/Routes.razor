@@ -1,13 +1,22 @@
 ﻿@using System.Security.Claims
+@using Atoms.Core.DTOs.Notifications.SignalR
+
+@implements IAsyncDisposable
+
+@inject INotificationService NotificationService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
 
 <CascadingAuthenticationState>
     <CascadingValue Value="AuthenticatedUser">
-        <Router AppAssembly="typeof(Program).Assembly">
-            <Found Context="routeData">
-                <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-                <FocusOnNavigate RouteData="routeData" Selector="h1" />
-            </Found>
-        </Router>
+        <CascadingValue Value="NotificationService">
+            <Router AppAssembly="typeof(Program).Assembly">
+                <Found Context="routeData">
+                    <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+                    <FocusOnNavigate RouteData="routeData" Selector="h1" />
+                </Found>
+            </Router>
+        </CascadingValue>
     </CascadingValue>
 </CascadingAuthenticationState>
 
@@ -16,6 +25,8 @@
     Task<AuthenticationState>? _authenticationState { get; set; }
 
     ClaimsPrincipal? AuthenticatedUser;
+
+    readonly CancellationToken _cancellationToken = new();
 
     protected async override Task OnInitializedAsync()
     {
@@ -28,5 +39,25 @@
                 AuthenticatedUser = state.User;
             }
         }
+
+        await NotificationService.Start(_cancellationToken);
+
+        NotificationService.OnRematch += NotifyRematch;
+    }
+
+    async Task NotifyRematch(Rematch notification)
+    {
+        var builder = new StringBuilder();
+        builder.Append($"<p>{notification.PlayerName} challenged you to a game!</p>");
+        builder.Append($"<p>Click <a href=\"{Navigation.GetAbsoluteGameUrl(notification.GameId)}\" target=\"_blank\">here</a> to play</p>");
+
+        await JSRuntime.InvokeVoidAsync("App.notify", builder.ToString(), 60000);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        NotificationService.OnRematch -= NotifyRematch;
+
+        await NotificationService.DisposeAsync();
     }
 }

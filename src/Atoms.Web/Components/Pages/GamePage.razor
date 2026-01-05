@@ -2,5 +2,7 @@
 
 @page "/games/{gameId:guid}"
 
-<Board Debug=@Debug
-       OnCellClicked=@CellClicked />
+<CascadingValue Value="GameId">
+    <Board Debug=@Debug
+           OnCellClicked=@CellClicked />
+</CascadingValue>

@@ -40,7 +40,10 @@ window.App = class {
             document.getElementById('music').load();
         }
     }
-    static notify(message) {
-        vNotify.info({ text: message })
+    static notify(message, visibleDuration) {
+        vNotify.info({
+            text: message,
+            visibleDuration: visibleDuration ?? vNotify.options.visibleDuration
+        })
     }
 }

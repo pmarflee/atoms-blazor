@@ -39,6 +39,11 @@ public class GameHub : Hub<IGameClient>
         if (_groups.TryGetValue(gameId, out var group))
         {
             group.TryRemove(Context.ConnectionId, out _);
+
+            if (group.IsEmpty)
+            {
+                _groups.TryRemove(gameId, out _);
+            }
         }
 
         await Clients
@@ -46,20 +51,20 @@ public class GameHub : Hub<IGameClient>
             .ClientDisconnected(new(Context.ConnectionId));
     }
 
-    static List<string> GetGameConnections(Guid gameId)
+#pragma warning disable CA1822 // Mark members as static
+    public List<string> GetConnections(Guid gameId)
+#pragma warning restore CA1822 // Mark members as static
     {
         return _groups.TryGetValue(gameId, out var group) 
             ? [.. group.Keys]
             : [];
     }
 
-    public async Task<List<string>> NotifyPlayerMoved(PlayerMoved notification)
+    public async Task NotifyPlayerMoved(PlayerMoved notification)
     {
         await Clients
             .Group(GroupName(notification.GameId))
             .PlayerMoved(notification);
-
-        return GetGameConnections(notification.GameId);
     }
 
     public async Task NotifyGameReloadRequired(GameReloadRequired notification)
@@ -72,6 +77,12 @@ public class GameHub : Hub<IGameClient>
         await Clients
             .Group(GroupName(notification.GameId))
             .PlayerJoined(notification);
+    }
+
+    public async Task NotifyRematch(Rematch notification)
+    {
+        await Clients.Clients(notification.ConnectionIds)
+            .Rematch(notification);
     }
 
     static string GroupName(Guid gameId) => gameId.ToString();

@@ -8,4 +8,5 @@ public interface IGameClient
     Task ClientDisconnected(ClientDisconnected notification);
     Task GameReloadRequired();
     Task PlayerJoined(PlayerJoined notification);
+    Task Rematch(Rematch notification);
 }

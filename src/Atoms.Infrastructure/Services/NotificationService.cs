@@ -16,6 +16,7 @@ public class NotificationService : INotificationService, IAsyncDisposable
     public event Func<ClientDisconnected, Task>? OnClientDisconnected;
     public event Func<GameReloadRequired, Task>? OnGameReloadRequired;
     public event Func<PlayerJoined, Task>? OnPlayerJoined;
+    public event Func<Rematch, Task>? OnRematch;
 
     public NotificationService(
         IOptions<AppSettings> appSettings,
@@ -68,20 +69,28 @@ public class NotificationService : INotificationService, IAsyncDisposable
                     await OnPlayerJoined.Invoke(notification);
                 }
             });
+
+        _connection.On<Rematch>(
+            nameof(IGameClient.Rematch),
+            async notification =>
+            {
+                if (OnRematch is not null)
+                {
+                    await OnRematch.Invoke(notification);
+                }
+            });
     }
 
     public async Task Start(CancellationToken cancellationToken = default)
         => await _connection.StartAsync(cancellationToken);
 
-    public async Task<List<string>> NotifyPlayerMoved(
+    public async Task NotifyPlayerMoved(
         PlayerMoved notification, CancellationToken cancellationToken = default)
     {
-        var connections = await _connection.InvokeAsync<List<string>>(
+        await _connection.InvokeAsync(
             nameof(GameHub.NotifyPlayerMoved),
             notification,
             cancellationToken: cancellationToken);
-
-        return [.. connections.Where(c => c != _connection.ConnectionId)];
     }
 
     public async Task NotifyGameReloadRequired(
@@ -103,34 +112,6 @@ public class NotificationService : INotificationService, IAsyncDisposable
     }
 
     public async Task JoinGame(
-        Game game,
-        CancellationToken cancellationToken = default)
-    {
-        await JoinGame(game.Id, cancellationToken);
-    }
-
-    public async Task LeaveGame(
-        Game game,
-        CancellationToken cancellationToken = default)
-    {
-        await LeaveGame(game.Id, cancellationToken);
-    }
-
-    public async Task JoinGame(
-        GameDTO game,
-        CancellationToken cancellationToken = default)
-    {
-        await JoinGame(game.Id, cancellationToken);
-    }
-
-    public async Task LeaveGame(
-        GameDTO game,
-        CancellationToken cancellationToken = default)
-    {
-        await LeaveGame(game.Id, cancellationToken);
-    }
-
-    async Task JoinGame(
         Guid gameId,
         CancellationToken cancellationToken = default)
     {
@@ -146,6 +127,28 @@ public class NotificationService : INotificationService, IAsyncDisposable
         await _connection.InvokeAsync(nameof(GameHub.LeaveGame),
                                       gameId,
                                       cancellationToken);
+    }
+
+    public async Task<List<string>> GetOpponentConnections(
+        Guid gameId,
+        CancellationToken cancellationToken = default)
+    {
+        var connectionIds = await _connection.InvokeAsync<List<string>>(
+            nameof(GameHub.GetConnections),
+            gameId,
+            cancellationToken);
+
+        return [.. connectionIds.Where(id => id != _connection.ConnectionId)];
+    }
+
+    public async Task NotifyRematch(
+        Rematch notification,
+        CancellationToken cancellationToken = default)
+    {
+        await _connection.InvokeAsync(
+            nameof(GameHub.NotifyRematch),
+            notification,
+            cancellationToken);
     }
 
     public ValueTask DisposeAsync()

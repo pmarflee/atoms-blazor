@@ -71,14 +71,14 @@ public class PlayerMoveMessageHandler(
             await using var notificationService = serviceScope.ServiceProvider.GetRequiredService<INotificationService>();
 
             await notificationService.Start(cancellationToken);
-            await notificationService.JoinGame(game, cancellationToken);
+            await notificationService.JoinGame(game.Id, cancellationToken);
 
             if (logger.IsEnabled(LogLevel.Debug))
             {
                 logger.LogDebug("Notifying players of move. GameId='{GameId}'.", game.Id);
             }
 
-            var connections = await notificationService.NotifyPlayerMoved(
+            await notificationService.NotifyPlayerMoved(
                 new(game.Id, message.Row, message.Column, lastUpdatedDateUtc),
                 cancellationToken);
 
