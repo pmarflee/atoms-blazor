@@ -1,37 +1,18 @@
 ﻿namespace Atoms.UseCases.CreateNewGame;
 
 public class CreateNewGameRequestHandler(
-    ILocalStorageUserService localStorageUserService,
-    CreateGame gameFactory,
-    IDbContextFactory<ApplicationDbContext> dbContextFactory)
+    IGameCreationService gameCreationService)
     : IRequestHandler<CreateNewGameRequest, CreateNewGameResponse>
 {
     public async Task<CreateNewGameResponse> Handle(
         CreateNewGameRequest request,
         CancellationToken cancellationToken)
     {
-        var localStorageId = await localStorageUserService.GetOrAddLocalStorageId(
+        var game = await gameCreationService.CreateGame(
+            request.Options,
+            request.UserIdentity,
             cancellationToken);
 
-        var game = gameFactory.Invoke(
-            request.GameId, request.Options,
-            localStorageId, request.UserIdentity);
-
-        await SaveGame(game, cancellationToken);
-
-        return new CreateNewGameResponse(game);
-    }
-
-    async Task SaveGame(Game game,
-                        CancellationToken cancellationToken)
-    {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync(
-            cancellationToken);
-
-        var gameDto = GameDTO.FromEntity(game);
-
-        await dbContext.Games.AddAsync(gameDto, cancellationToken);
-
-        await dbContext.SaveChangesAsync(cancellationToken);
+        return new(game);
     }
 }

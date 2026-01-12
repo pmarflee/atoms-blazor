@@ -9,7 +9,7 @@ public partial class MenuComponent : Component2Base
     protected NavigationManager NavigationManager { get; set; } = default!;
 
     [Parameter]
-    public EventCallback<Game> OnCreateGame { get; set; }
+    public EventCallback<GameDTO> OnCreateGame { get; set; }
 
     protected GameMenuOptions Options { get; set; } = default!;
 
@@ -30,7 +30,6 @@ public partial class MenuComponent : Component2Base
     {
         var response = await Mediator.Send(
             new CreateNewGameRequest(
-                Guid.NewGuid(),
                 Options,
                 new(UserId, await GetUserName())));
 

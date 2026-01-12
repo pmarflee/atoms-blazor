@@ -4,7 +4,7 @@ using Atoms.Core.State;
 namespace Atoms.UseCases.UpdateGameFromPlayerMoveNotification;
 
 public class UpdateGameFromPlayerMoveNotificationRequestHandler(
-    IGameService gameService, GameStateContainer stateContainer)
+    IGameMoveService gameService, GameStateContainer stateContainer)
     : IRequestHandler<UpdateGameFromPlayerMoveNotificationRequest>
 {
     public async Task Handle(UpdateGameFromPlayerMoveNotificationRequest request,

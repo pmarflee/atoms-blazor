@@ -12,7 +12,7 @@ public class BoardStateShouldMatchThatOfOriginalGame
     {
         var game = ObjectMother.Game();
         var moves = new Moves().Take(numberOfMoves);
-        var gameService = new GameService();
+        var gameService = new GameMoveService();
 
         foreach (var (row, column) in moves)
         {

@@ -27,18 +27,19 @@ public partial class HomePageComponent : Component2Base, IDisposable
         }
     }
 
-    protected void OnCreateGame(Game game)
+    protected void OnCreateGame(GameDTO gameDto)
     {
-        var firstHumanPlayer = game.Players.FirstOrDefault(p => p.IsHuman);
+        var firstHumanPlayer = gameDto.Players.FirstOrDefault(
+            p => p.PlayerTypeId == PlayerType.Human);
 
         if (firstHumanPlayer is not null 
-            && string.IsNullOrEmpty(firstHumanPlayer.Name))
+            && string.IsNullOrEmpty(firstHumanPlayer.AbbreviatedName))
         {
-            Navigation.NavigateToSetUserNamePage(game);
+            Navigation.NavigateToSetUserNamePage(gameDto);
         }
         else
         {
-            Navigation.NavigateToGame(game);
+            Navigation.NavigateToGame(gameDto);
         }
     }
 

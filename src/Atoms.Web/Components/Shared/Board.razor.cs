@@ -1,9 +1,9 @@
 ﻿using Atoms.Core.Test;
-using Atoms.UseCases.CreateNewGame;
 using Atoms.UseCases.PlayerMove;
 using Atoms.Core.DTOs.Notifications;
 using Atoms.UseCases.UpdateGameFromPlayerMoveNotification;
 using Atoms.Core.DTOs.Notifications.SignalR;
+using Atoms.UseCases.CreateRematchGame;
 
 namespace Atoms.Web.Components.Shared;
 
@@ -70,37 +70,11 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
     {
         if (Game is not null)
         {
-            var hasSound = await BrowserStorageService.GetSound();
-            var options = Game.CreateOptionsForRematch(hasSound);
             var username = await GetUserName();
-            var userIdentity = new UserIdentity(UserId, username);
-            var request = new CreateNewGameRequest(
-                Guid.NewGuid(), options, userIdentity);
+            var request = new CreateRematchGameRequest(
+                Game.Id, new UserIdentity(UserId, username),
+                _opponentConnectionIds ?? await GetGameConnections());
             var response = await Mediator.Send(request);
-
-            _opponentConnectionIds ??= await GetGameConnections();
-
-            if (_opponentConnectionIds?.Count > 0)
-            {
-                var challengePlayer = Game.Players
-                    .Where(
-                        player => Game.PlayerBelongsToUser(
-                            player, UserId, LocalStorageId))
-                    .OrderByDescending(player => !string.IsNullOrEmpty(player.Name))
-                    .FirstOrDefault();
-
-                if (challengePlayer is not null)
-                {
-                    Rematch notification = new(
-                        request.GameId,
-                        _opponentConnectionIds,
-                        challengePlayer.Name ?? $"Player {challengePlayer.Number}");
-
-                    await NotificationService.NotifyRematch(
-                        notification,
-                        _cancellationToken);
-                }
-            }
 
             NavigationManager.NavigateToGame(response.Game);
         }
@@ -272,7 +246,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
                 .TakeWhile((move, index) =>
                     index < Debug!.Value && Game?.HasWinner == false);
 
-            var gameService = new GameService();
+            var gameService = new GameMoveService();
 
             foreach (var (row, column) in moves)
             {

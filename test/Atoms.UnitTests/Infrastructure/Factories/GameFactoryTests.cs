@@ -15,20 +15,22 @@ public class GameFactoryTests
     [Test]
     public async Task ShouldCreateGameWithSpecifiedPlayers()
     {
-        var game = CreateGame();
+        var gameDto = CreateGame();
 
         using var _ = Assert.Multiple();
 
-        await Assert.That(game.Players.Count)
+        await Assert.That(gameDto.Players.Count)
             .IsEqualTo(ObjectMother.GameMenuOptions.NumberOfPlayers);
 
         for (var i = 0; i < ObjectMother.GameMenuOptions.NumberOfPlayers; i++)
         {
-            await Assert.That(game.Players[i].Number)
+            var player = gameDto.Players.ElementAt(i);
+
+            await Assert.That(player.Number)
                 .IsEqualTo(ObjectMother.GameMenuOptions.Players[i].Number);
-            await Assert.That(game.Players[i].Type)
+            await Assert.That(player.PlayerTypeId)
                 .IsEqualTo(ObjectMother.GameMenuOptions.Players[i].Type);
-            await Assert.That(game.Players[i].IsDead).IsFalse();
+            await Assert.That(player.IsActive).IsEqualTo(i == 0);
         }
     }
 
@@ -50,13 +52,28 @@ public class GameFactoryTests
             .IsEqualTo(ObjectMother.GameMenuOptions.AtomShape);
     }
 
-    static Game CreateGame()
+    [Test]
+    public async Task ShouldCreateGameWithCreationDateSetToCurrentUtcDateTime()
     {
+        var utcNow = new DateTime(2026, 1, 11, 11, 31, 0);
+        var game = CreateGame(utcNow);
+
+        await Assert.That(game.CreatedDateUtc)
+            .IsEqualTo(utcNow);
+    }
+
+    static GameDTO CreateGame(DateTime? utcNow = null)
+    {
+        var dateTimeServiceExpectations = new IDateTimeServiceCreateExpectations();
+        dateTimeServiceExpectations.Setups
+            .UtcNow
+            .Gets().ReturnValue(utcNow ?? DateTime.UtcNow);
+
         return GameFactory.Create(
             ObjectMother.CreateRng,
-            ObjectMother.CreatePlayerStrategy,
-            ObjectMother.GameId,
+            dateTimeServiceExpectations.Instance(),
             ObjectMother.GameMenuOptions,
-            ObjectMother.LocalStorageId);
+            ObjectMother.LocalStorageId,
+            gameId: ObjectMother.GameId);
     }
 }

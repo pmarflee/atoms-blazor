@@ -9,7 +9,9 @@
                 <PropertyColumn Property="game => game.LastUpdatedDateUtc" Title="Created/Updated" Format="d" Sortable=@false IsDefaultSortColumn=@true InitialSortDirection=@SortDirection.Descending />
                 <PropertyColumn Property="game => game.Opponents" Title="Opponents" Tooltip=@true TooltipText="game => game.Opponents" />
                 <TemplateColumn>
-                    <FluentButton Appearance=@Appearance.Accent OnClick="@(() => OpenGame(context))">Open</FluentButton>
+                    <FluentButton Appearance=@Appearance.Lightweight OnClick="@(() => OpenGame(context))" Title="Open">
+                        <FluentIcon Value="@(new Icons.Regular.Size28.Open())" />
+                    </FluentButton>
                 </TemplateColumn>
             </FluentDataGrid>
             <FluentPaginator State=@ActiveGamesPagination />
@@ -22,7 +24,12 @@
                 <PropertyColumn Property="game => game.Opponents" Title="Opponents" Tooltip=@true TooltipText="game => game.Opponents" />
                 <PropertyColumn Property="game => game.Winner" Title="Winner" Tooltip=@true TooltipText="game => game.Winner" />
                 <TemplateColumn>
-                    <FluentButton Appearance=@Appearance.Accent OnClick="@(() => OpenGame(context))">Open</FluentButton>
+                    <FluentButton Appearance=@Appearance.Lightweight OnClick="@(() => OpenGame(context))" Title="Open">
+                        <FluentIcon Value="@(new Icons.Regular.Size28.Open())" />
+                    </FluentButton>
+                    <FluentButton Appearance=@Appearance.Lightweight OnClick="@(() => Rematch(context))" Title="Rematch">
+                        <FluentIcon Value="@(new Icons.Regular.Size28.ArrowClockwise())" />
+                    </FluentButton>
                 </TemplateColumn>
             </FluentDataGrid>
             <FluentPaginator State=@InactiveGamesPagination />

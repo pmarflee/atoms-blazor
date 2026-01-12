@@ -15,7 +15,7 @@ public class GameInfoDTO
 }
 
 public class PlayerTypeDTO
-{ 
+{
     public required PlayerType Id { get; init; }
     public required string Name { get; init; }
     public required string Description { get; init; }
@@ -47,6 +47,74 @@ public class GameDTO
     public DateTime CreatedDateUtc { get; set; }
     public DateTime LastUpdatedDateUtc { get; set; }
 
+    public static GameDTO NewGame(
+        Guid id, UserIdentity? userIdentity, StorageId localStorageId,
+        GameMenuOptions options, IRandomNumberGenerator rng,
+        DateTime createdDateUtc)
+    {
+        var gameDto = new GameDTO
+        {
+            Id = id,
+            UserId = userIdentity?.Id,
+            LocalStorageUserId = localStorageId.Value,
+            ColourScheme = options.ColourScheme,
+            AtomShape = options.AtomShape,
+            Board = BoardDTO.NewBoard(),
+            IsActive = true,
+            Move = 1,
+            Round = 1,
+            Rng = RngDTO.FromEntity(rng),
+            CreatedDateUtc = createdDateUtc,
+            LastUpdatedDateUtc = createdDateUtc
+        };
+
+        var optionsPlayers = options.Players
+            .Take(options.NumberOfPlayers)
+            .ToList();
+        var foundHumanPlayer = false;
+
+        List<PlayerDTO> players = [.. optionsPlayers
+            .Index()
+            .Select(pair =>
+            {
+                var playerId = Guid.NewGuid();
+                UserIdentity? playerIdentity;
+                StorageId? playerLocalStorageId;
+
+                if (!options.IsRematch
+                    && !foundHumanPlayer
+                    && pair.Item.Type == PlayerType.Human)
+                {
+                    playerIdentity = userIdentity;
+                    playerLocalStorageId = localStorageId;
+                    foundHumanPlayer = true;
+                }
+                else
+                {
+                    playerIdentity = pair.Item.UserIdentity;
+                    playerLocalStorageId = pair.Item.LocalStorageId;
+                }
+
+                return new PlayerDTO
+                {
+                    Id = playerId,
+                    Number = pair.Item.Number,
+                    PlayerTypeId = pair.Item.Type,
+                    LocalStorageUserId = playerLocalStorageId?.Value,
+                    UserId = playerIdentity?.Id,
+                    AbbreviatedName = playerIdentity?.GetAbbreviatedName(),
+                    IsActive = pair.Index == 0
+                };
+            })];
+
+        foreach (var player in players)
+        {
+            gameDto.Players.Add(player);
+        }
+
+        return gameDto;
+    }
+
     public static GameDTO FromEntity(Game game)
     {
         var gameDto = new GameDTO
@@ -60,7 +128,7 @@ public class GameDTO
             IsActive = !game.HasWinner,
             Move = game.Move,
             Round = game.Round,
-            Rng = RngDTO.FromEntity(game.Rng),
+            Rng = RngDTO.FromEntity(game.Rng!),
             CreatedDateUtc = game.CreatedDateUtc,
             LastUpdatedDateUtc = game.LastUpdatedDateUtc
         };
@@ -84,12 +152,12 @@ public class GameDTO
         return gameDto;
     }
 
-    public async Task<Game> ToEntity(CreateRng rngFactory,
-                                     CreatePlayerStrategy playerStrategyFactory,
-                                     GetUserById getUserById,
-                                     GetLocalStorageUserById getLocalStorageUserById)
+    public async Task<Game> ToEntity(CreateRng? rngFactory = null,
+                                     CreatePlayerStrategy? playerStrategyFactory = null,
+                                     GetUserById? getUserById = null,
+                                     GetLocalStorageUserById? getLocalStorageUserById = null)
     {
-        var rng = rngFactory.Invoke(Rng.Seed, Rng.Iterations);
+        var rng = rngFactory?.Invoke(Rng.Seed, Rng.Iterations);
 
         List<Player> players = [];
         Player? activePlayer = null;
@@ -104,7 +172,7 @@ public class GameDTO
         foreach (var playerDto in Players.OrderBy(dto => dto.Number))
         {
             var user = playerDto.UserId != null
-                ? (await getUserById.Invoke(playerDto.UserId!))
+                ? (await getUserById!.Invoke(playerDto.UserId!))
                 : null;
 
             StorageId? localStorageId;
@@ -114,7 +182,7 @@ public class GameDTO
             {
                 localStorageId = (StorageId?)new StorageId(playerDto.LocalStorageUserId.Value);
                 localStorageUser = user is null
-                    ? await getLocalStorageUserById.Invoke(localStorageId!)
+                    ? await getLocalStorageUserById!.Invoke(localStorageId!)
                     : null;
             }
             else
@@ -129,7 +197,7 @@ public class GameDTO
                                     playerDto.UserId,
                                     user?.Name ?? localStorageUser?.Name,
                                     playerDto.AbbreviatedName,
-                                    playerStrategyFactory.Invoke(playerDto.PlayerTypeId, rng),
+                                    playerStrategyFactory?.Invoke(playerDto.PlayerTypeId, rng!),
                                     localStorageId);
 
             if (playerDto.IsActive)
@@ -170,7 +238,7 @@ public class GameDTO
     {
         Move = game.Move;
         Round = game.Round;
-        Rng = RngDTO.FromEntity(game.Rng);
+        Rng = RngDTO.FromEntity(game.Rng!);
         Board = BoardDTO.FromEntity(game.Board);
         IsActive = !game.HasWinner;
         LastUpdatedDateUtc = lastUpdatedDateUtc;
@@ -186,6 +254,36 @@ public class GameDTO
         }
 
         game.MarkUpdated(LastUpdatedDateUtc);
+    }
+
+    public GameMenuOptions CreateOptionsForRematch(bool hasSound = false)
+    {
+        if (IsActive)
+        {
+            throw new InvalidOperationException("Game not finished");
+        }
+
+        return new GameMenuOptions
+        {
+            NumberOfPlayers = Players.Count,
+            AtomShape = AtomShape,
+            ColourScheme = ColourScheme,
+            HasSound = hasSound,
+            IsRematch = true,
+            Players = [.. Players
+                .Shuffle()
+                .Index()
+                .Select(p => new GameMenuOptions.Player
+                {
+                    Number = p.Index + 1,
+                    Type = p.Item.PlayerTypeId,
+                    UserIdentity = p.Item.PlayerTypeId == PlayerType.Human
+                        ? new(p.Item.UserId, p.Item.LocalStorageUser?.Name)
+                        : null,
+                    LocalStorageId = p.Item.LocalStorageUserId
+                })
+            ]
+        };
     }
 }
 
@@ -238,6 +336,11 @@ public class BoardDTO
     const char CellItemSeparator = '-';
 
     public string Data { get; set; } = default!;
+
+    public static BoardDTO NewBoard()
+    {
+        return new() { Data = string.Empty };
+    }
 
     public static BoardDTO FromEntity(GameBoard board)
     {

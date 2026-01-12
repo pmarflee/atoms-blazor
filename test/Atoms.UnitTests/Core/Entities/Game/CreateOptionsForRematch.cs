@@ -7,144 +7,86 @@ public class CreateOptionsForRematch
     [Test]
     public void ShouldThrowExceptionWhenGameIsNotFinished()
     {
-        var game = ObjectMother.Game();
-
         Assert.Throws<InvalidOperationException>(
-            () => game.CreateOptionsForRematch(false));
+            () => ObjectMother.GameDTO().CreateOptionsForRematch());
     }
 
     [Test, MethodDataSource(nameof(GetTestData))]
     public async Task TestCreateOptions(
-        GameEntity game, bool hasSound, GameMenuOptions expected)
+        GameDTO game, bool hasSound)
     {
         var options = game.CreateOptionsForRematch(hasSound);
 
-        await Assert.That(options).IsEquivalentTo(expected);
-    }
+        using var _ = Assert.Multiple();
 
-    [Test]
-    public async Task FirstPlayerShouldBeHumanIfThereWasAtLeastOneLosingHumanInThePreviousGame()
-    {
-        var game = ObjectMother.Game(
-            players: [
-                ObjectMother.CreateHumanPlayer(Guid.NewGuid(), 1),
-                ObjectMother.CreateCPUPlayer(Guid.NewGuid(), 2, PlayerType.CPU_Easy),
-                ObjectMother.CreateHumanPlayer(Guid.NewGuid(), 3)
-            ],
-            cells: [new CellState(2, 1, 1, 2), new CellState(1, 2, 1, 1)],
-            move: 4, round: 2);
-        game.Players[1].MarkDead();
-        game.Players[2].MarkDead();
+        await Assert.That(options.HasSound).IsEqualTo(hasSound);
+        await Assert.That(options.Players.Count).IsEqualTo(game.Players.Count);
+        await Assert.That(options.ColourScheme).IsEqualTo(game.ColourScheme);
+        await Assert.That(options.AtomShape).IsEqualTo(game.AtomShape);
+        await Assert.That(options.IsRematch).IsTrue();
 
-        var options = game.CreateOptionsForRematch(false);
+        HashSet<GameMenuOptions.Player> foundPlayers = [];
+        HashSet<PlayerDTO> unmatchedPlayers = [];
 
-        await Assert.That(options.Players[0].Type).IsEqualTo(PlayerType.Human);
-    }
+        foreach (var gamePlayer in game.Players)
+        {
+            var foundPlayer = options.Players
+                .FirstOrDefault(op => 
+                    op.Type == gamePlayer.PlayerTypeId &&
+                    op.UserIdentity?.Id == gamePlayer.UserId &&
+                    op.LocalStorageId == gamePlayer.LocalStorageUserId &&
+                    !foundPlayers.Contains(op));
 
-    [Test]
-    public async Task FirstPlayerShouldNotBeHumanIfThereWereNoLosingHumansInThePreviousGame()
-    {
-        var game = ObjectMother.Game(
-            players: [
-                ObjectMother.CreateHumanPlayer(Guid.NewGuid(), 1),
-                ObjectMother.CreateCPUPlayer(Guid.NewGuid(), 2, PlayerType.CPU_Easy),
-                ObjectMother.CreateCPUPlayer(Guid.NewGuid(), 3, PlayerType.CPU_Medium),
-                ObjectMother.CreateCPUPlayer(Guid.NewGuid(), 4, PlayerType.CPU_Hard)
-            ],
-            cells: [new CellState(2, 1, 1, 2), new CellState(1, 2, 1, 1)],
-            move: 4, round: 2);
-        game.Players[1].MarkDead();
-        game.Players[2].MarkDead();
-        game.Players[3].MarkDead();
-
-        var options = game.CreateOptionsForRematch(false);
-
-        await Assert.That(options.Players[0].Type).IsNotEqualTo(PlayerType.Human);
-    }
-
-    public static IEnumerable<Func<(GameEntity, bool, GameMenuOptions)>> GetTestData()
-    {
-        var game1 = ObjectMother.Game(
-            cells: [new CellState(2, 1, 1, 2), new CellState(1, 2, 1, 1)],
-            move: 4, round: 2);
-        game1.Players[1].MarkDead();
-
-        yield return () => 
-        (
-            game1,
-            false,
-            new GameMenuOptions
+            if (foundPlayer is not null)
             {
-                AtomShape = game1.AtomShape,
-                ColourScheme = game1.ColourScheme,
-                HasSound = false,
-                NumberOfPlayers = game1.Players.Count,
-                Players =
-                [
-                    new GameMenuOptions.Player
-                    {
-                        Number = 1,
-                        Type = PlayerType.Human,
-                        UserIdentity = new Atoms.Core.Entities.UserIdentity()
-                    },
-                    new GameMenuOptions.Player
-                    {
-                        Number = 2,
-                        Type = PlayerType.Human,
-                        UserIdentity = new Atoms.Core.Entities.UserIdentity(),
-                        LocalStorageId = game1.Players[0].LocalStorageId
-                    }
-                ],
-                IsRematch = true
+                foundPlayers.Add(foundPlayer);
             }
+            else
+            {
+                unmatchedPlayers.Add(gamePlayer);
+            }
+        }
+
+        if (foundPlayers.Count < game.Players.Count)
+        {
+            Assert.Fail($"The following players were not matched: {string.Join(",", unmatchedPlayers.Select(p => p.Number))}");
+        }
+    }
+
+    public static IEnumerable<Func<(GameDTO, bool)>> GetTestData()
+    {
+        yield return () =>
+        (
+            ObjectMother.GameDTO(
+                board: ObjectMother.BoardDTO("2-1-1-2,1-2-1-1"),
+                move: 4, round: 2,
+                isActive: false),
+                false
         );
 
-        var game2 = ObjectMother.Game(
-            players: [
-                ObjectMother.CreateHumanPlayer(
-                    Guid.NewGuid(),
-                    1,
-                    new(Guid.NewGuid().ToString()),
-                    ObjectMother.LocalStorageId,
-                    "Paul"),
-                ObjectMother.CreateCPUPlayer(
-                    Guid.NewGuid(),
-                    2,
-                    PlayerType.CPU_Easy)
-            ],
-            cells: [new CellState(2, 1, 1, 2), new CellState(1, 2, 1, 1)],
-            move: 4, round: 2);
-        game2.Players[1].MarkDead();
-
-        yield return () => 
+        yield return () =>
         (
-            game2,
-            false,
-            new GameMenuOptions
-            {
-                AtomShape = game2.AtomShape,
-                ColourScheme = game2.ColourScheme,
-                HasSound = false,
-                NumberOfPlayers = game2.Players.Count,
-                Players =
+            ObjectMother.GameDTO(
                 [
-                    new GameMenuOptions.Player
+                    new PlayerDTO
                     {
+                        Id = Guid.NewGuid(),
                         Number = 1,
-                        Type = PlayerType.CPU_Easy
+                        PlayerTypeId = PlayerType.Human,
+                        UserId = Guid.NewGuid().ToString(),
+                        LocalStorageUserId = ObjectMother.LocalStorageId.Value
                     },
-                    new GameMenuOptions.Player
+                    new PlayerDTO
                     {
+                        Id = Guid.NewGuid(),
                         Number = 2,
-                        Type = PlayerType.Human,
-                        UserIdentity = new Atoms.Core.Entities.UserIdentity(
-                            game2.Players[0].UserId,
-                            game2.Players[0].Name),
-                        LocalStorageId = game2.Players[0].LocalStorageId
+                        PlayerTypeId = PlayerType.CPU_Easy
                     }
                 ],
-                IsRematch = true
-            }
+                4, 2,
+                ObjectMother.BoardDTO("2-1-1-2,1-2-1-1"),
+                isActive: false),
+                false
         );
     }
 }

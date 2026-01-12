@@ -14,6 +14,11 @@ public static class NavigationExtensions
             navigation.NavigateToGameById(game.Id);
         }
 
+        public void NavigateToGame(GameDTO gameDto)
+        {
+            navigation.NavigateToGameById(gameDto.Id);
+        }
+
         public void NavigateToGame(GameInfoDTO game)
         {
             navigation.NavigateToGameById(game.Id);
@@ -29,9 +34,9 @@ public static class NavigationExtensions
             navigation.NavigateToGameById(Guid.NewGuid(), debug);
         }
 
-        public void NavigateToSetUserNamePage(Game game)
+        public void NavigateToSetUserNamePage(GameDTO gameDto)
         {
-            var url = BaseUrl.AppendPathSegment(game.Id)
+            var url = BaseUrl.AppendPathSegment(gameDto.Id)
                              .AppendPathSegment("/username/");
 
             navigation.NavigateTo(url);
@@ -39,28 +44,28 @@ public static class NavigationExtensions
 
         public string GetAbsoluteGameUrl(Guid gameId)
         {
-            var url = navigation.GetGameUrl(gameId);
+            var url = GetGameUrl(gameId);
 
             return navigation.ToAbsoluteUri(url).AbsoluteUri;
         }
 
         void NavigateToGameById(Guid gameId, int? debug = null)
         {
-            var url = navigation.GetGameUrl(gameId, debug);
+            var url = GetGameUrl(gameId, debug);
 
             navigation.NavigateTo(url, true);
         }
+    }
 
-        string GetGameUrl(Guid gameId, int? debug = null)
+    static string GetGameUrl(Guid gameId, int? debug = null)
+    {
+        var url = BaseUrl.AppendPathSegment(gameId.ToString("N"));
+
+        if (debug.HasValue)
         {
-            var url = BaseUrl.AppendPathSegment(gameId.ToString("N"));
-
-            if (debug.HasValue)
-            {
-                url = url.AppendQueryParam("debug", debug);
-            }
-
-            return url;
+            url = url.AppendQueryParam("debug", debug);
         }
+
+        return url;
     }
 }

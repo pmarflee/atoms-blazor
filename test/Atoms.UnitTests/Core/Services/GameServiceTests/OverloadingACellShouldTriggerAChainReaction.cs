@@ -10,7 +10,7 @@ public class OverloadingACellShouldTriggerAChainReaction
                            int column,
                            Game expected)
     {
-        var service = new GameService();
+        var service = new GameMoveService();
         var cell = game.Board[row, column];
 
         await service.PlayMove(game, cell);

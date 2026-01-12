@@ -1,3 +1,3 @@
 ﻿namespace Atoms.UseCases.CreateNewGame;
 
-public record CreateNewGameResponse(Game Game);
+public record CreateNewGameResponse(GameDTO Game);

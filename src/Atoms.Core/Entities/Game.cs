@@ -16,7 +16,7 @@ public class Game
     public bool HasWinner => Winner != null;
     public int Move { get; private set; }
     public int Round { get; private set; }
-    public IRandomNumberGenerator Rng { get; }
+    public IRandomNumberGenerator? Rng { get; }
     public UserId? UserId { get; }
     public StorageId LocalStorageId { get; }
     public DateTime CreatedDateUtc { get; private set; }
@@ -38,7 +38,7 @@ public class Game
                 Player activePlayer,
                 ColourScheme colourScheme,
                 AtomShape atomShape,
-                IRandomNumberGenerator rng,
+                IRandomNumberGenerator? rng,
                 StorageId localStorageId,
                 DateTime createdDateUtc,
                 DateTime? lastUpdatedDateUtc = null,
@@ -73,32 +73,7 @@ public class Game
     public bool CanPlayMove(UserId? userId, StorageId? localStorageId)
     {
         return !HasWinner
-               && PlayerBelongsToUser(ActivePlayer, userId, localStorageId);
-    }
-
-    public bool PlayerBelongsToUser(Player player,
-                                    UserId? userId, StorageId? localStorageId)
-    {
-        return player.IsHuman && PlayerBelongsToUser(
-            player.UserId, player.LocalStorageId,
-            userId, localStorageId);
-    }
-
-    public bool PlayerBelongsToUser(UserId? playerUserId, StorageId? playerLocalStorageId,
-                                    UserId? userId, StorageId? localStorageId)
-    {
-        if (userId is not null && playerUserId is not null)
-        {
-            return userId.Id == playerUserId.Id;
-        }
-
-        if (localStorageId is not null && playerLocalStorageId is not null)
-        {
-            return localStorageId == playerLocalStorageId;
-        }
-
-        return userId is not null && userId.Id == UserId?.Id
-               || LocalStorageId == localStorageId;
+               && this.PlayerBelongsToUser(ActivePlayer, userId, localStorageId);
     }
 
     public bool CanPlaceAtom(GameBoard.Cell cell)
@@ -175,66 +150,6 @@ public class Game
     public Player GetPlayer(Guid playerId)
     {
         return Players.First(p => p.Id == playerId);
-    }
-
-    public GameMenuOptions CreateOptionsForRematch(bool hasSound)
-    {
-        if (!HasWinner)
-        {
-            throw new InvalidOperationException("Game not finished");
-        }
-
-        var options = new GameMenuOptions
-        {
-            NumberOfPlayers = Players.Count,
-            AtomShape = AtomShape,
-            ColourScheme = ColourScheme,
-            HasSound = hasSound,
-            IsRematch = true
-        };
-
-        List<Player> players = [];
-        List<Player> losingHumanPlayers = [..
-            Players.Where(p => p.IsDead && p.IsHuman)
-        ];
-
-        if (losingHumanPlayers.Count > 0)
-        {
-            players.AddRange(losingHumanPlayers.SingleRandom());
-        }
-
-        if (players.Count == 0)
-        {
-            var losingCPUPlayers = Players
-                .Where(p => p.IsDead && !p.IsHuman)
-                .ToList();
-
-            if (losingCPUPlayers.Count > 0)
-            {
-                players.AddRange(losingCPUPlayers.SingleRandom());
-            }
-        }
-
-        var otherPlayers = Players
-            .Where(p => !players.Contains(p))
-            .Shuffle();
-
-        players.AddRange(otherPlayers);
-
-        options.Players = [.. players
-            .Index()
-            .Select(p => new GameMenuOptions.Player
-            {
-                Number = p.Index + 1,
-                Type = p.Item.Type,
-                UserIdentity = p.Item.Type == PlayerType.Human
-                    ? new(p.Item.UserId, p.Item.Name)
-                    : null,
-                LocalStorageId = p.Item.LocalStorageId
-            })
-        ];
-
-        return options;
     }
 
     internal void MarkCreated(DateTime createdDate)

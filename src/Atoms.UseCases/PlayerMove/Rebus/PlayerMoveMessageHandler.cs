@@ -12,7 +12,7 @@ public class PlayerMoveMessageHandler(
     IDbContextFactory<ApplicationIdentityDbContext> applicationIdentityDbContextFactory,
     CreateRng rngFactory,
     CreatePlayerStrategy playerStrategyFactory,
-    IGameService gameService,
+    IGameMoveService gameService,
     IDateTimeService dateTimeService,
     ILogger<PlayerMoveMessageHandler> logger,
     IServiceScopeFactory serviceScopeFactory) 

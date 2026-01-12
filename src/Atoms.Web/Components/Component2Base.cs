@@ -25,6 +25,11 @@ public abstract class Component2Base : ComponentBase
         AuthenticatedUser?.GetUserName()
         ?? (await GetUserNameForLocalStorageId());
 
+    public async Task<UserIdentity> GetUserIdentity()
+    {
+        return new(UserId, await GetUserName());
+    }
+
     protected async Task SetDisplayColourScheme(ColourScheme colourScheme)
     {
         var colourSchemeFuncName = colourScheme == ColourScheme.Alternate

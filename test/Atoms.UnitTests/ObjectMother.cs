@@ -115,7 +115,8 @@ internal static class ObjectMother
         int move = 1,
         int round = 1,
         BoardDTO? board = null,
-        DateTime? lastUpdatedDateUtc = null)
+        DateTime? lastUpdatedDateUtc = null,
+        bool isActive = true)
     {
         var gameDto = new GameDTO
         {
@@ -127,7 +128,7 @@ internal static class ObjectMother
             Board = board ?? BoardDTO(),
             Move = move,
             Round = round,
-            IsActive = true,
+            IsActive = isActive,
             Rng = new RngDTO { Seed = 1, Iterations = 0 },
             CreatedDateUtc = CreatedDateUtc,
             LastUpdatedDateUtc = lastUpdatedDateUtc ?? LastUpdatedDateUtc
@@ -170,7 +171,12 @@ internal static class ObjectMother
 
     public static IRandomNumberGenerator CreateRng(int _, int __)
     {
-        return new IRandomNumberGeneratorCreateExpectations().Instance();
+        var expectations = new IRandomNumberGeneratorCreateExpectations();
+
+        expectations.Setups.Seed.Gets().ReturnValue(1);
+        expectations.Setups.Iterations.Gets().ReturnValue(0);
+
+        return expectations.Instance();
     }
 
     public static IPlayerStrategy? CreatePlayerStrategy(

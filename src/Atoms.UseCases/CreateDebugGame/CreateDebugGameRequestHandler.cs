@@ -1,17 +1,18 @@
-﻿
-namespace Atoms.UseCases.CreateDebugGame;
+﻿namespace Atoms.UseCases.CreateDebugGame;
 
 public class CreateDebugGameRequestHandler(CreateGame gameFactory)
     : IRequestHandler<CreateDebugGameRequest, CreateDebugGameResponse>
 {
-    public Task<CreateDebugGameResponse> Handle(CreateDebugGameRequest request,
-                                                CancellationToken cancellationToken)
+    public async Task<CreateDebugGameResponse> Handle(
+        CreateDebugGameRequest request,
+        CancellationToken cancellationToken)
     {
         var options = GameMenuOptions.CreateForDebug();
-        var game = gameFactory.Invoke(
-            request.GameId, options, request.LocalStorageId);
-        var response = new CreateDebugGameResponse(game);
+        var gameDto = gameFactory.Invoke(
+            options, request.LocalStorageId, 
+            gameId: request.GameId);
+        var response = new CreateDebugGameResponse(await gameDto.ToEntity());
 
-        return Task.FromResult(response);
+        return response;
     }
 }

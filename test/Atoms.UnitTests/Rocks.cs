@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 [assembly: Rock(typeof(IProtectedBrowserStorageService), BuildType.Create)]
 [assembly: Rock(typeof(ILocalStorageUserService), BuildType.Create)]
 [assembly: Rock(typeof(INotificationService), BuildType.Create)]
+[assembly: Rock(typeof(IGameCreationService), BuildType.Create)]
 [assembly: Rock(typeof(IBus), BuildType.Create)]
 [assembly: Rock(typeof(ILogger<>), BuildType.Create)]
 [assembly: Rock(typeof(IServiceScopeFactory), BuildType.Create)]

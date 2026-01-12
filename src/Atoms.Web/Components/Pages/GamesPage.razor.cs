@@ -1,4 +1,5 @@
 ﻿using Atoms.Core.Data;
+using Atoms.UseCases.CreateRematchGame;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FluentUI.AspNetCore.Components;
 
@@ -42,9 +43,19 @@ public class GamesPageComponent : Component2Base, IAsyncDisposable
             .Where(game => !game.IsActive);
     }
 
-    protected void OpenGame(GameInfoDTO game)
+    protected void OpenGame(GameInfoDTO gameInfoDto)
     {
-        Navigation.NavigateToGame(game);
+        Navigation.NavigateToGame(gameInfoDto);
+    }
+
+    protected async Task Rematch(GameInfoDTO gameInfoDto)
+    {
+        var createRematchGameResponse = await Mediator.Send(
+            new CreateRematchGameRequest(
+                gameInfoDto.Id,
+                await GetUserIdentity()));
+
+        Navigation.NavigateToGame(createRematchGameResponse.Game);
     }
 
     public async ValueTask DisposeAsync()

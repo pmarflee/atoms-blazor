@@ -7,30 +7,37 @@ public class ShouldAddNewGameToDatabase : BaseDbTestFixture
     [Test]
     public async Task Test()
     {
-        var localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
-        localStorageUserServiceExpectations.Setups
-            .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
-            .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
+        var gameDto = ObjectMother.GameDTO();
 
         using var dbContext = await DbContextFactory.CreateDbContextAsync();
+
+        var gameCreationServiceExpectations = new IGameCreationServiceCreateExpectations();
+        gameCreationServiceExpectations.Setups
+            .CreateGame(Arg.Any<GameMenuOptions>(),
+                        Arg.Any<UserIdentity>(),
+                        Arg.Any<CancellationToken>())
+            .Callback(async (options, identity, token) =>
+            {
+                await dbContext.Games.AddAsync(gameDto, CancellationToken.None);
+                await dbContext.SaveChangesAsync(CancellationToken.None);
+
+                return gameDto;
+            });
 
         await dbContext.LocalStorageUsers.AddAsync(ObjectMother.LocalStorageUser);
         await dbContext.SaveChangesAsync();
 
-        var game = ObjectMother.Game();
         var handler = new CreateNewGameRequestHandler(
-            localStorageUserServiceExpectations.Instance(),
-            (gameId, options, localStorageId, userIdentity) => game,
-            DbContextFactory);
+            gameCreationServiceExpectations.Instance());
 
         var request = new CreateNewGameRequest(
-            ObjectMother.GameId, ObjectMother.GameMenuOptions,
+            ObjectMother.GameMenuOptions,
             ObjectMother.UserIdentity);
         var response = await handler.Handle(request, CancellationToken.None);
 
-        var gameDto = await dbContext.Games.FindAsync(game.Id);
+        var gameDtoFromDb = await dbContext.Games.FindAsync(gameDto.Id);
 
-        await Assert.That(gameDto).IsNotNull()
-             .And.Member(x => x!.Id, x => x.EqualTo(game.Id));
+        await Assert.That(gameDtoFromDb).IsNotNull()
+             .And.Member(x => x!.Id, x => x.EqualTo(gameDto.Id));
     }
 }

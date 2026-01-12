@@ -32,11 +32,11 @@ builder.Services.AddSingleton<CreatePlayerStrategy>(PlayerStrategyFactory.Create
 builder.Services.AddScoped<CreateGame>(sp =>
 {
     var rngFactory = sp.GetRequiredService<CreateRng>();
-    var playerStrategyFactory = sp.GetRequiredService<CreatePlayerStrategy>();
+    var dateTimeService = sp.GetRequiredService<IDateTimeService>();
 
-    return (gameId, options, localStorageId, userIdentity) =>
-        GameFactory.Create(rngFactory, playerStrategyFactory,
-                           gameId, options, localStorageId, userIdentity);
+    return (options, localStorageId, userIdentity, gameId) =>
+        GameFactory.Create(rngFactory, dateTimeService,
+                           options, localStorageId, userIdentity, gameId);
 });
 builder.Services.AddSingleton<CreateLocalStorageId>(Guid.CreateVersion7);
 
@@ -96,10 +96,12 @@ builder.Services.AddScoped<ILocalStorageUserService, LocalStorageUserService>();
 builder.AddValidation();
 
 builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
-builder.Services.AddSingleton<IGameService, GameService>();
+builder.Services.AddSingleton<IGameMoveService, GameMoveService>();
 
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddSignalR();
+
+builder.Services.AddScoped<IGameCreationService, GameCreationService>();
 
 builder.Services.AddResponseCompression(opts =>
 {

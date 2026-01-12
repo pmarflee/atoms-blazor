@@ -7,30 +7,31 @@ public class ShouldReturnExpectedGameInstance : BaseDbTestFixture
     [Test]
     public async Task Test()
     {
-        var localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
-        localStorageUserServiceExpectations.Setups
-            .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
-            .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
+        var gameDto = ObjectMother.GameDTO();
+
+        var gameCreationServiceExpectations = new IGameCreationServiceCreateExpectations();
+        gameCreationServiceExpectations.Setups
+            .CreateGame(Arg.Any<GameMenuOptions>(),
+                        Arg.Any<UserIdentity>(),
+                        Arg.Any<CancellationToken>())
+            .ReturnValue(Task.FromResult(gameDto));
 
         using var dbContext = await DbContextFactory.CreateDbContextAsync();
 
         await dbContext.LocalStorageUsers.AddAsync(ObjectMother.LocalStorageUser);
         await dbContext.SaveChangesAsync();
 
-        var game = ObjectMother.Game();
         var handler = new CreateNewGameRequestHandler(
-            localStorageUserServiceExpectations.Instance(),
-            (gameId, options, localStorageId, userIdentity) => game, 
-            DbContextFactory);
+            gameCreationServiceExpectations.Instance());
 
         var request = new CreateNewGameRequest(
-            ObjectMother.GameId, ObjectMother.GameMenuOptions,
+            ObjectMother.GameMenuOptions,
             ObjectMother.UserIdentity);
         var response = await handler.Handle(request, CancellationToken.None);
 
         using var _ = Assert.Multiple();
 
         await Assert.That(response).IsNotNull();
-        await Assert.That(response.Game).IsEqualTo(game);
+        await Assert.That(response.Game).IsEqualTo(gameDto);
     }
 }

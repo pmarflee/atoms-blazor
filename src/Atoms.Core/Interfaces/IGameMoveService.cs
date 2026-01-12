@@ -2,7 +2,7 @@
 
 namespace Atoms.Core.Interfaces;
 
-public interface IGameService
+public interface IGameMoveService
 {
     Task PlayAllMoves(Game game, Cell? cell = null, Notify? notify = null);
 

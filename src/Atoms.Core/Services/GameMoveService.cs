@@ -3,7 +3,7 @@ using static Atoms.Core.Entities.Game.GameBoard;
 
 namespace Atoms.Core.Services;
 
-public class GameService : IGameService
+public class GameMoveService : IGameMoveService
 {
     public async Task PlayAllMoves(
         Game game, Cell? cell = null, Notify? notify = null)
