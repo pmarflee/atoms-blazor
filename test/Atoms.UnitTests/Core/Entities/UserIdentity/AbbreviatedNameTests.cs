@@ -40,9 +40,38 @@ public class AbbreviatedNameTests
                     Number = 1,
                     AbbreviatedName = "JL"
                 }
-            ], "JL1");
+            ], "JoL");
         yield return () => (
             new("John Lennon"), 
+            [
+                new PlayerDTO 
+                { 
+                    Id = Guid.NewGuid(),
+                    PlayerTypeId = PlayerType.Human,
+                    Number = 1,
+                    AbbreviatedName = "JL"
+                },
+                new PlayerDTO 
+                { 
+                    Id = Guid.NewGuid(),
+                    PlayerTypeId = PlayerType.Human,
+                    Number = 2,
+                    AbbreviatedName = "JoL"
+                }
+            ], "JohL");
+        yield return () => (
+            new("J L"), 
+            [
+                new PlayerDTO 
+                { 
+                    Id = Guid.NewGuid(),
+                    PlayerTypeId = PlayerType.Human,
+                    Number = 1,
+                    AbbreviatedName = "JL"
+                }
+            ], "JL1");
+        yield return () => (
+            new("J L"), 
             [
                 new PlayerDTO 
                 { 
@@ -59,5 +88,53 @@ public class AbbreviatedNameTests
                     AbbreviatedName = "JL1"
                 }
             ], "JL2");
+        yield return () => (
+            new("John Lennon"), 
+            [
+                new PlayerDTO 
+                { 
+                    Id = Guid.NewGuid(),
+                    PlayerTypeId = PlayerType.CPU_Easy,
+                    Number = 1
+                },
+                new PlayerDTO 
+                { 
+                    Id = Guid.NewGuid(),
+                    PlayerTypeId = PlayerType.Human,
+                    Number = 2
+                }
+            ], "JL");
+        yield return () => (
+            new("John Lennon"), 
+            [
+                new PlayerDTO 
+                { 
+                    Id = Guid.NewGuid(),
+                    PlayerTypeId = PlayerType.Human,
+                    Number = 1,
+                    AbbreviatedName = "JL"
+                },
+                new PlayerDTO 
+                { 
+                    Id = Guid.NewGuid(),
+                    PlayerTypeId = PlayerType.Human,
+                    Number = 2,
+                    AbbreviatedName = "JoL"
+                },
+                new PlayerDTO 
+                { 
+                    Id = Guid.NewGuid(),
+                    PlayerTypeId = PlayerType.Human,
+                    Number = 3,
+                    AbbreviatedName = "JohL"
+                },
+                new PlayerDTO 
+                { 
+                    Id = Guid.NewGuid(),
+                    PlayerTypeId = PlayerType.Human,
+                    Number = 4,
+                    AbbreviatedName = "JohnL"
+                }
+            ], "JohnLe");
     }
 }

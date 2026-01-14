@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Atoms.Core.Entities;
 
@@ -10,33 +11,66 @@ public record UserIdentity(UserId? Id = null, string? Name = null)
     {
         if (string.IsNullOrEmpty(Name)) return null;
 
-        var words = Name.Split(' ', '_');
-        var builder = new StringBuilder(words.Length);
+        var words = Name.Split(' ', '_', '-');
 
-        foreach (var word in words)
+        static char GetFirstLetter(string word) => char.ToUpper(word[0]);
+
+        var firstChars = words.Select(GetFirstLetter);
+
+        if (players is null || !players.Any())
         {
-            builder.Append(char.ToUpper(word[0]));
+            return new string([.. firstChars]);
         }
 
-        var abbreviatedName = builder.ToString();
+        var playerAbbreviatedChars = players
+            .Where(p => p.PlayerTypeId == PlayerType.Human
+                        && !string.IsNullOrEmpty(p.AbbreviatedName))
+            .Select(p => p.AbbreviatedName!.ToArray())
+            .ToList();
+         var abbreviatedChars = new LinkedList<char>(firstChars);
+        var insertAt = abbreviatedChars.First!;
+        var wordIndex = 0;
+        var letterIndex = 1;
 
-        if (players is null || !players.Any()) return abbreviatedName;
+        bool NameIsUnique() => playerAbbreviatedChars.All(
+            p => p?.SequenceEqual(abbreviatedChars) == false);
 
-        bool nameIsUnique;
-        var tries = 0;
-        string suffix;
-        string abbreviatedNameWithSuffix;
-
-        do
+        while (wordIndex < words.Length && !NameIsUnique())
         {
-            suffix = tries > 0 ? tries.ToString() : string.Empty;
-            abbreviatedNameWithSuffix = abbreviatedName + suffix;
-            nameIsUnique = players.All(p => p.AbbreviatedName
-                                            != abbreviatedNameWithSuffix);
-            tries++;
-        }
-        while (!nameIsUnique);
+            if (letterIndex >= words[wordIndex].Length)
+            {
+                wordIndex++;
+                letterIndex = 1;
+                insertAt = insertAt!.Next;
+            }
+            else
+            {
+                insertAt = abbreviatedChars.AddAfter(
+                    insertAt!,
+                    words[wordIndex][letterIndex]);
 
-        return abbreviatedNameWithSuffix;
+                letterIndex++;
+            }
+        }
+
+        var i = 1;
+
+        if (wordIndex == words.Length)
+        {
+            do
+            {
+                if (i > 1)
+                {
+                    abbreviatedChars.RemoveLast();
+                }
+
+                var charDigit = (char)(i++ + '0');
+
+                abbreviatedChars.AddAfter(abbreviatedChars.Last!, charDigit);
+            }
+            while (!NameIsUnique());
+        }
+
+        return new string([.. abbreviatedChars]);
     }
 }
