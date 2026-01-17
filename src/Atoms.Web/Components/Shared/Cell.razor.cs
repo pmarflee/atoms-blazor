@@ -12,6 +12,9 @@ public partial class CellComponent : Component2Base
     public string PlayerClassName { get; set; } = default!;
 
     [Parameter]
+    public bool CanHighlight { get; set;  }
+
+    [Parameter]
     public EventCallback<CellClickEventArgs> OnCellClicked { get; set; }
 
     protected override void OnParametersSet()
@@ -27,6 +30,13 @@ public partial class CellComponent : Component2Base
         await OnCellClicked.InvokeAsync(
             new CellClickEventArgs(Data.Position));
     }
+
+    protected string CellClasses =>
+        string.Join(" ",
+            [ 
+                "cell",
+                CanHighlight && Data.Highlighted ? "highlighted" : "filled"
+            ]);
 
     protected string AtomClasses(int atom)
     {

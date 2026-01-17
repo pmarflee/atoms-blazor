@@ -182,6 +182,11 @@ a:hover {
 	border-color: #88a #002 #002 #88a;
 	border-width: 2px;
 }
+.highlighted {
+    border-color: yellow !important;
+    border-radius: 5px;
+    border-width: 3px;
+}
 html.high-contrast .cell.filled {
 	background-color: #aaa;
 	border-color: #ddd #666 #666 #ddd;

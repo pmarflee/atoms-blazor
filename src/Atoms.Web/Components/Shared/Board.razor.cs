@@ -11,6 +11,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 {
     const int AtomExplodedDelay = 50;
     const int PlayerMovedDelay = 300;
+    const int AtomPlacedDelay = 300;
 
     [CascadingParameter]
     Guid GameId { get; set; }
@@ -81,6 +82,10 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         }
     }
 
+    protected bool CanHighlightCells => 
+        Game is not null
+        && !Game.PlayerBelongsToUser(Game.ActivePlayer, UserId, LocalStorageId);
+
     async Task AtomPlaced()
     {
         if (Game is null) return;
@@ -92,6 +97,11 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         }
 
         await UpdateGame();
+
+        if (!Game.PlayerBelongsToUser(Game.ActivePlayer, UserId, LocalStorageId))
+        {
+            await Task.Delay(AtomPlacedDelay);
+        }
     }
 
     async Task AtomExploded()

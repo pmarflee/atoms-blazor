@@ -94,10 +94,23 @@ public class GameMoveService : IGameMoveService
     {
         game.PlaceAtom(cell);
 
-        if (notify is not null)
+        async Task Notify()
         {
-            await NotifyAtomPlaced(game, cell, requestPlayer, notify);
+            if (notify is not null)
+            {
+                await NotifyAtomPlaced(game, cell, requestPlayer, notify);
+            }
         }
+
+        async Task SetHighlightAndNotify(bool highlight)
+        {
+            cell.Highlighted = highlight;
+
+            await Notify();
+        }
+
+        await SetHighlightAndNotify(true);
+        await SetHighlightAndNotify(false);
     }
 
     static async Task DoExplosion(

@@ -366,6 +366,7 @@ public class Game
             public bool IsOverloaded => Atoms > MaxAtoms;
             public bool IsFullyLoaded => Atoms == MaxAtoms;
             public ExplosionState Explosion { get; set; }
+            public bool Highlighted { get; set; }
 
             internal void AddAtom(Player player)
             {
