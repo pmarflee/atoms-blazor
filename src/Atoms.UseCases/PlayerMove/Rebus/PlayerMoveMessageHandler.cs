@@ -73,18 +73,18 @@ public class PlayerMoveMessageHandler(
             await notificationService.Start(cancellationToken);
             await notificationService.JoinGame(game.Id, cancellationToken);
 
-            if (logger.IsEnabled(LogLevel.Debug))
+            if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogDebug("Notifying players of move. GameId='{GameId}'.", game.Id);
+                logger.LogInformation("Notifying players of move. GameId='{GameId}'.", game.Id);
             }
 
             await notificationService.NotifyPlayerMoved(
                 new(game.Id, message.Row, message.Column, lastUpdatedDateUtc),
                 cancellationToken);
 
-            if (logger.IsEnabled(LogLevel.Debug))
+            if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogDebug(
+                logger.LogInformation(
                     "Notify reload required. GameId='{GameId}'.",
                     game.Id);
             }

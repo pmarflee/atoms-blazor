@@ -33,9 +33,8 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
     [Parameter]
     public int? Debug { get; set; }
 
-    bool _disableClicks;
-    readonly CancellationToken _cancellationToken = new();
     bool _handlingPlayerMove;
+    readonly CancellationToken _cancellationToken = new();
     List<string>? _opponentConnectionIds;
 
     protected async override Task OnInitializedAsync()
@@ -55,14 +54,16 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         {
             if (!CanPlayMove()) return;
 
-            _disableClicks = true;
+            _handlingPlayerMove = true;
 
             await PlayMove(eventArgs.Position);
             await OnCellClicked.InvokeAsync(eventArgs);
         }
-        finally
+        catch
         {
-            _disableClicks = false;
+            _handlingPlayerMove = false;
+
+            throw;
         }
     }
 
@@ -121,8 +122,6 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
             await Notify($"{player} moved");
         }
 
-        await SetCursor();
-
         if (Game.HasWinner)
         {
             _opponentConnectionIds = await GetGameConnections();
@@ -167,7 +166,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
                 notification.Id);
         }
 
-        if (Game is not null && !_handlingPlayerMove)
+        if (Game is not null)
         {
             try
             {
@@ -200,6 +199,8 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
             finally
             {
                 _handlingPlayerMove = false;
+
+                await SetCursor();
             }
         }
     }
@@ -238,30 +239,21 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
     {
         if (Game is null) return;
 
-        try
+        var moves = new Moves()
+            .TakeWhile((move, index) =>
+                index < Debug!.Value && Game?.HasWinner == false);
+
+        var gameService = new GameMoveService();
+
+        foreach (var (row, column) in moves)
         {
-            _disableClicks = true;
+            if (Game is null) break;
 
-            var moves = new Moves()
-                .TakeWhile((move, index) =>
-                    index < Debug!.Value && Game?.HasWinner == false);
+            await gameService.PlayMove(
+                Game, Game.Board[row, column],
+                debug: true, notify: GameStateChanged);
 
-            var gameService = new GameMoveService();
-
-            foreach (var (row, column) in moves)
-            {
-                if (Game is null) break;
-
-                await gameService.PlayMove(
-                    Game, Game.Board[row, column],
-                    debug: true, notify: GameStateChanged);
-
-                await DelayBetweenMoves();
-            }
-        }
-        finally
-        {
-            _disableClicks = false;
+            await DelayBetweenMoves();
         }
     }
 
@@ -390,12 +382,9 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         await SetCursor();
     }
 
-    bool CanPlayMove()
-    {
-        if (_disableClicks) return false;
-
-        return Game!.CanPlayMove(UserId, LocalStorageId);
-    }
+    bool CanPlayMove() => !Debug.HasValue
+                          && !_handlingPlayerMove
+                          && Game!.CanPlayMove(UserId, LocalStorageId);
 
     async Task Notify(string message)
     {

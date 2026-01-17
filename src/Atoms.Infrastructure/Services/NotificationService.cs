@@ -4,13 +4,18 @@ using Atoms.Infrastructure.SignalR;
 using Flurl;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Threading.Channels;
 
 namespace Atoms.Infrastructure.Services;
 
 public class NotificationService : INotificationService, IAsyncDisposable
 {
+    readonly CancellationTokenSource _cts = new();
     readonly HubConnection _connection;
+    readonly Channel<PlayerMoved> _playerMovedNotificationChannel;
+    readonly ILogger<NotificationService> _logger;
 
     public event Func<PlayerMoved, Task>? OnPlayerMoved;
     public event Func<ClientDisconnected, Task>? OnClientDisconnected;
@@ -20,10 +25,16 @@ public class NotificationService : INotificationService, IAsyncDisposable
 
     public NotificationService(
         IOptions<AppSettings> appSettings,
-        NavigationManager navigationManager)
+        NavigationManager navigationManager,
+        ILogger<NotificationService> logger)
     {
+        _logger = logger;
+
         var baseHubUrl = appSettings.Value.BaseHubUrl
                          ?? navigationManager.ToAbsoluteUri("/").AbsoluteUri;
+
+        _playerMovedNotificationChannel = Channel.CreateUnbounded<PlayerMoved>(
+            new UnboundedChannelOptions { SingleReader = true });
 
         _connection = new HubConnectionBuilder()
             .WithUrl(baseHubUrl.AppendPathSegment(GameHub.HubUrl))
@@ -34,10 +45,9 @@ public class NotificationService : INotificationService, IAsyncDisposable
             nameof(IGameClient.PlayerMoved),
             async notification =>
             {
-                if (OnPlayerMoved is not null)
-                {
-                    await OnPlayerMoved.Invoke(notification);
-                }
+                logger.LogInformation("Received player moved notification");
+
+                await _playerMovedNotificationChannel.Writer.WriteAsync(notification);
             });
 
         _connection.On<ClientDisconnected>(
@@ -82,7 +92,13 @@ public class NotificationService : INotificationService, IAsyncDisposable
     }
 
     public async Task Start(CancellationToken cancellationToken = default)
-        => await _connection.StartAsync(cancellationToken);
+    {
+        await _connection.StartAsync(cancellationToken);
+
+        _ = StartPlayerMovedNotificationConsumer(
+            _playerMovedNotificationChannel.Reader,
+            _cts.Token);
+    }
 
     public async Task NotifyPlayerMoved(
         PlayerMoved notification, CancellationToken cancellationToken = default)
@@ -151,10 +167,51 @@ public class NotificationService : INotificationService, IAsyncDisposable
             cancellationToken);
     }
 
-    public ValueTask DisposeAsync()
+    async Task StartPlayerMovedNotificationConsumer(
+        ChannelReader<PlayerMoved> reader, 
+        CancellationToken cancellationToken)
     {
-        GC.SuppressFinalize(this);
+        try
+        {
+            await foreach (var notification in reader.ReadAllAsync(cancellationToken))
+            {
+                if (OnPlayerMoved is not null)
+                {
+                    try
+                    {
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation(
+                                "Processing player moved notification for Game: {GameId}", 
+                                notification.GameId);
+                        }
 
-        return _connection.DisposeAsync();
+                        await OnPlayerMoved.Invoke(notification);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error executing OnPlayerMoved event handler.");
+                    }
+                }
+            }
+        }
+        catch (OperationCanceledException) { /* Normal shutdown */ }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await _cts.CancelAsync();
+
+            _playerMovedNotificationChannel.Writer.TryComplete();
+
+            _cts.Dispose();
+
+            await _connection.DisposeAsync();
+        }
+        catch (ObjectDisposedException) { }
+
+        GC.SuppressFinalize(this);
     }
 }
