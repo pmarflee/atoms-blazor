@@ -5,5 +5,6 @@ public sealed record AtomPlaced(
     Guid PlayerId,
     Guid? RequestPlayerId,
     int Row,
-    int Column) 
+    int Column,
+    bool Highlight) 
     : CellUpdated(GameId, PlayerId, RequestPlayerId, Row, Column);

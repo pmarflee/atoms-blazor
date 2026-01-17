@@ -86,7 +86,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         Game is not null
         && !Game.PlayerBelongsToUser(Game.ActivePlayer, UserId, LocalStorageId);
 
-    async Task AtomPlaced()
+    async Task AtomPlaced(AtomPlaced notification)
     {
         if (Game is null) return;
 
@@ -98,7 +98,10 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
         await UpdateGame();
 
-        if (!Game.PlayerBelongsToUser(Game.ActivePlayer, UserId, LocalStorageId))
+        if (notification.Highlight
+            && !Game.PlayerBelongsToUser(Game.ActivePlayer,
+                                         UserId,
+                                         LocalStorageId))
         {
             await Task.Delay(AtomPlacedDelay);
         }
@@ -219,7 +222,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
     {
         return notification switch
         {
-            AtomPlaced _ => AtomPlaced(),
+            AtomPlaced atomPlaced => AtomPlaced(atomPlaced),
             AtomExploded _ => AtomExploded(),
             Core.DTOs.Notifications.PlayerMoved playerMoved => PlayerMoved(playerMoved),
             _ => Task.CompletedTask,

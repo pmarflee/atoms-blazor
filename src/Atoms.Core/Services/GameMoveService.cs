@@ -37,7 +37,7 @@ public class GameMoveService : IGameMoveService
 
         if (cell is not null)
         {
-            await PlaceAtom(game, cell, requestPlayer, notify);
+            await PlaceAtom(game, cell, requestPlayer, notify, true);
 
             var overloaded = new Stack<Cell>();
 
@@ -74,7 +74,7 @@ public class GameMoveService : IGameMoveService
 
             foreach (var neighbour in game.Board.GetNeighbours(cell))
             {
-                await PlaceAtom(game, neighbour, requestPlayer, notify);
+                await PlaceAtom(game, neighbour, requestPlayer, notify, false);
 
                 if (neighbour.Atoms == neighbour.MaxAtoms + 1)
                 {
@@ -90,7 +90,7 @@ public class GameMoveService : IGameMoveService
 
     static async Task PlaceAtom(
         Game game, Cell cell, 
-        Game.Player? requestPlayer, Notify? notify)
+        Game.Player? requestPlayer, Notify? notify, bool canHighlight)
     {
         game.PlaceAtom(cell);
 
@@ -109,7 +109,11 @@ public class GameMoveService : IGameMoveService
             await Notify();
         }
 
-        await SetHighlightAndNotify(true);
+        if (canHighlight)
+        {
+            await SetHighlightAndNotify(true);
+        }
+
         await SetHighlightAndNotify(false);
     }
 
@@ -149,7 +153,8 @@ public class GameMoveService : IGameMoveService
                            game.ActivePlayer.Id,
                            requestPlayer?.Id,
                            cell.Row,
-                           cell.Column));
+                           cell.Column,
+                           cell.Highlighted));
     }
 
     static async Task NotifyAtomExploded(
