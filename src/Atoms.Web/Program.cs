@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Rebus.Config;
 using Rebus.Routing.TypeBased;
+using Rebus.Transport.InMem;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,10 +113,22 @@ builder.Services.AddResponseCompression(opts =>
 builder.Services.AddRebus(
     configure => configure
         .Transport(
-            t => t.UsePostgreSql(
-                atomsDbConnectionString,
-                "Rebus_Messages",
-                "message-queue"))
+            t =>
+            {
+                const string queueName = "message-queue";
+
+                if (builder.Environment.IsDevelopment())
+                {
+                    t.UseInMemoryTransport(new InMemNetwork(),
+                                           queueName);
+                }
+                else
+                {
+                    t.UsePostgreSql(atomsDbConnectionString,
+                                    "Rebus_Messages",
+                                    queueName);
+                }
+            })
         .Routing(
             r => r.TypeBased()
                 .MapAssemblyOf<PlayerMoveMessage>("message-queue"))
