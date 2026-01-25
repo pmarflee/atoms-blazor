@@ -139,12 +139,24 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         {
             _opponentConnectionIds = await GetGameConnections();
 
-            await JSRuntime.InvokeVoidAsync("App.stopMusic");
+            await StopMusic();
         }
 
         if (!Game.ActivePlayer.IsHuman)
         {
             await DelayBetweenMoves();
+        }
+    }
+
+    async Task StopMusic()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("App.stopMusic");
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore - client disconnected
         }
     }
 
@@ -168,10 +180,12 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
     async Task PlayerMoved(Core.DTOs.Notifications.SignalR.PlayerMoved notification)
     {
-        if (Logger.IsEnabled(LogLevel.Debug))
+        if (Logger.IsEnabled(LogLevel.Information))
         {
-            Logger.LogDebug(
-                "Received PlayerMoved notification. GameId='{GameId}', Row='{Row}', Column='{Column}., LastUpdatedDateUtc='{LastUpdatedDateUtc}', Id='{Id}'.",
+            Logger.LogInformation(
+                @"Received PlayerMoved notification. 
+                GameId='{GameId}', Row='{Row}', Column='{Column}', 
+                LastUpdatedDateUtc='{LastUpdatedDateUtc}', Id='{Id}'.",
                 notification.GameId,
                 notification.Row,
                 notification.Column,
@@ -187,10 +201,17 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
                 if (notification.GameLastUpdatedDateUtc == Game.LastUpdatedDateUtc)
                 {
-                    if (Logger.IsEnabled(LogLevel.Debug))
+                    if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogDebug("Update game from player move notification request. GameId='{GameId}'.",
-                                        notification.GameId);
+                        Logger.LogInformation(
+                            @"Update game from player move notification request. 
+                            GameId='{GameId}', Row='{Row}', Column='{Column}', 
+                            LastUpdatedDateUtc='{LastUpdatedDateUtc}', Id='{Id}'.",
+                            notification.GameId,
+                            notification.Row,
+                            notification.Column,
+                            notification.GameLastUpdatedDateUtc,
+                            notification.Id);
                     }
 
                     await Mediator.Send(
@@ -200,10 +221,17 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
                 if (notification.GameLastUpdatedDateUtc >= Game.LastUpdatedDateUtc)
                 {
-                    if (Logger.IsEnabled(LogLevel.Debug))
+                    if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogDebug("Reload game after handling player move notification request. GameId='{GameId}'.",
-                                        notification.GameId);
+                        Logger.LogInformation(
+                            @"Reload game after handling player move notification request. 
+                            GameId='{GameId}', Row='{Row}', Column='{Column}', 
+                            LastUpdatedDateUtc='{LastUpdatedDateUtc}', Id='{Id}'.",
+                            notification.GameId,
+                            notification.Row,
+                            notification.Column,
+                            notification.GameLastUpdatedDateUtc,
+                            notification.Id);
                     }
 
                     await ReloadGame();
@@ -336,15 +364,22 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
     async Task SetCursor()
     {
-        if (CanPlayMove())
+        try
         {
-            await JSRuntime.InvokeVoidAsync(
-                "App.setCursor",
-                Game!.ActivePlayer.Number - 1);
+            if (CanPlayMove())
+            {
+                await JSRuntime.InvokeVoidAsync(
+                    "App.setCursor",
+                    Game!.ActivePlayer.Number - 1);
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("App.setDefaultCursor");
+            }
         }
-        else
+        catch (TaskCanceledException)
         {
-            await JSRuntime.InvokeVoidAsync("App.setDefaultCursor");
+            // Ignore - client disconnected
         }
     }
 
@@ -401,7 +436,14 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
     async Task Notify(string message)
     {
-        await JSRuntime.InvokeVoidAsync("App.notify", message);
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("App.notify", message);
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore - client disconnected
+        }
     }
 
     async Task<List<string>> GetGameConnections()
