@@ -27,6 +27,10 @@
     <PackageReference Include="Rebus" Version="8.9.0" />
     <PackageReference Include="Rebus.PostgreSql" Version="9.1.1" />
     <PackageReference Include="Rebus.ServiceProvider" Version="10.7.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageReference Include="Serilog.Expressions" Version="5.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
   </ItemGroup>
 
   <ItemGroup>

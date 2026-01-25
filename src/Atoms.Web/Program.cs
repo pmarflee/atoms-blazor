@@ -18,163 +18,189 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using Rebus.Config;
 using Rebus.Routing.TypeBased;
 using Rebus.Transport.InMem;
+using Serilog;
+using Serilog.Events;
+using Serilog.Templates;
+using Serilog.Templates.Themes;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-
-builder.Services.AddFluentUIComponents();
-builder.Services.AddDataGridEntityFrameworkAdapter();
-
-builder.Services.AddSingleton<CreateRng>(RngFactory.Create);
-builder.Services.AddSingleton<CreatePlayerStrategy>(PlayerStrategyFactory.Create);
-builder.Services.AddScoped<CreateGame>(sp =>
+try
 {
-    var rngFactory = sp.GetRequiredService<CreateRng>();
-    var dateTimeService = sp.GetRequiredService<IDateTimeService>();
+    var builder = WebApplication.CreateBuilder(args);
 
-    return (options, localStorageId, userIdentity, gameId) =>
-        GameFactory.Create(rngFactory, dateTimeService,
-                           options, localStorageId, userIdentity, gameId);
-});
-builder.Services.AddSingleton<CreateLocalStorageId>(Guid.CreateVersion7);
+    // Add services to the container.
+    builder.Services.AddRazorComponents()
+        .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<GameStateContainer>();
+    builder.Services.AddFluentUIComponents();
+    builder.Services.AddDataGridEntityFrameworkAdapter();
 
-builder.Services
-    .AddMediatR(cfg =>
+    builder.Services.AddSingleton<CreateRng>(RngFactory.Create);
+    builder.Services.AddSingleton<CreatePlayerStrategy>(PlayerStrategyFactory.Create);
+    builder.Services.AddScoped<CreateGame>(sp =>
     {
-        cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>();
-        cfg.LicenseKey = builder.Configuration["MediatR:LicenceKey"];
+        var rngFactory = sp.GetRequiredService<CreateRng>();
+        var dateTimeService = sp.GetRequiredService<IDateTimeService>();
+
+        return (options, localStorageId, userIdentity, gameId) =>
+            GameFactory.Create(rngFactory, dateTimeService,
+                               options, localStorageId, userIdentity, gameId);
+    });
+    builder.Services.AddSingleton<CreateLocalStorageId>(Guid.CreateVersion7);
+
+    builder.Services.AddScoped<GameStateContainer>();
+
+    builder.Services
+        .AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblyContaining<CreateNewGameRequest>();
+            cfg.LicenseKey = builder.Configuration["MediatR:LicenceKey"];
+        });
+
+    builder.Services.AddCascadingAuthenticationState();
+    builder.Services.AddScoped<IdentityUserAccessor>();
+    builder.Services.AddScoped<IdentityRedirectManager>();
+    builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+    builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = IdentityConstants.ApplicationScheme;
+            options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+        })
+        .AddIdentityCookies();
+
+    var atomsDbConnectionString = builder.Configuration.GetConnectionString("AtomsDb")
+        ?? throw new Exception("Atoms Db connection string is null");
+
+
+    builder.AddAtomsDatabase(atomsDbConnectionString);
+
+    if (builder.Environment.IsDevelopment())
+    {
+        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    }
+
+    builder.Services.AddIdentityCore<ApplicationUser>(
+        options => options.SignIn.RequireConfirmedAccount = true)
+        .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+        .AddSignInManager()
+        .AddDefaultTokenProviders();
+
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
+    builder.Services.AddSingleton<IEmailSender, MailgunApiEmailSender>();
+
+    builder.Services.AddDataProtection()
+        .PersistKeysToDbContext<DataProtectionKeyContext>()
+        .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
+
+    builder.Services.AddOptions<EmailSettings>()
+                    .BindConfiguration("Email");
+
+    builder.Services.AddBlazoredLocalStorage();
+    builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
+    builder.Services.AddScoped<IProtectedBrowserStorageService, ProtectedBrowserStorageService>();
+    builder.Services.AddScoped<ILocalStorageUserService, LocalStorageUserService>();
+
+    builder.AddValidation();
+
+    builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
+    builder.Services.AddSingleton<IGameMoveService, GameMoveService>();
+
+    builder.Services.AddScoped<INotificationService, NotificationService>();
+    builder.Services.AddSignalR();
+
+    builder.Services.AddScoped<IGameCreationService, GameCreationService>();
+
+    builder.Services.AddResponseCompression(opts =>
+    {
+        opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+            ["application/octet-stream"]);
     });
 
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+    builder.Services.AddRebus(
+        configure => configure
+            .Transport(
+                t =>
+                {
+                    const string queueName = "message-queue";
 
-builder.Services.AddAuthentication(options =>
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        t.UseInMemoryTransport(new InMemNetwork(),
+                                               queueName);
+                    }
+                    else
+                    {
+                        t.UsePostgreSql(atomsDbConnectionString,
+                                        "Rebus_Messages",
+                                        queueName);
+                    }
+                })
+            .Routing(
+                r => r.TypeBased()
+                    .MapAssemblyOf<PlayerMoveMessage>("message-queue"))
+        );
+
+    builder.Services.AutoRegisterHandlersFromAssemblyOf<PlayerMoveMessageHandler>();
+
+    builder.Services.AddSerilog((services, lc) => lc
+        .ReadFrom.Configuration(builder.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext());
+
+    builder.Services.Configure<AppSettings>(
+        builder.Configuration.GetSection("AppSettings"));
+
+    var app = builder.Build();
+
+    app.UseSerilogRequestLogging();
+
+    if (!app.Environment.IsDevelopment())
     {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+        app.UseResponseCompression();
+    }
 
-var atomsDbConnectionString = builder.Configuration.GetConnectionString("AtomsDb")
-    ?? throw new Exception("Atoms Db connection string is null");
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
 
+    //app.UseHttpsRedirection();
 
-builder.AddAtomsDatabase(atomsDbConnectionString);
+    app.MapGet("/music/{filename}", ([FromRoute] string filename) =>
+    {
+        var path = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "audio", filename);
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        return Results.File(path, "audio/mpeg");
+    });
+
+    app.MapStaticAssets();
+    app.UseAntiforgery();
+
+    app.MapRazorComponents<App>()
+        .AddInteractiveServerRenderMode();
+
+    app.MapAdditionalIdentityEndpoints();
+
+    app.MapHub<GameHub>(GameHub.HubUrl);
+
+    app.RunDatabaseMigrations();
+
+    app.Run();
 }
-
-builder.Services.AddIdentityCore<ApplicationUser>(
-    options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
-builder.Services.AddSingleton<IEmailSender, MailgunApiEmailSender>();
-
-builder.Services.AddDataProtection()
-    .PersistKeysToDbContext<DataProtectionKeyContext>()
-    .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
-
-builder.Services.AddOptions<EmailSettings>()
-                .BindConfiguration("Email");
-
-builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
-builder.Services.AddScoped<IProtectedBrowserStorageService, ProtectedBrowserStorageService>();
-builder.Services.AddScoped<ILocalStorageUserService, LocalStorageUserService>();
-
-builder.AddValidation();
-
-builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
-builder.Services.AddSingleton<IGameMoveService, GameMoveService>();
-
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddSignalR();
-
-builder.Services.AddScoped<IGameCreationService, GameCreationService>();
-
-builder.Services.AddResponseCompression(opts =>
+catch (Exception ex)
 {
-    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-        ["application/octet-stream"]);
-});
-
-builder.Services.AddRebus(
-    configure => configure
-        .Transport(
-            t =>
-            {
-                const string queueName = "message-queue";
-
-                if (builder.Environment.IsDevelopment())
-                {
-                    t.UseInMemoryTransport(new InMemNetwork(),
-                                           queueName);
-                }
-                else
-                {
-                    t.UsePostgreSql(atomsDbConnectionString,
-                                    "Rebus_Messages",
-                                    queueName);
-                }
-            })
-        .Routing(
-            r => r.TypeBased()
-                .MapAssemblyOf<PlayerMoveMessage>("message-queue"))
-    );
-
-builder.Services.AutoRegisterHandlersFromAssemblyOf<PlayerMoveMessageHandler>();
-
-var loggingConfigurationSection = builder.Configuration.GetSection("Logging");
-
-builder.Services.Configure<AppSettings>(
-    builder.Configuration.GetSection("AppSettings"));
-
-var app = builder.Build();
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseResponseCompression();
+    Log.Fatal(ex, "Application terminated unexpectedly");
 }
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+finally
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    Log.CloseAndFlush();
 }
-
-//app.UseHttpsRedirection();
-
-app.MapGet("/music/{filename}", ([FromRoute] string filename) =>
-{
-    var path = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "audio", filename);
-
-    return Results.File(path, "audio/mpeg");
-});
-
-app.MapStaticAssets();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.MapAdditionalIdentityEndpoints();
-
-app.MapHub<GameHub>(GameHub.HubUrl);
-
-app.RunDatabaseMigrations();
-
-app.Run();
