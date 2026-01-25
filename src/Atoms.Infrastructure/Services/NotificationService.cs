@@ -18,7 +18,6 @@ public class NotificationService : INotificationService, IAsyncDisposable
     readonly ILogger<NotificationService> _logger;
 
     public event Func<PlayerMoved, Task>? OnPlayerMoved;
-    public event Func<ClientDisconnected, Task>? OnClientDisconnected;
     public event Func<GameReloadRequired, Task>? OnGameReloadRequired;
     public event Func<PlayerJoined, Task>? OnPlayerJoined;
     public event Func<Rematch, Task>? OnRematch;
@@ -48,16 +47,6 @@ public class NotificationService : INotificationService, IAsyncDisposable
                 logger.LogInformation("Received player moved notification");
 
                 await _playerMovedNotificationChannel.Writer.WriteAsync(notification);
-            });
-
-        _connection.On<ClientDisconnected>(
-            nameof(IGameClient.ClientDisconnected),
-            async notification =>
-            {
-                if (OnClientDisconnected is not null)
-                {
-                    await OnClientDisconnected.Invoke(notification);
-                }
             });
 
         _connection.On<GameReloadRequired>(
@@ -132,15 +121,6 @@ public class NotificationService : INotificationService, IAsyncDisposable
         CancellationToken cancellationToken = default)
     {
         await _connection.InvokeAsync(nameof(GameHub.JoinGame),
-                                      gameId,
-                                      cancellationToken);
-    }
-
-    public async Task LeaveGame(
-        Guid gameId,
-        CancellationToken cancellationToken = default)
-    {
-        await _connection.InvokeAsync(nameof(GameHub.LeaveGame),
                                       gameId,
                                       cancellationToken);
     }

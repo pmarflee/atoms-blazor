@@ -5,7 +5,6 @@ namespace Atoms.Core.Interfaces;
 public interface INotificationService : IAsyncDisposable
 {
     event Func<PlayerMoved, Task>? OnPlayerMoved;
-    event Func<ClientDisconnected, Task>? OnClientDisconnected;
     event Func<GameReloadRequired, Task>? OnGameReloadRequired;
     event Func<PlayerJoined, Task>? OnPlayerJoined;
     event Func<Rematch, Task>? OnRematch;
@@ -17,7 +16,6 @@ public interface INotificationService : IAsyncDisposable
                             CancellationToken cancellationToken = default);
     Task Start(CancellationToken cancellationToken = default);
     Task JoinGame(Guid gameId, CancellationToken cancellationToken = default);
-    Task LeaveGame(Guid gameId, CancellationToken cancellationToken = default);
     Task<List<string>> GetOpponentConnections(Guid gameId, CancellationToken cancellationToken = default);
     Task NotifyRematch(Rematch notification, CancellationToken cancellationToken = default);
 }

@@ -1,62 +1,58 @@
-﻿using Atoms.Core.DTOs.Notifications.SignalR;
+﻿using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Concurrent;
+using Atoms.Core.DTOs.Notifications.SignalR;
+using Microsoft.Extensions.Logging;
 
 namespace Atoms.Infrastructure.SignalR;
 
-public class GameHub : Hub<IGameClient>
+public class GameHub(ILogger<GameHub> logger) : Hub<IGameClient>
 {
     public const string HubUrl = "/gamehub";
 
-    static readonly ConcurrentDictionary<Guid, ConcurrentDictionary<string, byte>> _groups = [];
+    static readonly ConcurrentDictionary<Guid, ConcurrentDictionary<string, byte>> _gameGroups = [];
+    static readonly ConcurrentDictionary<string, ConcurrentDictionary<Guid, byte>> _connectionGroups = [];
 
-    public override Task OnDisconnectedAsync(Exception? exception)
+    public async override Task OnDisconnectedAsync(Exception? exception)
     {
-        foreach (var group in _groups.Values)
+        if (logger.IsEnabled(LogLevel.Information))
         {
-            group.TryRemove(Context.ConnectionId, out _);
+            logger.LogInformation(
+                "Client disconnected. ConnectionId='{connectionId}'.",
+                Context.ConnectionId);
         }
 
-        return base.OnDisconnectedAsync(exception);
+        await LeaveAllGames();
+
+        await base.OnDisconnectedAsync(exception);
     }
 
     public async Task JoinGame(Guid gameId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, GroupName(gameId));
 
-        var group = _groups.GetOrAdd(
-            gameId, _ => new ConcurrentDictionary<string, byte>());
+        var gameGroup = _gameGroups.GetOrAdd(gameId, _ => []);
 
-        group.TryAdd(Context.ConnectionId, 0);
-    }
+        gameGroup.TryAdd(Context.ConnectionId, 0);
 
-    public async Task LeaveGame(Guid gameId)
-    {
-        var groupName = GroupName(gameId);
+        var connectionGroup = _connectionGroups.GetOrAdd(
+            Context.ConnectionId, _ => []);
 
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        connectionGroup.TryAdd(gameId, 0);
 
-        if (_groups.TryGetValue(gameId, out var group))
+        if (logger.IsEnabled(LogLevel.Information))
         {
-            group.TryRemove(Context.ConnectionId, out _);
-
-            if (group.IsEmpty)
-            {
-                _groups.TryRemove(gameId, out _);
-            }
+            logger.LogInformation(
+                "Game joined. GameId='{gameId}', ConnectionId='{connectionId}'.",
+                gameId, Context.ConnectionId);
         }
-
-        await Clients
-            .Group(groupName)
-            .ClientDisconnected(new(Context.ConnectionId));
     }
 
 #pragma warning disable CA1822 // Mark members as static
     public List<string> GetConnections(Guid gameId)
 #pragma warning restore CA1822 // Mark members as static
     {
-        return _groups.TryGetValue(gameId, out var group) 
-            ? [.. group.Keys]
+        return _gameGroups.TryGetValue(gameId, out var gameGroup) 
+            ? [.. gameGroup.Keys]
             : [];
     }
 
@@ -83,6 +79,45 @@ public class GameHub : Hub<IGameClient>
     {
         await Clients.Clients(notification.ConnectionIds)
             .Rematch(notification);
+    }
+
+    async Task LeaveAllGames()
+    {
+        if (_connectionGroups.TryGetValue(Context.ConnectionId, out var connectionGames))
+        {
+            foreach (var gameId in connectionGames.Keys)
+            {
+                await LeaveGame(gameId);
+
+                connectionGames.Remove(gameId, out _);
+            }
+
+            _connectionGroups.Remove(Context.ConnectionId, out _);
+        }
+    }
+
+    async Task LeaveGame(Guid gameId)
+    {
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            logger.LogInformation(
+                "Leaving game. GameId='{gameId}', ConnectionId='{connectionId}'.",
+                gameId, Context.ConnectionId);
+        }
+
+        var groupName = GroupName(gameId);
+
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+
+        if (_gameGroups.TryGetValue(gameId, out var gameGroup))
+        {
+            gameGroup.TryRemove(Context.ConnectionId, out _);
+
+            if (gameGroup.IsEmpty)
+            {
+                _gameGroups.TryRemove(gameId, out _);
+            }
+        }
     }
 
     static string GroupName(Guid gameId) => gameId.ToString();

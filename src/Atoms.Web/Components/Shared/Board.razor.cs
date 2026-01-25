@@ -411,19 +411,10 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        GC.SuppressFinalize(this);
-
-        try
-        {
-            await NotificationService.LeaveGame(GameId, _cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "NotificationService.LeaveGame");
-        }
-
         NotificationService.OnPlayerMoved -= PlayerMoved;
         NotificationService.OnGameReloadRequired -= ReloadGameIfRequired;
         NotificationService.OnPlayerJoined -= PlayerJoined;
+
+        GC.SuppressFinalize(this);
     }
 }
