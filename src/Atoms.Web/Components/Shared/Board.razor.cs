@@ -158,6 +158,10 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         {
             // Ignore - client disconnected
         }
+        catch (JSDisconnectedException)
+        {
+            // Ignore - client disconnected
+        }
     }
 
     async Task PlayerJoined(PlayerJoined notification)
@@ -381,6 +385,10 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         {
             // Ignore - client disconnected
         }
+        catch (JSDisconnectedException)
+        {
+            // Ignore - client disconnected
+        }
     }
 
     static async Task DelayBetweenMoves()
@@ -441,6 +449,10 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
             await JSRuntime.InvokeVoidAsync("App.notify", message);
         }
         catch (TaskCanceledException)
+        {
+            // Ignore - client disconnected
+        }
+        catch (JSDisconnectedException)
         {
             // Ignore - client disconnected
         }
