@@ -469,10 +469,8 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         {
             await NotificationService.LeaveGame(GameId, _cancellationToken);
         }
-        catch (ObjectDisposedException)
-        {
-            // Normal shutdown
-        }
+        catch (ObjectDisposedException) { /* Normal shutdown */ }
+        catch (TaskCanceledException) { /* Normal shutdown */ }
         catch (Exception ex)
         {
             Logger.LogError(ex, "NotificationService.LeaveGame");

@@ -13,6 +13,9 @@ public partial class GameComponent : Component2Base, IDisposable
     [Inject]
     GameStateContainer StateContainer { get; set; } = default!;
 
+    [Inject]
+    ILogger<GamesPageComponent> Logger { get; set; } = default!;
+
     [Parameter]
     public Guid GameId { get; set; }
 
@@ -42,19 +45,36 @@ public partial class GameComponent : Component2Base, IDisposable
 
     async Task LoadGame(bool isReload = false)
     {
-        var storageId = await GetOrAddStorageId();
-        var response = await Mediator.Send(
-            new GetGameRequest(GameId, storageId, UserId));
-
-        if (response.Success)
+        try
         {
-            Debug = null;
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation("Loading game. Game='{gameId}'.", GameId);
+            }
 
-            await Initialize(response.Game!, isReload);
+            var storageId = await GetOrAddStorageId();
+            var response = await Mediator.Send(
+                new GetGameRequest(GameId, storageId, UserId));
+
+            if (response.Success)
+            {
+                Debug = null;
+
+                await Initialize(response.Game!, isReload);
+            }
+            else
+            {
+                Navigation.NavigateTo("/");
+            }
         }
-        else
+        catch (TaskCanceledException)
         {
-            Navigation.NavigateTo("/");
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogWarning(
+                    "Abort loading game, task was cancelled. Game='{gameId}'.",
+                    GameId);
+            }
         }
     }
 
