@@ -16,6 +16,7 @@ public interface INotificationService : IAsyncDisposable
                             CancellationToken cancellationToken = default);
     Task Start(CancellationToken cancellationToken = default);
     Task JoinGame(Guid gameId, CancellationToken cancellationToken = default);
+    Task LeaveGame(Guid gameId, CancellationToken cancellationToken = default);
     Task<List<string>> GetOpponentConnections(Guid gameId, CancellationToken cancellationToken = default);
     Task NotifyRematch(Rematch notification, CancellationToken cancellationToken = default);
 }

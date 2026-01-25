@@ -131,6 +131,15 @@ public class NotificationService : INotificationService, IAsyncDisposable
                                       cancellationToken);
     }
 
+    public async Task LeaveGame(
+        Guid gameId,
+        CancellationToken cancellationToken = default)
+    {
+        await _connection.InvokeAsync(nameof(GameHub.LeaveGame),
+                                      gameId,
+                                      cancellationToken);
+    }
+
     public async Task<List<string>> GetOpponentConnections(
         Guid gameId,
         CancellationToken cancellationToken = default)

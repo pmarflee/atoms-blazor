@@ -463,8 +463,22 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         return await NotificationService.GetOpponentConnections(GameId);
     }
 
+    async Task LeaveGame()
+    {
+        try
+        {
+            await NotificationService.LeaveGame(GameId, _cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "NotificationService.LeaveGame");
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
+        await LeaveGame();
+
         NotificationService.OnPlayerMoved -= PlayerMoved;
         NotificationService.OnGameReloadRequired -= ReloadGameIfRequired;
         NotificationService.OnPlayerJoined -= PlayerJoined;

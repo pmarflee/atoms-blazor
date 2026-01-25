@@ -47,6 +47,30 @@ public class GameHub(ILogger<GameHub> logger) : Hub<IGameClient>
         }
     }
 
+    public async Task LeaveGame(Guid gameId)
+    {
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            logger.LogInformation(
+                "Leaving game. GameId='{gameId}', ConnectionId='{connectionId}'.",
+                gameId, Context.ConnectionId);
+        }
+
+        var groupName = GroupName(gameId);
+
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+
+        if (_gameGroups.TryGetValue(gameId, out var gameGroup))
+        {
+            gameGroup.TryRemove(Context.ConnectionId, out _);
+
+            if (gameGroup.IsEmpty)
+            {
+                _gameGroups.TryRemove(gameId, out _);
+            }
+        }
+    }
+
 #pragma warning disable CA1822 // Mark members as static
     public List<string> GetConnections(Guid gameId)
 #pragma warning restore CA1822 // Mark members as static
@@ -93,30 +117,6 @@ public class GameHub(ILogger<GameHub> logger) : Hub<IGameClient>
             }
 
             _connectionGroups.Remove(Context.ConnectionId, out _);
-        }
-    }
-
-    async Task LeaveGame(Guid gameId)
-    {
-        if (logger.IsEnabled(LogLevel.Information))
-        {
-            logger.LogInformation(
-                "Leaving game. GameId='{gameId}', ConnectionId='{connectionId}'.",
-                gameId, Context.ConnectionId);
-        }
-
-        var groupName = GroupName(gameId);
-
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-
-        if (_gameGroups.TryGetValue(gameId, out var gameGroup))
-        {
-            gameGroup.TryRemove(Context.ConnectionId, out _);
-
-            if (gameGroup.IsEmpty)
-            {
-                _gameGroups.TryRemove(gameId, out _);
-            }
         }
     }
 
