@@ -75,7 +75,10 @@ public class PlayerMoveMessageHandler(
 
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("Notifying players of move. GameId='{GameId}'.", game.Id);
+                logger.LogInformation(
+                    @"Notifying players of move.
+                    GameId='{GameId}', Row='{row}', Column='{column}'.",
+                    game.Id, message.Row, message.Column);
             }
 
             await notificationService.NotifyPlayerMoved(

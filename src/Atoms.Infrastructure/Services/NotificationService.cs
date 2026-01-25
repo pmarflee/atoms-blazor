@@ -44,7 +44,13 @@ public class NotificationService : INotificationService, IAsyncDisposable
             nameof(IGameClient.PlayerMoved),
             async notification =>
             {
-                logger.LogInformation("Received player moved notification");
+                if (logger.IsEnabled(LogLevel.Information))
+                {
+                    logger.LogInformation(
+                        @"Received player moved notification. 
+                        Game='{gameId}', Row='{row}', Column='{column}'.",
+                        notification.GameId, notification.Row, notification.Column);
+                }
 
                 await _playerMovedNotificationChannel.Writer.WriteAsync(notification);
             });
@@ -148,7 +154,7 @@ public class NotificationService : INotificationService, IAsyncDisposable
     }
 
     async Task StartPlayerMovedNotificationConsumer(
-        ChannelReader<PlayerMoved> reader, 
+        ChannelReader<PlayerMoved> reader,
         CancellationToken cancellationToken)
     {
         try
@@ -162,8 +168,11 @@ public class NotificationService : INotificationService, IAsyncDisposable
                         if (_logger.IsEnabled(LogLevel.Information))
                         {
                             _logger.LogInformation(
-                                "Processing player moved notification for Game: {GameId}", 
-                                notification.GameId);
+                                @"Processing player moved notification.
+                                Game='{gameId}', Row='{row}', Column='{column}',
+                                LastUpdatedDate='{lastUpdatedDate}'.",
+                                notification.GameId, notification.Row,
+                                notification.Column, notification.GameLastUpdatedDateUtc);
                         }
 
                         await OnPlayerMoved.Invoke(notification);
