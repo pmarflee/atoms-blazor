@@ -5,6 +5,7 @@ using Atoms.Infrastructure;
 using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Email;
 using Atoms.Infrastructure.Factories;
+using Atoms.Infrastructure.Middleware;
 using Atoms.Infrastructure.Services;
 using Atoms.Infrastructure.SignalR;
 using Atoms.UseCases.CreateNewGame;
@@ -184,6 +185,8 @@ try
 
     app.MapStaticAssets();
     app.UseAntiforgery();
+
+    app.UseMiddleware<SetVisitorIdCookie>();
 
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode();

@@ -2,7 +2,6 @@
 using Atoms.Core.Services;
 using Atoms.Core.ValueObjects;
 using Atoms.UseCases.Invites.ReadInviteCode;
-using Microsoft.Extensions.Logging;
 
 using static Atoms.Core.Entities.Game;
 
@@ -23,6 +22,7 @@ internal static class ObjectMother
     public static readonly UserId UserId = new("7B452FD8-C32C-497A-BC20-2190C1244B9E");
     public static readonly string Username = "David";
     public static readonly UserIdentity UserIdentity = new(UserId, Username);
+    public static readonly VisitorId VisitorId = new(Guid.Parse("22D05F6C-DE9B-4B70-81B0-A54E0E83DA6D"));
 
     public static LocalStorageUserDTO LocalStorageUser => new() { Id = LocalStorageId.Value, Name = Username };
 
