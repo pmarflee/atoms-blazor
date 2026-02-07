@@ -1,4 +1,4 @@
-﻿using Atoms.UseCases.GetVisitorUserName;
+﻿using Atoms.Core;
 
 namespace Atoms.Web.Components;
 
@@ -19,16 +19,15 @@ public abstract class Component2Base : ComponentBase
     [CascadingParameter]
     public VisitorId VisitorId { get; init; } = default!;
 
+    [CascadingParameter(Name = Constants.CascadingValues.VisitorUserName)]
+    public string? VisitorUserName { get; init; }
+
     public UserId? UserId => AuthenticatedUser?.GetUserId();
 
-    public async Task<string?> GetUserName() =>
-        AuthenticatedUser?.GetUserName()
-        ?? (await GetUserNameForVisitorId());
+    public string? UserName =>
+        AuthenticatedUser?.GetUserName() ?? VisitorUserName;
 
-    public async Task<UserIdentity> GetUserIdentity()
-    {
-        return new(UserId, await GetUserName());
-    }
+    public async Task<UserIdentity> GetUserIdentity() => new(UserId, UserName);
 
     protected async Task SetDisplayColourScheme(ColourScheme colourScheme)
     {
@@ -46,10 +45,5 @@ public abstract class Component2Base : ComponentBase
             : "Default";
 
         await JSRuntime.InvokeVoidAsync($"App.set{atomShapeFuncName}AtomShape");
-    }
-
-    async Task<string?> GetUserNameForVisitorId()
-    {
-        return await Mediator.Send(new GetVisitorUserNameRequest(VisitorId));
     }
 }

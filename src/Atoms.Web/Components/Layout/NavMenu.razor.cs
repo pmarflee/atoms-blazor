@@ -5,7 +5,6 @@ namespace Atoms.Web.Components.Layout;
 public partial class NavMenuComponent : Component2Base, IDisposable
 {
     protected string? CurrentUrl;
-    protected string? UserName;
 
     [Inject]
     public NavigationManager NavigationManager { get; set; } = default!;
@@ -13,7 +12,6 @@ public partial class NavMenuComponent : Component2Base, IDisposable
     protected async override Task OnInitializedAsync()
     {
         CurrentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        UserName = await GetUserName();
 
         NavigationManager.LocationChanged += OnLocationChanged;
     }

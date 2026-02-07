@@ -72,9 +72,8 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
     {
         if (Game is not null)
         {
-            var username = await GetUserName();
             var request = new CreateRematchGameRequest(
-                Game.Id, base.VisitorId, new UserIdentity(UserId, username),
+                Game.Id, VisitorId, new UserIdentity(UserId, UserName),
                 _opponentConnectionIds ?? await GetGameConnections());
             var response = await Mediator.Send(request);
 

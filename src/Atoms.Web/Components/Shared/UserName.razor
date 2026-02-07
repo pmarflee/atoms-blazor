@@ -2,18 +2,27 @@
 
 <div>
     <section>
-        <EditForm Model="Input" OnValidSubmit=@OnValidSubmit>
+        <EditForm Model="Input"
+                  OnValidSubmit=@OnValidSubmit
+                  FormName="UserNameForm">
             <FluentValidator />
-            <ValidationSummary role="alert" />
-            <div class="input-form">
+            <FluentStack Orientation=@Orientation.Vertical VerticalGap="20">
                 <div class="input-group">
-                    <label for="Input.Name">Name</label>
-                    <InputText @ref="InputName" @bind-Value="Input.Name" autocomplete="name" aria-required="true" placeholder="Please enter your name" maxlength="25" />
+                    <FluentTextField Name="Input.Name"
+                                     @bind-Value=@Input.Name
+                                     Label="Name"
+                                     Required
+                                     Autofocus
+                                     Placeholder="Please enter your name"
+                                     Maxlength="25"
+                                     AutoComplete="name"
+                                     Style="width: 100%;" />
+                    <FluentValidationMessage For="@(() => Input.Name)" />
                 </div>
-                <div class="submit-group">
-                    <button type="submit">Submit</button>
+                <div class="input-group">
+                    <button type="submit" class="input-button">Submit</button>
                 </div>
-            </div>
+            </FluentStack>
         </EditForm>
     </section>
 </div>

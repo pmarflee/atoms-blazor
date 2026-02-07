@@ -1,6 +1,5 @@
 ﻿namespace Atoms.Infrastructure.Middleware;
 
-using Atoms.Core.DTOs;
 using Atoms.Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 
@@ -21,9 +20,10 @@ public class SetVisitorIdCookie(
             if (!cookieValueService.TryGetCookieValue(context, out var visitorIdCookieValue)
                 || visitorIdCookieValue.RequiresRenewal(utcNow))
             {
-                var newVisitorIdCookieValue = new VisitorIdCookieValue(
-                    visitorIdCookieValue?.Id ?? new(Guid.CreateVersion7()),
-                    utcNow);
+                var newVisitorIdCookieValue = VisitorIdCookieValue.CreateNew(
+                    utcNow,
+                    visitorIdCookieValue?.Id,
+                    visitorIdCookieValue?.Name);
 
                 cookieValueService.SetCookieValue(
                     context, newVisitorIdCookieValue);

@@ -30,9 +30,7 @@ public partial class MenuComponent : Component2Base
     {
         var response = await Mediator.Send(
             new CreateNewGameRequest(
-                Options,
-                VisitorId,
-                new(UserId, await GetUserName())));
+                Options, VisitorId, new(UserId, UserName)));
 
         await OnCreateGame.InvokeAsync(response.Game);
     }

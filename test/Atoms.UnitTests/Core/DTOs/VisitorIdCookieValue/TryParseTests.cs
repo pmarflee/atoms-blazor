@@ -31,15 +31,16 @@ public class TryParseTests
     {
         var dto = new VisitorIdCookieValueDTO(
             ObjectMother.VisitorId,
+            ObjectMother.Username,
             new DateTime(2026, 1, 31, 22, 14, 0));
 
-        var rawValue1 = $"{{\"Id\": \"{dto.Id.Value}\", \"IssueDate\": \"{dto.IssueDate:O}\" }}";
+        var rawValue1 = $"{{\"Id\": \"{dto.Id.Value}\", \"Name\": \"{dto.Name}\", \"IssueDate\": \"{dto.IssueDate:O}\" }}";
         var rawValue1Bytes = Encoding.UTF8.GetBytes(rawValue1);
         var base64EncodedRawValue1 = Convert.ToBase64String(rawValue1Bytes);
 
         yield return () => (base64EncodedRawValue1, rawValue1, true, dto);
 
-        var rawValue2 = $"{{\"Idx\": \"{dto.Id.Value}\", \"IssueDate\": \"{dto.IssueDate:O}\" }}";
+        var rawValue2 = $"{{\"Idx\": \"{dto.Id.Value}\", \"Name\": \"{dto.Name}\", \"IssueDate\": \"{dto.IssueDate:O}\" }}";
         var rawValue2Bytes = Encoding.UTF8.GetBytes(rawValue2);
         var base64EncodedRawValue2 = Convert.ToBase64String(rawValue2Bytes);
 
@@ -50,5 +51,15 @@ public class TryParseTests
         var base64EncodedRawValue3 = Convert.ToBase64String(rawValue3Bytes);
 
         yield return () => (base64EncodedRawValue3, rawValue3, false, null);
+
+        var dto2 = VisitorIdCookieValueDTO.CreateNew(
+            new DateTime(2026, 1, 31, 22, 14, 0),
+            ObjectMother.VisitorId);
+
+        var rawValue4 = $"{{\"Id\": \"{dto2.Id.Value}\", \"IssueDate\": \"{dto2.IssueDate:O}\" }}";
+        var rawValue4Bytes = Encoding.UTF8.GetBytes(rawValue4);
+        var base64EncodedRawValue4 = Convert.ToBase64String(rawValue4Bytes);
+
+        yield return () => (base64EncodedRawValue4, rawValue4, true, dto2);
     }
 }

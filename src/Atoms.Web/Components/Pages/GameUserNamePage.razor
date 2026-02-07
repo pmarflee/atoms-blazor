@@ -1,5 +1,6 @@
 ﻿@inherits GameUserNamePageComponent
+@attribute [ExcludeFromInteractiveRouting]
 
 @page "/games/{gameId:guid}/username"
 
-<UserName NameChanged=@NameChanged />
+<UserName GameId=@GameId />

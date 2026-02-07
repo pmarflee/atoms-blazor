@@ -30,7 +30,7 @@ public class InvitePageComponent : Component2Base
             _invite = response.Invite!;
             _userId = UserId;
 
-            var username = await GetUserName();
+            var username = UserName;
 
             if (!string.IsNullOrEmpty(username))
             {

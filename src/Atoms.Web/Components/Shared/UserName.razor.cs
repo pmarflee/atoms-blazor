@@ -1,35 +1,66 @@
-﻿using Atoms.UseCases.SetUserName;
+﻿using Atoms.Infrastructure.Services;
+using Atoms.UseCases.GetGame;
+using Atoms.UseCases.SetUserName;
 
 namespace Atoms.Web.Components.Shared;
 
 public class UserNameComponent : Component2Base
 {
     [Parameter]
-    public EventCallback<string?> NameChanged { get; set; }
+    public string? RedirectUrl { get; set; }
 
-    protected InputText InputName { get; set; } = default!;
+    [Parameter]
+    public Guid? GameId { get; set; }
 
-    protected UsernameDTO Input { get; set; } = new();
+    [Inject]
+    VisitorIdCookieValueService CookieValueService { get; set; } = default!;
+
+    [Inject]
+    NavigationManager NavigationManager { get; set; } = default!;
+
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    public UsernameDTO Input { get; set; } = default!;
 
     protected async override Task OnInitializedAsync()
     {
-        Input.Name = await GetUserName();
-    }
-
-    protected async override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await InputName.Element!.Value.FocusAsync();
-        }
+        Input ??= new UsernameDTO { Name = UserName };
     }
 
     protected async Task OnValidSubmit()
     {
+        Game? game = null;
+
+        if (GameId.HasValue)
+        {
+            var response = await Mediator.Send(
+                new GetGameRequest(GameId.Value, VisitorId, UserId));
+
+            if (response.Success)
+            {
+                game = response.Game;
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/");
+            }
+        }
+
         await Mediator.Send(
             new SetUserNameRequest(
-                VisitorId, new UserIdentity(Input.Name)));
+                VisitorId, new UserIdentity(Input.Name), game));
 
-        await NameChanged.InvokeAsync(Input.Name);
+        CookieValueService.SetName(HttpContext, Input.Name!);
+
+        if (game is not null)
+        {
+            NavigationManager.NavigateToGame(game);
+        }
+        else
+        {
+            NavigationManager.NavigateTo(RedirectUrl ?? "/");
+        }
     }
 }

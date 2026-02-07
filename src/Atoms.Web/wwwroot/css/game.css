@@ -126,7 +126,8 @@ a:hover {
 #intro input[type="radio"]:focus + span > label {
 	outline: 1px solid white;
 }
-#intro button {
+
+.input-button {
 	font-size: 18pt;
 	line-height: 1;
 	margin: 20px;
@@ -136,13 +137,16 @@ a:hover {
 	border: 2px solid;
 	border-color: #88a #224 #224 #88a;
 }
-#intro button:focus {
+
+.input-button:focus {
 	outline: 1px solid white;
 }
-#intro button:active {
+
+.input-button:active {
 	background-color: #448;
 	outline: none;
 }
+
 #status {
 	width: 500px;
 	height: 60px;

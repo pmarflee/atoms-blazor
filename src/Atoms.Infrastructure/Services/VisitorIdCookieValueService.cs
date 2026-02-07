@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Atoms.Infrastructure.Services;
 
-public class VisitorIdCookieValueService(IDataProtectionProvider provider)
+public class VisitorIdCookieValueService(
+    IDataProtectionProvider provider,
+    IDateTimeService dateTimeService)
 {
     const string CookieName = Constants.Cookies.VisitorId;
 
@@ -40,5 +42,16 @@ public class VisitorIdCookieValueService(IDataProtectionProvider provider)
             CookieName,
             cookieValue.Serialize(_protector),
             options);
+    }
+
+    public void SetName(HttpContext context, string name)
+    {
+        var issueDate = dateTimeService.UtcNow;
+        var cookieValue = TryGetCookieValue(context, out var outCookieValue)
+            ? (outCookieValue with { Name = name, IssueDate = dateTimeService.UtcNow })
+            : VisitorIdCookieValue.CreateNew(
+                issueDate, name: name);
+
+        SetCookieValue(context, cookieValue);
     }
 }

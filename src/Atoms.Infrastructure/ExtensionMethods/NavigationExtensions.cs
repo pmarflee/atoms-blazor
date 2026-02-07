@@ -39,7 +39,7 @@ public static class NavigationExtensions
             var url = BaseUrl.AppendPathSegment(gameDto.Id)
                              .AppendPathSegment("/username/");
 
-            navigation.NavigateTo(url);
+            navigation.NavigateTo(url, true);
         }
 
         public string GetAbsoluteGameUrl(Guid gameId)

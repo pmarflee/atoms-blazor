@@ -1,3 +1,4 @@
+using Atoms.Core;
 using Atoms.Core.Data.Identity;
 using Atoms.Core.Delegates;
 using Atoms.Core.Entities.Configuration;
@@ -160,14 +161,25 @@ try
         var httpContext = httpContextAccessor.HttpContext!;
         var visitorIdCookieValueService = sp.GetRequiredService<VisitorIdCookieValueService>();
 
-        if (!visitorIdCookieValueService.TryGetCookieValue(
-            httpContext, out var visitorIdCookieValue))
-        {
-            throw new Exception("Visitor Id cookie not set");
-        }
-
-        return visitorIdCookieValue.Id;
+        return visitorIdCookieValueService.TryGetCookieValue(
+            httpContext, out var visitorIdCookieValue)
+            ? visitorIdCookieValue.Id
+            : VisitorId.Empty;
     });
+
+    builder.Services.AddCascadingValue(
+        Constants.CascadingValues.VisitorUserName,
+        sp =>
+        {
+            var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+            var httpContext = httpContextAccessor.HttpContext!;
+            var visitorIdCookieValueService = sp.GetRequiredService<VisitorIdCookieValueService>();
+
+            return visitorIdCookieValueService.TryGetCookieValue(
+                httpContext, out var visitorIdCookieValue)
+                ? visitorIdCookieValue.Name
+                : null;
+        });
 
     var app = builder.Build();
 

@@ -8,9 +8,18 @@ namespace Atoms.Core.DTOs;
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public record VisitorIdCookieValue(
     [property: JsonRequired] VisitorId Id,
+    string? Name,
     [property: JsonRequired] DateTime IssueDate)
 {
     public const int MaxAgeDays = 400;
+
+    public static VisitorIdCookieValue CreateNew(
+        DateTime issueDate, VisitorId? visitorId = null, string? name = null)
+    {
+        visitorId ??= new VisitorId(Guid.CreateVersion7());
+
+        return new(visitorId.Value, name, issueDate);
+    }
 
     public static bool TryParse(
         string value,

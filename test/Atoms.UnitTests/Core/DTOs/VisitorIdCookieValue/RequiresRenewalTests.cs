@@ -14,6 +14,7 @@ public class RequiresRenewalTests
     {
         var dto = new VisitorIdCookieValueDTO(
             ObjectMother.VisitorId,
+            ObjectMother.Username,
             new DateTime(2026, 1, 31, 22, 14, 0));
 
         yield return () => (dto, new DateTime(2026, 4, 30, 11, 14, 0), false);

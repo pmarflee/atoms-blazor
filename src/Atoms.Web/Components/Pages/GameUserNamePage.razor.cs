@@ -1,17 +1,14 @@
 ﻿using Atoms.UseCases.GetGame;
-using Atoms.UseCases.SetUserName;
 
 namespace Atoms.Web.Components.Pages;
 
 public class GameUserNamePageComponent : Component2Base
 {
     [Inject]
-    NavigationManager Navigation { get; set; } = default!;
+    NavigationManager NavigationManager { get; set; } = default!;
 
     [Parameter]
     public Guid GameId { get; set; }
-
-    Game _game = default!;
 
     protected async override Task OnInitializedAsync()
     {
@@ -24,22 +21,18 @@ public class GameUserNamePageComponent : Component2Base
             new GetGameRequest(GameId, VisitorId, UserId));
         var success = response.Success;
 
-        if (!success) Navigation.NavigateTo("/");
+        if (!success) NavigationManager.NavigateTo("/");
 
-        _game = response.Game!;
+        var game = response.Game!;
 
-        var firstHumanPlayer = _game.Players.FirstOrDefault(p => p.IsHuman);
+        var firstHumanPlayer = game.Players.FirstOrDefault(p => p.IsHuman);
 
         success = firstHumanPlayer is not null
                   && string.IsNullOrEmpty(firstHumanPlayer.Name);
 
-        if (!success) Navigation.NavigateToGame(_game);
-    }
-
-    protected async Task NameChanged(string name)
-    {
-        await Mediator.Send(new SetUserNameRequest(VisitorId, new(name), _game));
-
-        Navigation.NavigateToGame(_game);
+        if (!success)
+        {
+            NavigationManager.NavigateToGame(game);
+        }
     }
 }
