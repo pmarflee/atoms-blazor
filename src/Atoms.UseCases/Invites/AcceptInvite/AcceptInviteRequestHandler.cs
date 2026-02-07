@@ -6,8 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Atoms.UseCases.Invites.AcceptInvite;
 
 public class AcceptInviteRequestHandler(
-    ILocalStorageUserService localStorageUserService,
-    IValidator<Invite> inviteValidator,
+    IValidator<AcceptInviteRequest> acceptInviteRequestValidator,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
     IDateTimeService dateTimeService,
     IServiceScopeFactory serviceScopeFactory)
@@ -16,9 +15,8 @@ public class AcceptInviteRequestHandler(
     public async Task<AcceptInviteResponse> Handle(
         AcceptInviteRequest request, CancellationToken cancellationToken)
     {
-        var invite = request.Invite;
-        var validationResult = await inviteValidator.ValidateAsync(
-            invite, cancellationToken);
+        var validationResult = await acceptInviteRequestValidator.ValidateAsync(
+            request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -30,19 +28,20 @@ public class AcceptInviteRequestHandler(
         using var dbContext = await dbContextFactory.CreateDbContextAsync(
             cancellationToken);
 
+        var invite = request.Invite;
         var game = await dbContext.GetGameByPlayerId(invite.PlayerId, cancellationToken);
         var player = game!.Players.First(p => p.Id == invite.PlayerId);
-        var localStorageId = await localStorageUserService.GetOrAddLocalStorageId(cancellationToken);
 
         player.UserId = request.UserIdentity.Id;
         player.AbbreviatedName = request.UserIdentity.GetAbbreviatedName(game!.Players);
-        player.LocalStorageUserId = localStorageId.Value;
+        player.VisitorId = request.VisitorId.Value;
 
         game.LastUpdatedDateUtc = dateTimeService.UtcNow;
 
-        var localStorageUser = (await dbContext.FindAsync<LocalStorageUserDTO>(localStorageId.Value))!;
+        var visitor = (await dbContext.FindAsync<VisitorDTO>(
+            request.VisitorId.Value))!;
 
-        localStorageUser.Name = request.UserIdentity.Name!;
+        visitor.Name = request.UserIdentity.Name!;
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -56,7 +55,7 @@ public class AcceptInviteRequestHandler(
 
         await notificationService.NotifyPlayerJoined(
             new PlayerJoined(game.Id, player.Id, 
-                             player.UserId, localStorageId.Value,
+                             player.UserId, request.VisitorId.Value,
                              playerDescription),
             cancellationToken);
 

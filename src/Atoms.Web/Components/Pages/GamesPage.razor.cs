@@ -11,7 +11,7 @@ public class GamesPageComponent : Component2Base, IAsyncDisposable
     protected IDbContextFactory<ApplicationDbContext> DbContextFactory { get; set; } = default!;
 
     [Inject]
-    protected ILocalStorageUserService LocalStorageUserService { get; set; } = default!;
+    protected IVisitorService VisitorService { get; set; } = default!;
 
     [Inject]
     NavigationManager Navigation { get; set; } = default!;
@@ -32,14 +32,12 @@ public class GamesPageComponent : Component2Base, IAsyncDisposable
         _dbContextActiveGames = await DbContextFactory.CreateDbContextAsync();
         _dbContextInactiveGames = await DbContextFactory.CreateDbContextAsync();
 
-        var localStorageId = await LocalStorageUserService.GetOrAddLocalStorageId(_dbContextActiveGames);
-
         ActiveGames = _dbContextActiveGames
-            .GetGamesForUser(localStorageId, UserId)
+            .GetGamesForUser(VisitorId, UserId)
             .Where(game => game.IsActive);
 
         InactiveGames = _dbContextInactiveGames
-            .GetGamesForUser(localStorageId, UserId)
+            .GetGamesForUser(VisitorId, UserId)
             .Where(game => !game.IsActive);
     }
 
@@ -53,6 +51,7 @@ public class GamesPageComponent : Component2Base, IAsyncDisposable
         var createRematchGameResponse = await Mediator.Send(
             new CreateRematchGameRequest(
                 gameInfoDto.Id,
+                VisitorId,
                 await GetUserIdentity()));
 
         Navigation.NavigateToGame(createRematchGameResponse.Game);

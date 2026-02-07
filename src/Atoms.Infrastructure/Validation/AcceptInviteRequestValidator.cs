@@ -1,16 +1,17 @@
 ﻿using Atoms.Core.Data;
+using Atoms.UseCases.Invites.AcceptInvite;
 using FluentValidation;
 
 namespace Atoms.Infrastructure.Validation;
 
-public class InviteValidator : AbstractValidator<Invite>
+public class AcceptInviteRequestValidator : AbstractValidator<AcceptInviteRequest>
 {
-    public InviteValidator(
-        IDbContextFactory<ApplicationDbContext> dbContextFactory,
-        IBrowserStorageService browserStorageService)
+    public AcceptInviteRequestValidator(
+        IDbContextFactory<ApplicationDbContext> dbContextFactory)
     {
-        RuleFor(x => x).CustomAsync(async (invite, ctx, token) =>
+        RuleFor(x => x).CustomAsync(async (request, ctx, token) =>
         {
+            var invite = request.Invite;
             var dbContext = await dbContextFactory.CreateDbContextAsync(token);
             var game = await dbContext.GetGameByPlayerId(invite.PlayerId, token);
 
@@ -30,15 +31,14 @@ public class InviteValidator : AbstractValidator<Invite>
 
             var player = game.Players.First(p => p.Id == invite.PlayerId);
 
-            if (player.UserId is not null || player.LocalStorageUserId is not null)
+            if (player.UserId is not null || player.VisitorId is not null)
             {
                 ctx.AddFailure(nameof(Invite.PlayerId), "Invite no longer valid");
             }
 
             var firstHumanPlayer = game.Players.First(p => p.PlayerTypeId == PlayerType.Human);
-            var localStorageId = await browserStorageService.GetOrAddStorageId();
 
-            if (localStorageId.Value == firstHumanPlayer.LocalStorageUserId)
+            if (request.VisitorId == firstHumanPlayer.VisitorId)
             {
                 ctx.AddFailure(nameof(Invite.PlayerId), "Invite not accepted on same browser instance");
             }

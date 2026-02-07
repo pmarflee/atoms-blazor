@@ -18,7 +18,7 @@ public class Game
     public int Round { get; private set; }
     public IRandomNumberGenerator? Rng { get; }
     public UserId? UserId { get; }
-    public StorageId LocalStorageId { get; }
+    public VisitorId VisitorId { get; }
     public DateTime CreatedDateUtc { get; private set; }
     public DateTime LastUpdatedDateUtc { get; private set; }
 
@@ -39,7 +39,7 @@ public class Game
                 ColourScheme colourScheme,
                 AtomShape atomShape,
                 IRandomNumberGenerator? rng,
-                StorageId localStorageId,
+                VisitorId visitorId,
                 DateTime createdDateUtc,
                 DateTime? lastUpdatedDateUtc = null,
                 IEnumerable<GameBoard.CellState>? cells = null,
@@ -63,17 +63,17 @@ public class Game
         Round = round;
         Rng = rng;
         UserId = userId;
-        LocalStorageId = localStorageId;
+        VisitorId = visitorId;
         CreatedDateUtc = createdDateUtc;
         LastUpdatedDateUtc = lastUpdatedDateUtc ?? createdDateUtc;
 
         UpdatePlayerStates(true);
     }
 
-    public bool CanPlayMove(UserId? userId, StorageId? localStorageId)
+    public bool CanPlayMove(UserId? userId, VisitorId visitorId)
     {
         return !HasWinner
-               && this.PlayerBelongsToUser(ActivePlayer, userId, localStorageId);
+               && this.PlayerBelongsToUser(ActivePlayer, userId, visitorId);
     }
 
     public bool CanPlaceAtom(GameBoard.Cell cell)
@@ -215,7 +215,7 @@ public class Game
                       string? name = null,
                       string? abbreviatedName = null,
                       IPlayerStrategy? strategy = null,
-                      StorageId? localStorageId = null,
+                      VisitorId? visitorId = null,
                       bool isDead = false)
         {
             if (type != PlayerType.Human && strategy is null)
@@ -229,7 +229,7 @@ public class Game
             UserId = userId;
             Name = name;
             AbbreviatedName = abbreviatedName;
-            LocalStorageId = localStorageId;
+            VisitorId = visitorId;
             IsDead = isDead;
 
             _strategy = strategy;
@@ -241,7 +241,7 @@ public class Game
         public UserId? UserId { get; private set; }
         public string? Name { get; private set; }
         public string? AbbreviatedName { get; private set; }
-        public StorageId? LocalStorageId { get; private set; }
+        public VisitorId? VisitorId { get; private set; }
         public bool IsDead { get; private set; }
         public bool IsHuman => Type == PlayerType.Human;
         public void MarkDead() => IsDead = true;
@@ -253,16 +253,16 @@ public class Game
 
         public void SetIdentity(UserId? userId,
                                 string? name,
-                                StorageId? localStorageId)
+                                VisitorId? visitorId)
         {
             UserId = userId;
             Name = name;
-            LocalStorageId = localStorageId;
+            VisitorId = visitorId;
         }
 
         public bool TryCreateInviteLink(string baseUrl, [NotNullWhen(true)] out InviteLink? inviteLink)
         {
-            if (IsHuman && !IsDead && LocalStorageId is null)
+            if (IsHuman && !IsDead && VisitorId is null)
             {
                 inviteLink = new(Id.ToString("N"), baseUrl);
 

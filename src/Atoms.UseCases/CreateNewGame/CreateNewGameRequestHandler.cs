@@ -10,6 +10,7 @@ public class CreateNewGameRequestHandler(
     {
         var game = await gameCreationService.CreateGame(
             request.Options,
+            request.VisitorId,
             request.UserIdentity,
             cancellationToken);
 

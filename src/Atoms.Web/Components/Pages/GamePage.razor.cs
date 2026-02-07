@@ -32,7 +32,7 @@ public partial class GameComponent : Component2Base, IDisposable
             var response = await Mediator.Send(
                 new CreateDebugGameRequest(
                     GameId, Debug.Value,
-                    await GetOrAddStorageId()));
+                    VisitorId));
 
             await Task.Delay(10);
             await Initialize(response.Game);
@@ -52,9 +52,8 @@ public partial class GameComponent : Component2Base, IDisposable
                 Logger.LogInformation("Loading game. Game='{gameId}'.", GameId);
             }
 
-            var storageId = await GetOrAddStorageId();
             var response = await Mediator.Send(
-                new GetGameRequest(GameId, storageId, UserId));
+                new GetGameRequest(GameId, VisitorId, UserId));
 
             if (response.Success)
             {
@@ -82,10 +81,6 @@ public partial class GameComponent : Component2Base, IDisposable
 
     async Task Initialize(Game game, bool isReload = false)
     {
-        var localStorageId = await GetOrAddStorageId();
-
-        StateContainer.SetLocalStorageId(localStorageId);
-
         await SetDisplayColourScheme(game.ColourScheme);
         await SetDisplayAtomShape(game.AtomShape);
         await StateContainer.SetGame(game, isReload);

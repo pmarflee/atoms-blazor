@@ -9,23 +9,26 @@ public class GameCreationServiceTests : BaseDbTestFixture
     {
         using var dbContext = await DbContextFactory.CreateDbContextAsync();
 
-        var localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
-        localStorageUserServiceExpectations.Setups
-            .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
-            .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
+        var visitorServiceExpectations = new IVisitorServiceCreateExpectations();
+        visitorServiceExpectations.Setups
+            .SaveVisitorId(
+                Arg.Is(ObjectMother.VisitorId),
+                Arg.Any<CancellationToken?>())
+            .ReturnValue(Task.FromResult(ObjectMother.VisitorId));
 
-        await dbContext.LocalStorageUsers.AddAsync(ObjectMother.LocalStorageUser);
+        await dbContext.Visitors.AddAsync(ObjectMother.VisitorUser);
         await dbContext.SaveChangesAsync();
 
         var gameDto = ObjectMother.GameDTO();
 
         var gameCreationService = new GameCreationService(
-            localStorageUserServiceExpectations.Instance(),
-            (gameId, options, localStorageId, userIdentity) => gameDto,
+            visitorServiceExpectations.Instance(),
+            (gameId, options, visitorId, userIdentity) => gameDto,
             DbContextFactory);
 
         var responseGameDto = await gameCreationService.CreateGame(
             ObjectMother.GameMenuOptions,
+            ObjectMother.VisitorId,
             ObjectMother.UserIdentity,
             CancellationToken.None);
 
@@ -35,6 +38,5 @@ public class GameCreationServiceTests : BaseDbTestFixture
 
         await Assert.That(gameDtoFromDb).IsNotNull()
              .And.Member(x => x!.Id, x => x.EqualTo(gameDto.Id));
-
     }
 }

@@ -2,10 +2,10 @@
 
 public class GetGameRequest(
     Guid gameId,
-    StorageId storageId,
+    VisitorId storageId,
     UserId? userId = null) : IRequest<GetGameResponse>
 {
     public Guid GameId { get; } = gameId;
-    public StorageId StorageId { get; } = storageId;
+    public VisitorId VisitorId { get; } = storageId;
     public UserId? UserId { get; } = userId;
 }

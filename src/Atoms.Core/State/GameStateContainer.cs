@@ -1,5 +1,4 @@
-﻿
-using Atoms.Core.DTOs.Notifications;
+﻿using Atoms.Core.DTOs.Notifications;
 
 namespace Atoms.Core.State;
 
@@ -7,13 +6,10 @@ public class GameStateContainer
 {
     Game? _game;
     GameState _state;
-    StorageId _localStorageId = default!;
 
     public Game? Game => _game;
 
     public GameState State => _state;
-
-    public StorageId LocalStorageId => _localStorageId;
 
     public async Task SetGame(Game game, bool isReload)
     {
@@ -22,11 +18,6 @@ public class GameStateContainer
 
         await NotifyGameSet(isReload);
         await NotifyStateChanged();
-    }
-
-    public void SetLocalStorageId(StorageId localStorageId)
-    {
-        _localStorageId = localStorageId;
     }
 
     public async Task GameUpdated()

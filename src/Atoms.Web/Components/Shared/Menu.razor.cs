@@ -18,7 +18,7 @@ public partial class MenuComponent : Component2Base
         var response = await Mediator.Send(
             new CreateGameOptionsRequest(
                 Core.Constants.MaxPlayers,
-                await GetOrAddStorageId(),
+                VisitorId,
                 UserId));
 
         Options = response.Options;
@@ -31,6 +31,7 @@ public partial class MenuComponent : Component2Base
         var response = await Mediator.Send(
             new CreateNewGameRequest(
                 Options,
+                VisitorId,
                 new(UserId, await GetUserName())));
 
         await OnCreateGame.InvokeAsync(response.Game);

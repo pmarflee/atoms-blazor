@@ -16,7 +16,7 @@ public class ShouldNotAllowPlayerMoveIfGameHasWinner : PlayerMoveAtomTestFixture
             ObjectMother.CreateRng, 
             ObjectMother.CreatePlayerStrategy, 
             ObjectMother.GetUserById,
-            ObjectMother.GetLocalStorageUserById);
+            ObjectMother.GetVisitorById);
 
         LoggerExpectations.Setups
             .IsEnabled(Arg.Is(LogLevel.Debug))

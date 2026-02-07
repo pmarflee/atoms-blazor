@@ -6,65 +6,65 @@ public static class PlayerBelongsToUserExtensions
     {
         public bool PlayerBelongsToUser(PlayerDTO playerDto,
                                         UserId? userId,
-                                        StorageId? localStorageId)
+                                        VisitorId visitorId)
         {
             return PlayerBelongsToUser(
                     playerDto.PlayerTypeId,
-                    playerDto.UserId, playerDto.LocalStorageUserId,
-                    userId, localStorageId, 
-                    gameDto.UserId, gameDto.LocalStorageUserId);
+                    playerDto.UserId, playerDto.VisitorId,
+                    userId, visitorId, 
+                    gameDto.UserId, gameDto.VisitorId);
         }
     }
 
     extension(Game game)
     {
         public bool PlayerBelongsToUser(Game.Player player,
-                                        UserId? userId, StorageId? localStorageId)
+                                        UserId? userId, VisitorId visitorId)
         {
             return PlayerBelongsToUser(
                 player.Type,
-                player.UserId, player.LocalStorageId,
-                userId, localStorageId,
-                game.UserId, game.LocalStorageId);
+                player.UserId, player.VisitorId,
+                userId, visitorId,
+                game.UserId, game.VisitorId);
         }
 
-        public bool PlayerBelongsToUser(UserId? playerUserId, StorageId? playerLocalStorageId,
-                                        UserId? userId, StorageId? localStorageId)
+        public bool PlayerBelongsToUser(UserId? playerUserId, VisitorId playerVisitorId,
+                                        UserId? userId, VisitorId visitorId)
         {
             return PlayerBelongsToUser(
-                playerUserId, playerLocalStorageId,
-                userId, localStorageId,
-                game.UserId, game.LocalStorageId);
+                playerUserId, playerVisitorId,
+                userId, visitorId,
+                game.UserId, game.VisitorId);
         }
     }
 
     static bool PlayerBelongsToUser(PlayerType playerType,
-                                    UserId? playerUserId, StorageId? playerLocalStorageId,
-                                    UserId? userId, StorageId? localStorageId,
-                                    UserId? gameUserId, StorageId gameLocalStorageId)
+                                    UserId? playerUserId, VisitorId? playerVisitorId,
+                                    UserId? userId, VisitorId visitorId,
+                                    UserId? gameUserId, VisitorId gameVisitorId)
     {
         return playerType == PlayerType.Human
             && PlayerBelongsToUser(
-                playerUserId, playerLocalStorageId,
-                userId, localStorageId,
-                gameUserId, gameLocalStorageId);
+                playerUserId, playerVisitorId,
+                userId, visitorId,
+                gameUserId, gameVisitorId);
     }
 
-    static bool PlayerBelongsToUser(UserId? playerUserId, StorageId? playerLocalStorageId,
-                                    UserId? userId, StorageId? localStorageId,
-                                    UserId? gameUserId, StorageId gameLocalStorageUserId)
+    static bool PlayerBelongsToUser(UserId? playerUserId, VisitorId? playerVisitorId,
+                                    UserId? userId, VisitorId visitorId,
+                                    UserId? gameUserId, VisitorId gameVisitorId)
     {
         if (userId is not null && playerUserId is not null)
         {
             return userId.Id == playerUserId.Id;
         }
 
-        if (localStorageId is not null && playerLocalStorageId is not null)
+        if (playerVisitorId is not null)
         {
-            return localStorageId == playerLocalStorageId;
+            return visitorId == playerVisitorId;
         }
 
         return userId is not null && userId.Id == gameUserId
-               || gameLocalStorageUserId == localStorageId;
+               || gameVisitorId == visitorId;
     }
 }

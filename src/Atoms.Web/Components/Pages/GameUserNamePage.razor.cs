@@ -20,10 +20,8 @@ public class GameUserNamePageComponent : Component2Base
 
     async Task LoadGame()
     {
-        var localStorageId = await GetOrAddStorageId();
-
         var response = await Mediator.Send(
-            new GetGameRequest(GameId, localStorageId, UserId));
+            new GetGameRequest(GameId, VisitorId, UserId));
         var success = response.Success;
 
         if (!success) Navigation.NavigateTo("/");
@@ -40,7 +38,7 @@ public class GameUserNamePageComponent : Component2Base
 
     protected async Task NameChanged(string name)
     {
-        await Mediator.Send(new SetUserNameRequest(new(name), _game));
+        await Mediator.Send(new SetUserNameRequest(VisitorId, new(name), _game));
 
         Navigation.NavigateToGame(_game);
     }

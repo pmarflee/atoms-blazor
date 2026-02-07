@@ -12,8 +12,7 @@ public class AcceptInviteTests : BaseDbTestFixture
     const string Player_Name = "Bob";
 
     private INotificationServiceCreateExpectations _notificationServiceExpectations = default!;
-    private ILocalStorageUserServiceCreateExpectations _localStorageUserServiceExpectations = default!;
-    private IValidatorCreateExpectations<Invite> _validatorExpectations = default!;
+    private IValidatorCreateExpectations<AcceptInviteRequest> _validatorExpectations = default!;
     private IDateTimeServiceCreateExpectations _dateServiceCreateExpectations = default!;
     private IServiceScopeFactoryCreateExpectations _serviceScopeFactoryCreateExpectations = default!;
     private IServiceProviderCreateExpectations _serviceProviderCreateExpectations = default!;
@@ -22,8 +21,7 @@ public class AcceptInviteTests : BaseDbTestFixture
     protected override Task SetupInternal()
     {
         _notificationServiceExpectations = new INotificationServiceCreateExpectations();
-        _localStorageUserServiceExpectations = new ILocalStorageUserServiceCreateExpectations();
-        _validatorExpectations = new IValidatorCreateExpectations<Invite>();
+        _validatorExpectations = new IValidatorCreateExpectations<AcceptInviteRequest>();
 
         _dateServiceCreateExpectations = new IDateTimeServiceCreateExpectations();
         _dateServiceCreateExpectations.Setups
@@ -37,14 +35,18 @@ public class AcceptInviteTests : BaseDbTestFixture
     public async Task ShouldReturnFailureResponseWhenInviteIsNotValid()
     {
         var invite = ObjectMother.Invite;
+        var request = new AcceptInviteRequest(
+            invite,
+            ObjectMother.VisitorId,
+            new(ObjectMother.UserId, Player_Name));
 
         _validatorExpectations.Setups
-            .ValidateAsync(Arg.Is(invite), CancellationToken.None)
+            .ValidateAsync(Arg.Is(request), CancellationToken.None)
             .ReturnValue(Task.FromResult(new ValidationResult([new ValidationFailure()])));
 
         var handler = CreateHandler();
         var result = await handler.Handle(
-            new AcceptInviteRequest(invite, new(ObjectMother.UserId, Player_Name)),
+            request,
             CancellationToken.None);
 
         await Assert.That(result.Success).IsFalse();
@@ -54,6 +56,10 @@ public class AcceptInviteTests : BaseDbTestFixture
     public async Task InviteShouldBeSuccessfullyAcceptedIfItIsValid(UserId? userId)
     {
         var invite = ObjectMother.Invite;
+        var request = new AcceptInviteRequest(
+            invite,
+            ObjectMother.VisitorId,
+            new(userId, Player_Name));
 
         _notificationServiceExpectations.Setups
             .NotifyPlayerJoined(
@@ -71,19 +77,15 @@ public class AcceptInviteTests : BaseDbTestFixture
             .DisposeAsync()
             .ReturnValue(ValueTask.CompletedTask);
 
-        _localStorageUserServiceExpectations.Setups
-            .GetOrAddLocalStorageId(Arg.Any<CancellationToken?>())
-            .ReturnValue(Task.FromResult(ObjectMother.LocalStorageId));
-
         _validatorExpectations.Setups
-            .ValidateAsync(Arg.Is(invite), CancellationToken.None)
+            .ValidateAsync(Arg.Is(request), CancellationToken.None)
             .ReturnValue(Task.FromResult(new ValidationResult()));
 
         await AddGame();
 
         var handler = CreateHandler();
         var result = await handler.Handle(
-            new AcceptInviteRequest(invite, new(userId, Player_Name)),
+            request,
             CancellationToken.None);
 
         using var _ = Assert.Multiple();
@@ -101,12 +103,12 @@ public class AcceptInviteTests : BaseDbTestFixture
 
         var player = game.Players.First(p => p.Id == invite.PlayerId);
 
-        await Assert.That(player.LocalStorageUserId)
-            .IsEqualTo(ObjectMother.LocalStorageId.Value);
+        await Assert.That(player.VisitorId)
+            .IsEqualTo(ObjectMother.VisitorId.Value);
 
         await Assert.That(player.UserId).IsEqualTo(userId?.Id);
-        await Assert.That(player.LocalStorageUser).IsNotNull();
-        await Assert.That(player.LocalStorageUser!.Name).IsEqualTo(Player_Name);
+        await Assert.That(player.Visitor).IsNotNull();
+        await Assert.That(player.Visitor!.Name).IsEqualTo(Player_Name);
     }
 
     async Task AddGame()
@@ -115,7 +117,7 @@ public class AcceptInviteTests : BaseDbTestFixture
 
         var gameDto = ObjectMother.GameDTO();
 
-        await dbContext.LocalStorageUsers.AddAsync(ObjectMother.LocalStorageUser);
+        await dbContext.Visitors.AddAsync(ObjectMother.VisitorUser);
         await dbContext.Games.AddAsync(gameDto);
         await dbContext.SaveChangesAsync();
     }
@@ -137,11 +139,10 @@ public class AcceptInviteTests : BaseDbTestFixture
             .CreateScope()
             .ReturnValue(_serviceScopeCreateExpectations.Instance());
 
-        return new(_localStorageUserServiceExpectations.Instance(),
-            _validatorExpectations.Instance(),
-            DbContextFactory,
-            _dateServiceCreateExpectations.Instance(),
-            _serviceScopeFactoryCreateExpectations.Instance());
+        return new(_validatorExpectations.Instance(),
+                   DbContextFactory,
+                   _dateServiceCreateExpectations.Instance(),
+                   _serviceScopeFactoryCreateExpectations.Instance());
     }
 
     public static IEnumerable<Func<UserId?>> GetTestCaseUsers()

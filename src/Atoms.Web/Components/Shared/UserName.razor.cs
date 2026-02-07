@@ -26,7 +26,10 @@ public class UserNameComponent : Component2Base
 
     protected async Task OnValidSubmit()
     {
-        await Mediator.Send(new SetUserNameRequest(new UserIdentity(Input.Name)));
+        await Mediator.Send(
+            new SetUserNameRequest(
+                VisitorId, new UserIdentity(Input.Name)));
+
         await NameChanged.InvokeAsync(Input.Name);
     }
 }

@@ -10,15 +10,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<GameDTO> Games { get; set; }
     public DbSet<PlayerDTO> Players { get; set; }
     public DbSet<PlayerTypeDTO> PlayerTypes { get; set; }
-    public DbSet<LocalStorageUserDTO> LocalStorageUsers { get; set; }
+    public DbSet<VisitorDTO> Visitors { get; set; }
 
     public IQueryable<GameInfoDTO> GetGamesForUser(
-        StorageId localStorageId,
+        VisitorId visitorId,
         UserId? userId)
     {
-        var localStorageIdParam = new NpgsqlParameter(
-            "localStorageId", NpgsqlTypes.NpgsqlDbType.Uuid)
-        { Value = localStorageId.Value };
+        var visitorIdParam = new NpgsqlParameter(
+            "visitorId", NpgsqlTypes.NpgsqlDbType.Uuid)
+        { Value = visitorId.Value };
         var userIdParam = new NpgsqlParameter(
             "userId", NpgsqlTypes.NpgsqlDbType.Text)
         { Value = userId?.Id ?? (object)DBNull.Value };
@@ -44,10 +44,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                     INNER JOIN
                         "PlayerTypes" AS "pt" ON "p"."PlayerTypeId" = "pt"."Id"
                     LEFT JOIN
-                        "LocalStorageUsers" AS "u" ON "p"."LocalStorageUserId" = "u"."Id"
+                        "Visitors" AS "u" ON "p"."VisitorId" = "u"."Id"
                     WHERE
                         "p"."GameId" = "g"."Id"
-                        AND ("p"."LocalStorageUserId" IS NULL OR "p"."LocalStorageUserId" <> @localStorageId)
+                        AND ("p"."VisitorId" IS NULL OR "p"."VisitorId" <> @visitorId)
                         AND (@userId IS NULL OR "p"."UserId" <> @userId)
                 ) AS "Opponents",
                 (
@@ -61,7 +61,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                     INNER JOIN
                         "PlayerTypes" AS "pt" ON "p"."PlayerTypeId" = "pt"."Id"
                     LEFT JOIN
-                        "LocalStorageUsers" AS "u" ON "p"."LocalStorageUserId" = "u"."Id"
+                        "Visitors" AS "u" ON "p"."VisitorId" = "u"."Id"
                     WHERE
                         "p"."GameId" = "g"."Id"
                         AND "p"."IsWinner" = TRUE
@@ -70,17 +70,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 "Games" AS "g"
             WHERE
                 (
-                    "g"."LocalStorageUserId" = @localStorageId
+                    "g"."VisitorId" = @visitorId
                     AND (@userId IS NULL OR "g"."UserId" = @userId)
                 )
                 OR EXISTS (
                     SELECT 1
                     FROM "Players" AS "p"
                     WHERE "p"."GameId" = "g"."Id"
-                    AND ("p"."LocalStorageUserId" = @localStorageId
+                    AND ("p"."VisitorId" = @visitorId
                     AND (@userId IS NULL OR "p"."UserId" = @userId))
                 )
-            """, localStorageIdParam, userIdParam);
+            """, visitorIdParam, userIdParam);
     }
 
     public async Task<GameDTO?> GetGameById(
@@ -97,25 +97,24 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             cancellationToken: cancellationToken);
     }
 
-    public async Task AddOrUpdateLocalStorageId(
-        StorageId localStorageId, CancellationToken cancellationToken)
+    public async Task AddVisitorId(
+        VisitorId visitorId, CancellationToken cancellationToken)
     {
-        var localStorageUserExists = await LocalStorageUsers
-            .AnyAsync(u => u.Id == localStorageId.Value, cancellationToken);
+        var visitorExists = await Visitors
+            .AnyAsync(u => u.Id == visitorId.Value, cancellationToken);
 
-        if (!localStorageUserExists)
-        {
-            var localStorageUser = new LocalStorageUserDTO { Id = localStorageId.Value };
+        if (visitorExists) return;
 
-            LocalStorageUsers.Add(localStorageUser);
+        var visitorDto = new VisitorDTO { Id = visitorId.Value };
 
-            await SaveChangesAsync(cancellationToken);
-        }
+        Visitors.Add(visitorDto);
+
+        await SaveChangesAsync(cancellationToken);
     }
 
-    public ValueTask<LocalStorageUserDTO> GetLocalStorageUserById(
-        StorageId localStorageId) =>
-        FindAsync<LocalStorageUserDTO>(localStorageId.Value)!;
+    public ValueTask<VisitorDTO> GetVisitorById(
+        VisitorId visitorId) =>
+        FindAsync<VisitorDTO>(visitorId.Value)!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -123,7 +122,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasKey(x => x.Id);
 
         modelBuilder.Entity<GameDTO>()
-            .HasIndex(x => x.LocalStorageUserId);
+            .HasIndex(x => x.VisitorId);
 
         modelBuilder.Entity<GameDTO>()
             .HasIndex(x => x.UserId);
@@ -138,13 +137,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .ComplexProperty(x => x.Rng);
 
         modelBuilder.Entity<GameDTO>()
-            .HasOne(x => x.LocalStorageUser)
+            .HasOne(x => x.Visitor)
             .WithMany(x => x.Games)
-            .HasForeignKey(x => x.LocalStorageUserId)
+            .HasForeignKey(x => x.VisitorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<GameDTO>()
-            .Navigation(x => x.LocalStorageUser)
+            .Navigation(x => x.Visitor)
             .AutoInclude();
 
         modelBuilder.Entity<GameDTO>()
@@ -158,19 +157,19 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasIndex(x => x.UserId);
 
         modelBuilder.Entity<PlayerDTO>()
-            .HasIndex(x => x.LocalStorageUserId);
+            .HasIndex(x => x.VisitorId);
 
         modelBuilder.Entity<PlayerDTO>()
             .HasIndex(x => x.IsWinner);
 
         modelBuilder.Entity<PlayerDTO>()
-            .HasOne(x => x.LocalStorageUser)
+            .HasOne(x => x.Visitor)
             .WithMany(x => x.Players)
-            .HasForeignKey(x => x.LocalStorageUserId)
+            .HasForeignKey(x => x.VisitorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<PlayerDTO>()
-            .Navigation(x => x.LocalStorageUser)
+            .Navigation(x => x.Visitor)
             .AutoInclude();
 
         modelBuilder.Entity<GameInfoDTO>()

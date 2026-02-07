@@ -11,7 +11,7 @@ public abstract class PlayerMoveAtomTestFixture : BaseDbTestFixture
     {
         using var dbContext = await DbContextFactory.CreateDbContextAsync();
 
-        await dbContext.LocalStorageUsers.AddAsync(new() { Id = GameState.LocalStorageUserId });
+        await dbContext.Visitors.AddAsync(new() { Id = GameState.VisitorId });
         await dbContext.Games.AddAsync(GameState);
         await dbContext.SaveChangesAsync();
     }

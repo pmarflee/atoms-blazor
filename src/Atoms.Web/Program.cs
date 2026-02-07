@@ -21,8 +21,6 @@ using Rebus.Routing.TypeBased;
 using Rebus.Transport.InMem;
 using Serilog;
 using Serilog.Events;
-using Serilog.Templates;
-using Serilog.Templates.Themes;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -48,12 +46,10 @@ try
         var rngFactory = sp.GetRequiredService<CreateRng>();
         var dateTimeService = sp.GetRequiredService<IDateTimeService>();
 
-        return (options, localStorageId, userIdentity, gameId) =>
+        return (options, visitorId, userIdentity, gameId) =>
             GameFactory.Create(rngFactory, dateTimeService,
-                               options, localStorageId, userIdentity, gameId);
+                               options, visitorId, userIdentity, gameId);
     });
-    builder.Services.AddSingleton<CreateLocalStorageId>(Guid.CreateVersion7);
-
     builder.Services.AddScoped<GameStateContainer>();
 
     builder.Services
@@ -105,7 +101,7 @@ try
     builder.Services.AddBlazoredLocalStorage();
     builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
     builder.Services.AddScoped<IProtectedBrowserStorageService, ProtectedBrowserStorageService>();
-    builder.Services.AddScoped<ILocalStorageUserService, LocalStorageUserService>();
+    builder.Services.AddScoped<IVisitorService, VisitorService>();
     builder.Services.AddSingleton<VisitorIdCookieValueService>();
 
     builder.AddValidation();

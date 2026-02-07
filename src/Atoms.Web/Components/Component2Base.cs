@@ -1,5 +1,4 @@
-﻿using Atoms.UseCases.GetLocalStorageUserName;
-using Atoms.UseCases.GetOrAddLocalStorageId;
+﻿using Atoms.UseCases.GetVisitorUserName;
 
 namespace Atoms.Web.Components;
 
@@ -18,15 +17,13 @@ public abstract class Component2Base : ComponentBase
     public ClaimsPrincipal? AuthenticatedUser { get; set; }
 
     [CascadingParameter]
-    public VisitorId VisitorId { get; private set; } = default!;
+    public VisitorId VisitorId { get; init; } = default!;
 
     public UserId? UserId => AuthenticatedUser?.GetUserId();
 
-    public Task<StorageId> GetOrAddStorageId() => Mediator.Send(new GetOrAddLocalStorageIdRequest());
-
     public async Task<string?> GetUserName() =>
         AuthenticatedUser?.GetUserName()
-        ?? (await GetUserNameForLocalStorageId());
+        ?? (await GetUserNameForVisitorId());
 
     public async Task<UserIdentity> GetUserIdentity()
     {
@@ -51,11 +48,8 @@ public abstract class Component2Base : ComponentBase
         await JSRuntime.InvokeVoidAsync($"App.set{atomShapeFuncName}AtomShape");
     }
 
-    async Task<string?> GetUserNameForLocalStorageId()
+    async Task<string?> GetUserNameForVisitorId()
     {
-        var localStorageId = await GetOrAddStorageId();
-
-        return await Mediator.Send(
-            new GetLocalStorageUserNameRequest(localStorageId));
+        return await Mediator.Send(new GetVisitorUserNameRequest(VisitorId));
     }
 }

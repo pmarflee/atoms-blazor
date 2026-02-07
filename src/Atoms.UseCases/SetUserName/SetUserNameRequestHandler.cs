@@ -3,7 +3,7 @@ namespace Atoms.UseCases.SetUserName;
 
 public class SetUserNameRequestHandler(
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
-    ILocalStorageUserService localStorageUserService) 
+    IVisitorService visitorService) 
     : IRequestHandler<SetUserNameRequest>
 {
     public async Task Handle(SetUserNameRequest request,
@@ -25,12 +25,13 @@ public class SetUserNameRequestHandler(
             }
         }
 
-        var localStorageId = await localStorageUserService.GetOrAddLocalStorageId(
+        await visitorService.SaveVisitorId(
+            request.VisitorId,
             cancellationToken);
 
-        var localStorageUser = dbContext.Find<LocalStorageUserDTO>(localStorageId.Value)!;
+        var visitor = dbContext.Find<VisitorDTO>(request.VisitorId.Value)!;
 
-        localStorageUser.Name = userName;
+        visitor.Name = userName;
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }

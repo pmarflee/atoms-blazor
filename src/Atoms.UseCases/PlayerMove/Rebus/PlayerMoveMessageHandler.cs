@@ -55,7 +55,7 @@ public class PlayerMoveMessageHandler(
             var game = await gameDto.ToEntity(
                 rngFactory, playerStrategyFactory,
                 applicationIdentityDbContext.GetUserById,
-                applicationDbContext.GetLocalStorageUserById);
+                applicationDbContext.GetVisitorById);
 
             var cell = message.Row.HasValue && message.Column.HasValue
                 ? game.Board[message.Row.Value, message.Column.Value]

@@ -12,13 +12,14 @@ public class ShouldReturnExpectedGameInstance : BaseDbTestFixture
         var gameCreationServiceExpectations = new IGameCreationServiceCreateExpectations();
         gameCreationServiceExpectations.Setups
             .CreateGame(Arg.Any<GameMenuOptions>(),
+                        Arg.Any<VisitorId>(),
                         Arg.Any<UserIdentity>(),
                         Arg.Any<CancellationToken>())
             .ReturnValue(Task.FromResult(gameDto));
 
         using var dbContext = await DbContextFactory.CreateDbContextAsync();
 
-        await dbContext.LocalStorageUsers.AddAsync(ObjectMother.LocalStorageUser);
+        await dbContext.Visitors.AddAsync(ObjectMother.VisitorUser);
         await dbContext.SaveChangesAsync();
 
         var handler = new CreateNewGameRequestHandler(
@@ -26,6 +27,7 @@ public class ShouldReturnExpectedGameInstance : BaseDbTestFixture
 
         var request = new CreateNewGameRequest(
             ObjectMother.GameMenuOptions,
+            ObjectMother.VisitorId,
             ObjectMother.UserIdentity);
         var response = await handler.Handle(request, CancellationToken.None);
 

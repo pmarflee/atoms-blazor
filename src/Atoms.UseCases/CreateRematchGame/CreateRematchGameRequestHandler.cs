@@ -14,7 +14,6 @@ public class CreateRematchGameRequestHandler(
         CancellationToken cancellationToken)
     {
         var hasSound = await browserStorageService.GetSound();
-        var localStorageId = await browserStorageService.GetOrAddStorageId();
 
         using var dbContext = await dbContextFactory.CreateDbContextAsync(
             cancellationToken);
@@ -25,6 +24,7 @@ public class CreateRematchGameRequestHandler(
 
         var newGame = await gameCreationService.CreateGame(
             gameDto.CreateOptionsForRematch(hasSound),
+            request.VisitorId,
             request.UserIdentity,
             cancellationToken);
 
@@ -32,7 +32,7 @@ public class CreateRematchGameRequestHandler(
         {
             await NotifyOpponents(request.UserIdentity,
                                   request.OpponentConnectionIds,
-                                  localStorageId,
+                                  request.VisitorId,
                                   newGame,
                                   cancellationToken);
         }
@@ -42,7 +42,7 @@ public class CreateRematchGameRequestHandler(
 
     private async Task NotifyOpponents(UserIdentity userIdentity,
                                        List<string> connectionIds,
-                                       StorageId localStorageId,
+                                       VisitorId visitorId,
                                        GameDTO gameDto,
                                        CancellationToken cancellationToken)
     {
@@ -50,7 +50,7 @@ public class CreateRematchGameRequestHandler(
             .Where(player => gameDto.PlayerBelongsToUser(
                 player,
                 userIdentity.Id,
-                localStorageId))
+                visitorId))
             .OrderByDescending(player => !string.IsNullOrEmpty(player.AbbreviatedName))
             .FirstOrDefault();
 

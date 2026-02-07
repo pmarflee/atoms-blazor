@@ -22,7 +22,7 @@ public class SetVisitorIdCookie(
                 || visitorIdCookieValue.RequiresRenewal(utcNow))
             {
                 var newVisitorIdCookieValue = new VisitorIdCookieValue(
-                    visitorIdCookieValue?.Id ?? new(Guid.NewGuid()),
+                    visitorIdCookieValue?.Id ?? new(Guid.CreateVersion7()),
                     utcNow);
 
                 cookieValueService.SetCookieValue(

@@ -8,7 +8,7 @@ public static class GameFactory
         CreateRng rngFactory,
         IDateTimeService dateTimeService,
         GameMenuOptions options,
-        StorageId localStorageId,
+        VisitorId visitorId,
         UserIdentity? userIdentity = null,
         Guid? gameId = null)
     {
@@ -19,7 +19,7 @@ public static class GameFactory
         return GameDTO.NewGame(
             gameId.Value,
             userIdentity,
-            localStorageId,
+            visitorId,
             options,
             rng,
             dateTimeService.UtcNow);

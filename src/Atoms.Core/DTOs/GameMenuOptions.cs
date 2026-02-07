@@ -39,6 +39,6 @@ public class GameMenuOptions
 
         public UserIdentity? UserIdentity { get; set; }
 
-        public StorageId? LocalStorageId { get; set; }
+        public VisitorId? VisitorId { get; set; }
     }
 }

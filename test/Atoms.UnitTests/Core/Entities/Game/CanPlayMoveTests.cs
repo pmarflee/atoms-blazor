@@ -10,7 +10,7 @@ public class CanPlayMoveTests
         var game = ObjectMother.Game(cells: [new(1, 1, 1, 1)], move: 3, round: 2);
 
         await Assert.That(
-            game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            game.CanPlayMove(ObjectMother.UserId, ObjectMother.VisitorId))
             .IsFalse();
     }
 
@@ -23,7 +23,7 @@ public class CanPlayMoveTests
             2, [new(1, 1, 1, 1)], move: 2, round: 1);
 
         await Assert.That(
-            game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            game.CanPlayMove(ObjectMother.UserId, ObjectMother.VisitorId))
             .IsFalse();
     }
 
@@ -37,63 +37,63 @@ public class CanPlayMoveTests
         var game = ObjectMother.Game(
             [player1, player2],
             userId: UserId.FromGuid(Guid.NewGuid()),
-            localStorageId: new StorageId(Guid.NewGuid()));
+            visitorId: new VisitorId(Guid.NewGuid()));
 
         await Assert.That(
-            game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            game.CanPlayMove(ObjectMother.UserId, ObjectMother.VisitorId))
             .IsTrue();
     }
 
     [Test]
-    public async Task ShouldBeAbleToPlayMoveWhenLocalStorageIdMatchesThatOfTheActivePlayer()
+    public async Task ShouldBeAbleToPlayMoveWhenVisitorIdMatchesThatOfTheActivePlayer()
     {
         var player1 = ObjectMother.CreateHumanPlayer(
             ObjectMother.Player1Id, 1,
-            localStorageId: ObjectMother.LocalStorageId);
+            visitorId: ObjectMother.VisitorId);
         var player2 = ObjectMother.CreateCPUPlayer(ObjectMother.Player2Id, 2);
 
         var game = ObjectMother.Game(
             [player1, player2],
             userId: UserId.FromGuid(Guid.NewGuid()),
-            localStorageId: new StorageId(Guid.NewGuid()));
+            visitorId: new VisitorId(Guid.NewGuid()));
 
         await Assert.That(
-            game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            game.CanPlayMove(ObjectMother.UserId, ObjectMother.VisitorId))
             .IsTrue();
     }
 
     [Test]
-    public async Task ShouldBeAbleToPlayMoveWhenActivePlayerDoesNotHaveAUserIdOrLocalStorageIdAndUserIdMatchesThatOfTheGame()
+    public async Task ShouldBeAbleToPlayMoveWhenActivePlayerDoesNotHaveAUserIdOrVisitorIdAndUserIdMatchesThatOfTheGame()
     {
         var player1 = ObjectMother.CreateHumanPlayer(ObjectMother.Player1Id, 1);
         var player2 = ObjectMother.CreateCPUPlayer(ObjectMother.Player2Id, 2);
 
         var game = ObjectMother.Game(
             [player1, player2],
-            localStorageId: new StorageId(Guid.NewGuid()));
+            visitorId: new VisitorId(Guid.NewGuid()));
 
         await Assert.That(
-            game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            game.CanPlayMove(ObjectMother.UserId, ObjectMother.VisitorId))
             .IsTrue();
     }
 
     [Test]
-    public async Task ShouldBeAbleToPlayMoveWhenActivePlayerDoesNotHaveAUserIdOrLocalStorageIdAndLocalStorageIdMatchesThatOfTheGame()
+    public async Task ShouldBeAbleToPlayMoveWhenActivePlayerDoesNotHaveAUserIdOrVisitorIdAndVisitorIdMatchesThatOfTheGame()
     {
         var player1 = ObjectMother.CreateHumanPlayer(ObjectMother.Player1Id, 1);
         var player2 = ObjectMother.CreateCPUPlayer(ObjectMother.Player2Id, 2);
 
         var game = ObjectMother.Game(
             [player1, player2],
-            localStorageId: new StorageId(Guid.NewGuid()));
+            visitorId: new VisitorId(Guid.NewGuid()));
 
         await Assert.That(
-            game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            game.CanPlayMove(ObjectMother.UserId, ObjectMother.VisitorId))
             .IsTrue();
     }
 
     [Test]
-    public async Task ShouldNotBeAbleToPlayMoveWhenActivePlayerDoesNotHaveAUserIdOrLocalStorageIdAndNeitherUserIdOrLocalStorageIdMatchesThatOfTheGame()
+    public async Task ShouldNotBeAbleToPlayMoveWhenActivePlayerDoesNotHaveAUserIdOrVisitorIdAndNeitherUserIdOrVisitorIdMatchesThatOfTheGame()
     {
         var player1 = ObjectMother.CreateHumanPlayer(ObjectMother.Player1Id, 1);
         var player2 = ObjectMother.CreateCPUPlayer(ObjectMother.Player2Id, 2);
@@ -101,10 +101,10 @@ public class CanPlayMoveTests
         var game = ObjectMother.Game(
             [player1, player2],
             userId: UserId.FromGuid(Guid.NewGuid()),
-            localStorageId: new StorageId(Guid.NewGuid()));
+            visitorId: new VisitorId(Guid.NewGuid()));
 
         await Assert.That(
-            game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            game.CanPlayMove(ObjectMother.UserId, ObjectMother.VisitorId))
             .IsFalse();
     }
 
@@ -121,25 +121,25 @@ public class CanPlayMoveTests
             userId: ObjectMother.UserId);
 
         await Assert.That(
-            game.CanPlayMove(ObjectMother.UserId, ObjectMother.LocalStorageId))
+            game.CanPlayMove(ObjectMother.UserId, ObjectMother.VisitorId))
             .IsFalse();
     }
 
     [Test]
-    public async Task ShouldNotBeAbleToPlayMoveWhenUserHasALocalStorageIdAndTheActivePlayerHasALocalStorageIdThatDoesNotMatch()
+    public async Task ShouldNotBeAbleToPlayMoveWhenUserHasAVisitorIdAndTheActivePlayerHasAVisitorIdThatDoesNotMatch()
     {
         var player1 = ObjectMother.CreateHumanPlayer(
             ObjectMother.Player1Id, 1,
-            localStorageId: ObjectMother.LocalStorageId);
+            visitorId: ObjectMother.VisitorId);
         var player2 = ObjectMother.CreateHumanPlayer(
             ObjectMother.Player2Id, 2, 
-            localStorageId: new StorageId(Guid.NewGuid()));
+            visitorId: new VisitorId(Guid.NewGuid()));
 
         var game = ObjectMother.Game(
             [player1, player2], 2);
 
         await Assert.That(
-            game.CanPlayMove(null, ObjectMother.LocalStorageId))
+            game.CanPlayMove(null, ObjectMother.VisitorId))
             .IsFalse();
     }
 }

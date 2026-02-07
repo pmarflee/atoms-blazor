@@ -1,27 +1,10 @@
-﻿using Atoms.Core.Delegates;
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
 
 namespace Atoms.Infrastructure.Services;
 
-public class BrowserStorageService(
-    ILocalStorageService localStorageService,
-    IProtectedBrowserStorageService protectedBrowserStorageService,
-    CreateLocalStorageId createLocalStorageId)
+public class BrowserStorageService(ILocalStorageService localStorageService)
     : IBrowserStorageService
 {
-    public async ValueTask<StorageId> GetOrAddStorageId()
-    {
-        return await GetStorageId() ?? await CreateStorageId();
-    }
-
-    public async ValueTask<StorageId?> GetStorageId()
-    {
-        var id = await protectedBrowserStorageService.GetAsync<Guid?>(
-                Constants.StorageKeys.LocalStorageId);
-
-        return id.HasValue ? new(id.Value) : null;
-    }
-
     public async ValueTask<bool> GetSound()
     {
         var options = await GetGameMenuOptions();
@@ -40,16 +23,5 @@ public class BrowserStorageService(
         await localStorageService.SetItemAsync(
             Constants.StorageKeys.GameMenuOptions,
             options);
-    }
-
-    async Task<StorageId> CreateStorageId()
-    {
-        var id = createLocalStorageId.Invoke();
-
-        await protectedBrowserStorageService.SetAsync(
-            Constants.StorageKeys.LocalStorageId,
-            id);
-
-        return new(id);
     }
 }

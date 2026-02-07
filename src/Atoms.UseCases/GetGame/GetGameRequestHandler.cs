@@ -30,8 +30,8 @@ public class GetGameRequestHandler(
         ValueTask<ApplicationUser> GetUserById(UserId userId) =>
             applicationIdentityDbContext.FindAsync<ApplicationUser>(userId.Id)!;
 
-        ValueTask<LocalStorageUserDTO> GetLocalStorageUserById(StorageId localStorageId) =>
-            applicationDbContext.FindAsync<LocalStorageUserDTO>(localStorageId.Value)!;
+        ValueTask<VisitorDTO> GetVisitorById(VisitorId visitorId) =>
+            applicationDbContext.FindAsync<VisitorDTO>(visitorId.Value)!;
 
         async ValueTask<GetGameResponse> Found()
         {
@@ -40,7 +40,7 @@ public class GetGameRequestHandler(
                     rngFactory,
                     playerStrategyFactory,
                     GetUserById,
-                    GetLocalStorageUserById));
+                    GetVisitorById));
         }
 
         bool GameMatchesUserId() =>
@@ -48,11 +48,11 @@ public class GetGameRequestHandler(
             (gameDto.UserId == request.UserId ||
             gameDto.Players.Any(p => p.UserId == request.UserId));
 
-        bool GameMatchesLocalStorageId() =>
-            gameDto.LocalStorageUserId == request.StorageId.Value ||
-            gameDto.Players.Any(p => p.LocalStorageUserId == request.StorageId.Value);
+        bool GameMatchesVisitorId() =>
+            gameDto.VisitorId == request.VisitorId.Value ||
+            gameDto.Players.Any(p => p.VisitorId == request.VisitorId.Value);
 
-        return GameMatchesUserId() || GameMatchesLocalStorageId()
+        return GameMatchesUserId() || GameMatchesVisitorId()
             ? await Found()
             : GetGameResponse.NotFound;
     }

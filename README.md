@@ -13,9 +13,10 @@ Play online at https://atoms-blazor.app/
 Migration commands:
 
 ```
+dotnet tool update --global dotnet-ef
 dotnet ef migrations add AddGame --project ..\atoms.infrastructure\atoms.infrastructure.csproj --context ApplicationDbContext --namespace Atoms.Infrastructure.Data.Migrations -o ..\Atoms.Infrastructure\Data\Migrations
 dotnet ef migrations add AddDataProtectionKeys --project ..\atoms.infrastructure\atoms.infrastructure.csproj --context DataProtectionKeyContext --namespace Atoms.Infrastructure.Data.DataProtection.Migrations -o ..\Atoms.Infrastructure\Data\DataProtection\Migrations
-dotnet tool update --global dotnet-ef
+dotnet ef migrations add RenameLocalStorageToVisitor --project ..\atoms.infrastructure\atoms.infrastructure.csproj --context ApplicationDbContext --namespace Atoms.Infrastructure.Data.Migrations -o ..\Atoms.Infrastructure\Data\Migrations
 ```
 
 How to authorize with doctl:
@@ -59,4 +60,8 @@ GRANT ALL PRIVILEGES ON DATABASE "Atoms" TO atoms_user;
 -- Step 7: (Optional but recommended) Re-grant CONNECT to the public role for other users
 -- This allows other users (if any) to connect without affecting your schema
 GRANT CONNECT ON DATABASE "Atoms" TO public;
+
+-- Step 8: (Optional) Grant atoms_user ownership of the database
+REASSIGN OWNED BY <old_owner_name> TO atoms_user;
+ALTER SCHEMA public OWNER TO atoms_user;
 ```

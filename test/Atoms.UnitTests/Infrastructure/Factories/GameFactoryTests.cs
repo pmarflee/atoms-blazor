@@ -73,7 +73,7 @@ public class GameFactoryTests
             ObjectMother.CreateRng,
             dateTimeServiceExpectations.Instance(),
             ObjectMother.GameMenuOptions,
-            ObjectMother.LocalStorageId,
+            ObjectMother.VisitorId,
             gameId: ObjectMother.GameId);
     }
 }

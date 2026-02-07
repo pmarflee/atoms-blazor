@@ -18,13 +18,12 @@ internal static class ObjectMother
     public const int Columns = 10;
 
     public static readonly Guid GameId = new("5BD0E94D-ED21-4679-8B31-E2C70945C8B4");
-    public static readonly StorageId LocalStorageId = new(Guid.Parse("22D05F6C-DE9B-4B70-81B0-A54E0E83DA6D"));
+    public static readonly VisitorId VisitorId = new(Guid.Parse("22D05F6C-DE9B-4B70-81B0-A54E0E83DA6D"));
     public static readonly UserId UserId = new("7B452FD8-C32C-497A-BC20-2190C1244B9E");
     public static readonly string Username = "David";
     public static readonly UserIdentity UserIdentity = new(UserId, Username);
-    public static readonly VisitorId VisitorId = new(Guid.Parse("22D05F6C-DE9B-4B70-81B0-A54E0E83DA6D"));
 
-    public static LocalStorageUserDTO LocalStorageUser => new() { Id = LocalStorageId.Value, Name = Username };
+    public static VisitorDTO VisitorUser => new() { Id = VisitorId.Value, Name = Username };
 
     public static readonly Guid Player1Id = new("FE0FA471-AC98-4D1B-825B-4DDF64122022");
     public static readonly Guid Player2Id = new("08C5B9A7-0B0C-4E2F-9741-0FE822093901");
@@ -62,12 +61,12 @@ internal static class ObjectMother
                             int move = 1,
                             int round = 1,
                             UserId? userId = null,
-                            StorageId? localStorageId = null,
+                            VisitorId? visitorId = null,
                             DateTime? lastUpdatedDateUtc = null)
     {
         players ??=
         [
-            new (Player1Id, 1, PlayerType.Human, localStorageId: LocalStorageId),
+            new (Player1Id, 1, PlayerType.Human, visitorId: VisitorId),
             new (Player2Id, 2, PlayerType.Human),
         ];
 
@@ -79,7 +78,7 @@ internal static class ObjectMother
         return new Game(GameId, Rows, Columns, players, activePlayer,
                         ColourScheme.Original, AtomShape.Round,
                         rng,
-                        localStorageId ?? LocalStorageId,
+                        visitorId ?? VisitorId,
                         CreatedDateUtc,
                         lastUpdatedDateUtc ?? LastUpdatedDateUtc,
                         cells, move, round,
@@ -89,13 +88,13 @@ internal static class ObjectMother
     public static Player CreateHumanPlayer(
         Guid id, int number,
         UserId? userId = null,
-        StorageId? localStorageId = null,
+        VisitorId? visitorId = null,
         string? name = null)
     {
         return new(
             id, number, PlayerType.Human,
             userId: userId,
-            localStorageId: localStorageId,
+            visitorId: visitorId,
             name: name);
     }
 
@@ -122,7 +121,7 @@ internal static class ObjectMother
         {
             Id = GameId,
             UserId = UserId.Id,
-            LocalStorageUserId = LocalStorageId.Value,
+            VisitorId = VisitorId.Value,
             ColourScheme = ColourScheme.Original,
             AtomShape = AtomShape.Round,
             Board = board ?? BoardDTO(),
@@ -141,7 +140,7 @@ internal static class ObjectMother
                     Id = Player1Id,
                     Number = 1,
                     PlayerTypeId = PlayerType.Human,
-                    LocalStorageUserId = LocalStorageId.Value,
+                    VisitorId = VisitorId.Value,
                     Game = gameDto,
                     IsActive = true
                 },
@@ -197,9 +196,9 @@ internal static class ObjectMother
         return ValueTask.FromResult(CreateApplicationUser(userId));
     }
 
-    public static ValueTask<LocalStorageUserDTO> GetLocalStorageUserById(StorageId storageId)
+    public static ValueTask<VisitorDTO> GetVisitorById(VisitorId storageId)
     {
-        return ValueTask.FromResult(new LocalStorageUserDTO { Id = storageId.Value });
+        return ValueTask.FromResult(new VisitorDTO { Id = storageId.Value });
     }
 
     public sealed class MockReadInviteCodeRequestLogger : ILogger<ReadInviteCodeRequestHandler>

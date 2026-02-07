@@ -5,7 +5,7 @@ namespace Atoms.Core.Json.Converters;
 
 public class VisitorIdJsonConverter : JsonConverter<VisitorId>
 {
-    public override VisitorId? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override VisitorId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         return new(reader.GetGuid());
     }

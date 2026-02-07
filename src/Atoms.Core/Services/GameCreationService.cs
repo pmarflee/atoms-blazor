@@ -4,19 +4,19 @@ using Microsoft.EntityFrameworkCore;
 namespace Atoms.Core.Services;
 
 public class GameCreationService(
-    ILocalStorageUserService localStorageUserService,
+    IVisitorService visitorService,
     CreateGame gameFactory,
     IDbContextFactory<ApplicationDbContext> dbContextFactory
     ) : IGameCreationService
 {
     public async Task<GameDTO> CreateGame(GameMenuOptions options,
+                                          VisitorId visitorId,
                                           UserIdentity userIdentity,
                                           CancellationToken cancellationToken)
     {
-        var localStorageId = await localStorageUserService.GetOrAddLocalStorageId(
-            cancellationToken);
+        await visitorService.SaveVisitorId(visitorId, cancellationToken);
 
-        var gameDto = gameFactory.Invoke(options, localStorageId, userIdentity);
+        var gameDto = gameFactory.Invoke(options, visitorId, userIdentity);
 
         await SaveGame(gameDto, cancellationToken);
 

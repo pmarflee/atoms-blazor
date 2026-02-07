@@ -21,7 +21,7 @@ public class PlayerTypeDTO
     public required string Description { get; init; }
 }
 
-public class LocalStorageUserDTO
+public class VisitorDTO
 {
     public required Guid Id { get; init; }
     public string? Name { get; set; }
@@ -34,8 +34,8 @@ public class GameDTO
 {
     public required Guid Id { get; init; }
     public string? UserId { get; init; }
-    public required Guid LocalStorageUserId { get; init; }
-    public LocalStorageUserDTO LocalStorageUser { get; init; } = default!;
+    public required Guid VisitorId { get; init; }
+    public VisitorDTO Visitor { get; init; } = default!;
     public required ColourScheme ColourScheme { get; init; }
     public required AtomShape AtomShape { get; init; }
     public ICollection<PlayerDTO> Players { get; } = new SortedSet<PlayerDTO>(new PlayerDTOSortComparer());
@@ -48,7 +48,7 @@ public class GameDTO
     public DateTime LastUpdatedDateUtc { get; set; }
 
     public static GameDTO NewGame(
-        Guid id, UserIdentity? userIdentity, StorageId localStorageId,
+        Guid id, UserIdentity? userIdentity, VisitorId visitorId,
         GameMenuOptions options, IRandomNumberGenerator rng,
         DateTime createdDateUtc)
     {
@@ -56,7 +56,7 @@ public class GameDTO
         {
             Id = id,
             UserId = userIdentity?.Id,
-            LocalStorageUserId = localStorageId.Value,
+            VisitorId = visitorId.Value,
             ColourScheme = options.ColourScheme,
             AtomShape = options.AtomShape,
             Board = BoardDTO.NewBoard(),
@@ -79,20 +79,20 @@ public class GameDTO
             {
                 var playerId = Guid.NewGuid();
                 UserIdentity? playerIdentity;
-                StorageId? playerLocalStorageId;
+                VisitorId? playerVisitorId;
 
                 if (!options.IsRematch
                     && !foundHumanPlayer
                     && pair.Item.Type == PlayerType.Human)
                 {
                     playerIdentity = userIdentity;
-                    playerLocalStorageId = localStorageId;
+                    playerVisitorId = visitorId;
                     foundHumanPlayer = true;
                 }
                 else
                 {
                     playerIdentity = pair.Item.UserIdentity;
-                    playerLocalStorageId = pair.Item.LocalStorageId;
+                    playerVisitorId = pair.Item.VisitorId;
                 }
 
                 return new PlayerDTO
@@ -100,7 +100,7 @@ public class GameDTO
                     Id = playerId,
                     Number = pair.Item.Number,
                     PlayerTypeId = pair.Item.Type,
-                    LocalStorageUserId = playerLocalStorageId?.Value,
+                    VisitorId = playerVisitorId?.Value,
                     UserId = playerIdentity?.Id,
                     AbbreviatedName = playerIdentity?.GetAbbreviatedName(),
                     IsActive = pair.Index == 0
@@ -121,7 +121,7 @@ public class GameDTO
         {
             Id = game.Id,
             UserId = game.UserId?.Id,
-            LocalStorageUserId = game.LocalStorageId.Value,
+            VisitorId = game.VisitorId.Value,
             ColourScheme = game.ColourScheme,
             AtomShape = game.AtomShape,
             Board = BoardDTO.FromEntity(game.Board),
@@ -144,7 +144,7 @@ public class GameDTO
                 IsWinner = game.Winner == player,
                 UserId = player.UserId?.Id,
                 AbbreviatedName = player.AbbreviatedName,
-                LocalStorageUserId = player.LocalStorageId?.Value,
+                VisitorId = player.VisitorId?.Value,
                 IsActive = game.ActivePlayer == player
             });
         }
@@ -155,7 +155,7 @@ public class GameDTO
     public async Task<Game> ToEntity(CreateRng? rngFactory = null,
                                      CreatePlayerStrategy? playerStrategyFactory = null,
                                      GetUserById? getUserById = null,
-                                     GetLocalStorageUserById? getLocalStorageUserById = null)
+                                     GetVisitorById? getVisitorById = null)
     {
         var rng = rngFactory?.Invoke(Rng.Seed, Rng.Iterations);
 
@@ -175,30 +175,30 @@ public class GameDTO
                 ? (await getUserById!.Invoke(playerDto.UserId!))
                 : null;
 
-            StorageId? localStorageId;
-            LocalStorageUserDTO? localStorageUser;
+            VisitorId? visitorId;
+            VisitorDTO? visitorDto;
 
-            if (playerDto.LocalStorageUserId.HasValue)
+            if (playerDto.VisitorId.HasValue)
             {
-                localStorageId = (StorageId?)new StorageId(playerDto.LocalStorageUserId.Value);
-                localStorageUser = user is null
-                    ? await getLocalStorageUserById!.Invoke(localStorageId!)
+                visitorId = new VisitorId(playerDto.VisitorId.Value);
+                visitorDto = user is null
+                    ? await getVisitorById!.Invoke(visitorId.Value)
                     : null;
             }
             else
             {
-                localStorageId = null;
-                localStorageUser = null;
+                visitorId = null;
+                visitorDto = null;
             }
 
             var player = new Player(playerDto.Id,
                                     playerDto.Number,
                                     playerDto.PlayerTypeId,
                                     playerDto.UserId,
-                                    user?.Name ?? localStorageUser?.Name,
+                                    user?.Name ?? visitorDto?.Name,
                                     playerDto.AbbreviatedName,
                                     playerStrategyFactory?.Invoke(playerDto.PlayerTypeId, rng!),
-                                    localStorageId);
+                                    visitorId);
 
             if (playerDto.IsActive)
             {
@@ -225,7 +225,7 @@ public class GameDTO
             ColourScheme,
             AtomShape,
             rng,
-            new(LocalStorageUserId),
+            new(VisitorId),
             CreatedDateUtc,
             LastUpdatedDateUtc,
             Board.ToEntity(),
@@ -249,7 +249,7 @@ public class GameDTO
 
             playerDto.IsWinner = game.HasWinner && !player.IsDead;
             playerDto.UserId = player.UserId?.Id;
-            playerDto.LocalStorageUserId = player.LocalStorageId?.Value;
+            playerDto.VisitorId = player.VisitorId?.Value;
             playerDto.IsActive = game.ActivePlayer == player;
         }
 
@@ -278,9 +278,9 @@ public class GameDTO
                     Number = p.Index + 1,
                     Type = p.Item.PlayerTypeId,
                     UserIdentity = p.Item.PlayerTypeId == PlayerType.Human
-                        ? new(p.Item.UserId, p.Item.LocalStorageUser?.Name)
+                        ? new(p.Item.UserId, p.Item.Visitor?.Name)
                         : null,
-                    LocalStorageId = p.Item.LocalStorageUserId
+                    VisitorId = p.Item.VisitorId
                 })
             ]
         };
@@ -292,8 +292,8 @@ public class PlayerDTO
     public required Guid Id { get; init; }
     public required int Number { get; init; }
     public required PlayerType PlayerTypeId { get; init; }
-    public Guid? LocalStorageUserId { get; set; }
-    public LocalStorageUserDTO? LocalStorageUser { get; set; }
+    public Guid? VisitorId { get; set; }
+    public VisitorDTO? Visitor { get; set; }
     public string? UserId { get; set; }
     public bool IsWinner { get; set; }
     public Guid GameId { get; init; }

@@ -14,9 +14,10 @@ public class ShouldAddNewGameToDatabase : BaseDbTestFixture
         var gameCreationServiceExpectations = new IGameCreationServiceCreateExpectations();
         gameCreationServiceExpectations.Setups
             .CreateGame(Arg.Any<GameMenuOptions>(),
+                        Arg.Any<VisitorId>(),
                         Arg.Any<UserIdentity>(),
                         Arg.Any<CancellationToken>())
-            .Callback(async (options, identity, token) =>
+            .Callback(async (options, visitorId, identity, token) =>
             {
                 await dbContext.Games.AddAsync(gameDto, CancellationToken.None);
                 await dbContext.SaveChangesAsync(CancellationToken.None);
@@ -24,7 +25,7 @@ public class ShouldAddNewGameToDatabase : BaseDbTestFixture
                 return gameDto;
             });
 
-        await dbContext.LocalStorageUsers.AddAsync(ObjectMother.LocalStorageUser);
+        await dbContext.Visitors.AddAsync(ObjectMother.VisitorUser);
         await dbContext.SaveChangesAsync();
 
         var handler = new CreateNewGameRequestHandler(
@@ -32,6 +33,7 @@ public class ShouldAddNewGameToDatabase : BaseDbTestFixture
 
         var request = new CreateNewGameRequest(
             ObjectMother.GameMenuOptions,
+            ObjectMother.VisitorId,
             ObjectMother.UserIdentity);
         var response = await handler.Handle(request, CancellationToken.None);
 

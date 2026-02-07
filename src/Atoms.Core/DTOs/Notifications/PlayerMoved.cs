@@ -6,7 +6,7 @@ public record PlayerMoved(
     Guid? RequestPlayerId) 
     : GameStateChanged(GameId, PlayerId)
 {
-    public bool CanHandle(Game game, UserId? userId, StorageId localStorageId)
+    public bool CanHandle(Game game, UserId? userId, VisitorId visitorId)
     {
         if (RequestPlayerId is null) return false;
 
@@ -16,7 +16,7 @@ public record PlayerMoved(
 
         var player = game.GetPlayer(PlayerId);
 
-        return !game.PlayerBelongsToUser(player, userId, localStorageId)
-               && requestPlayer.LocalStorageId != localStorageId;
+        return !game.PlayerBelongsToUser(player, userId, visitorId)
+               && requestPlayer.VisitorId != visitorId;
     }
 }

@@ -9,7 +9,7 @@ public class CreateDebugGameRequestHandler(CreateGame gameFactory)
     {
         var options = GameMenuOptions.CreateForDebug();
         var gameDto = gameFactory.Invoke(
-            options, request.LocalStorageId, 
+            options, request.VisitorId, 
             gameId: request.GameId);
         var response = new CreateDebugGameResponse(await gameDto.ToEntity());
 

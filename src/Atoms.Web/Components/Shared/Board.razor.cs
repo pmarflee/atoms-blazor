@@ -74,7 +74,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         {
             var username = await GetUserName();
             var request = new CreateRematchGameRequest(
-                Game.Id, new UserIdentity(UserId, username),
+                Game.Id, base.VisitorId, new UserIdentity(UserId, username),
                 _opponentConnectionIds ?? await GetGameConnections());
             var response = await Mediator.Send(request);
 
@@ -84,7 +84,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
     protected bool CanHighlightCells => 
         Game is not null
-        && !Game.PlayerBelongsToUser(Game.ActivePlayer, UserId, LocalStorageId);
+        && !Game.PlayerBelongsToUser(Game.ActivePlayer, UserId, VisitorId);
 
     async Task AtomPlaced(AtomPlaced notification)
     {
@@ -101,7 +101,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         if (notification.Highlight
             && !Game.PlayerBelongsToUser(Game.ActivePlayer,
                                          UserId,
-                                         LocalStorageId))
+                                         VisitorId))
         {
             await Task.Delay(AtomPlacedDelay);
         }
@@ -128,7 +128,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
         await UpdateGame();
 
-        if (notification.CanHandle(Game, UserId, LocalStorageId))
+        if (notification.CanHandle(Game, UserId, VisitorId))
         {
             var player = Game.GetPlayer(notification.PlayerId);
 
@@ -169,9 +169,9 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
         if (Game is null) return;
 
         if (!Game.PlayerBelongsToUser(notification.UserId,
-                                      notification.LocalStorageId,
+                                      notification.VisitorId,
                                       UserId,
-                                      LocalStorageId))
+                                      VisitorId))
         {
             await Notify($"{notification.PlayerDescription} joined");
         }
@@ -335,7 +335,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
             playerNameClassNames.Add("name-cpu");
         }
 
-        if (Game!.PlayerBelongsToUser(player, UserId, LocalStorageId))
+        if (Game!.PlayerBelongsToUser(player, UserId, VisitorId))
         {
             playerNameClassNames.Add("name-highlight");
         }
@@ -344,8 +344,6 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
     }
 
     protected Game? Game => StateContainer.Game;
-
-    protected StorageId LocalStorageId => StateContainer.LocalStorageId;
 
     async Task PlayMove(Position? position = null)
     {
@@ -357,7 +355,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
                 new PlayerMoveRequest(
                     Game!, position, Debug.HasValue,
                     UserId,
-                    LocalStorageId));
+                    VisitorId));
 
             if (response.Result == PlayerMoveResult.GameStateHasChanged)
             {
@@ -440,7 +438,7 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
 
     bool CanPlayMove() => !Debug.HasValue
                           && !_handlingPlayerMove
-                          && Game!.CanPlayMove(UserId, LocalStorageId);
+                          && Game!.CanPlayMove(UserId, VisitorId);
 
     async Task Notify(string message)
     {

@@ -20,7 +20,7 @@ public class CreateGameMenuOptionsTests
         var handler = new CreateGameOptionsRequestHandler(browserStorageServiceExpectations.Instance());
         var request = new CreateGameOptionsRequest(
             Atoms.Core.Constants.MaxPlayers,
-            ObjectMother.LocalStorageId, ObjectMother.UserId);
+            ObjectMother.VisitorId, ObjectMother.UserId);
 
         var response = await handler.Handle(request, CancellationToken.None);
         var options = response.Options;

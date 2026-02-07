@@ -34,7 +34,7 @@ public class CreateOptionsForRematch
                 .FirstOrDefault(op => 
                     op.Type == gamePlayer.PlayerTypeId &&
                     op.UserIdentity?.Id == gamePlayer.UserId &&
-                    op.LocalStorageId == gamePlayer.LocalStorageUserId &&
+                    op.VisitorId == gamePlayer.VisitorId &&
                     !foundPlayers.Contains(op));
 
             if (foundPlayer is not null)
@@ -74,7 +74,7 @@ public class CreateOptionsForRematch
                         Number = 1,
                         PlayerTypeId = PlayerType.Human,
                         UserId = Guid.NewGuid().ToString(),
-                        LocalStorageUserId = ObjectMother.LocalStorageId.Value
+                        VisitorId = ObjectMother.VisitorId.Value
                     },
                     new PlayerDTO
                     {

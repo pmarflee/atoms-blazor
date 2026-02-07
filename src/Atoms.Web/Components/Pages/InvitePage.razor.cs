@@ -60,7 +60,8 @@ public class InvitePageComponent : Component2Base
     public async Task AcceptInvite()
     {
         var response = await Mediator.Send(
-            new AcceptInviteRequest(_invite, new(_userId, Input.Name)));
+            new AcceptInviteRequest(
+                _invite, VisitorId, new(_userId, Input.Name)));
 
         if (response.Success)
         {
