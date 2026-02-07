@@ -106,6 +106,7 @@ try
     builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
     builder.Services.AddScoped<IProtectedBrowserStorageService, ProtectedBrowserStorageService>();
     builder.Services.AddScoped<ILocalStorageUserService, LocalStorageUserService>();
+    builder.Services.AddSingleton<VisitorIdCookieValueService>();
 
     builder.AddValidation();
 
@@ -156,6 +157,21 @@ try
 
     builder.Services.Configure<AppSettings>(
         builder.Configuration.GetSection("AppSettings"));
+
+    builder.Services.AddCascadingValue(sp =>
+    {
+        var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+        var httpContext = httpContextAccessor.HttpContext!;
+        var visitorIdCookieValueService = sp.GetRequiredService<VisitorIdCookieValueService>();
+
+        if (!visitorIdCookieValueService.TryGetCookieValue(
+            httpContext, out var visitorIdCookieValue))
+        {
+            throw new Exception("Visitor Id cookie not set");
+        }
+
+        return visitorIdCookieValue.Id;
+    });
 
     var app = builder.Build();
 

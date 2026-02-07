@@ -17,6 +17,9 @@ public abstract class Component2Base : ComponentBase
     [CascadingParameter]
     public ClaimsPrincipal? AuthenticatedUser { get; set; }
 
+    [CascadingParameter]
+    public VisitorId VisitorId { get; private set; } = default!;
+
     public UserId? UserId => AuthenticatedUser?.GetUserId();
 
     public Task<StorageId> GetOrAddStorageId() => Mediator.Send(new GetOrAddLocalStorageIdRequest());

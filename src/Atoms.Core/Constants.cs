@@ -16,4 +16,9 @@ public static class Constants
         public const string Sound = nameof(Sound);
         public const string GameMenuOptions = nameof(GameMenuOptions);
     }
+
+    public static class Cookies
+    {
+        public const string VisitorId = nameof(VisitorId);
+    }
 }
