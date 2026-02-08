@@ -11,7 +11,7 @@ public class GameCreationServiceTests : BaseDbTestFixture
 
         var visitorServiceExpectations = new IVisitorServiceCreateExpectations();
         visitorServiceExpectations.Setups
-            .SaveVisitorId(
+            .AddOrUpdate(
                 Arg.Is(ObjectMother.VisitorId),
                 Arg.Any<CancellationToken?>())
             .ReturnValue(Task.FromResult(ObjectMother.VisitorId));

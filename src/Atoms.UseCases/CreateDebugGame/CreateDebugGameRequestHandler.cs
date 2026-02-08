@@ -7,7 +7,7 @@ public class CreateDebugGameRequestHandler(CreateGame gameFactory)
         CreateDebugGameRequest request,
         CancellationToken cancellationToken)
     {
-        var options = GameMenuOptions.CreateForDebug();
+        var options = GameMenuOptions.Default;
         var gameDto = gameFactory.Invoke(
             options, request.VisitorId, 
             gameId: request.GameId);

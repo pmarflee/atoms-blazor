@@ -1,5 +1,6 @@
-﻿@attribute [ExcludeFromInteractiveRouting]
+﻿@inherits UserNamePageComponent
+@attribute [ExcludeFromInteractiveRouting]
 
 @page "/username"
 
-<UserName />
+<UserName OnValid="HandleValidUserName" />

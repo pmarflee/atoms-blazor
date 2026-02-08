@@ -25,7 +25,7 @@ public class SetUserNameRequestHandler(
             }
         }
 
-        await visitorService.SaveVisitorId(
+        await visitorService.AddOrUpdate(
             request.VisitorId,
             cancellationToken);
 

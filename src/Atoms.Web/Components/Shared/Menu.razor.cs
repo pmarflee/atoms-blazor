@@ -11,19 +11,28 @@ public partial class MenuComponent : Component2Base
     [Parameter]
     public EventCallback<GameDTO> OnCreateGame { get; set; }
 
-    protected GameMenuOptions Options { get; set; } = default!;
+    protected GameMenuOptions Options { get; set; } = GameMenuOptions.Default;
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await Mediator.Send(
-            new CreateGameOptionsRequest(
-                Core.Constants.MaxPlayers,
-                VisitorId,
-                UserId));
+    }
 
-        Options = response.Options;
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var response = await Mediator.Send(
+                new CreateGameOptionsRequest(
+                    Core.Constants.MaxPlayers,
+                    VisitorId,
+                    UserId));
 
-        await SetDisplayColourScheme(Options.ColourScheme);
+            Options = response.Options;
+
+            await SetDisplayColourScheme(Options.ColourScheme);
+
+            StateHasChanged();
+        }
     }
 
     protected async Task SubmitAsync()
@@ -33,11 +42,6 @@ public partial class MenuComponent : Component2Base
                 Options, VisitorId, new(UserId, UserName)));
 
         await OnCreateGame.InvokeAsync(response.Game);
-    }
-
-    protected async Task CopyInviteToClipboard(Uri url)
-    {
-        await JSRuntime.InvokeVoidAsync("App.copyToClipboard", url.ToString());
     }
 
     protected async Task ColourSchemeChanged(int value)

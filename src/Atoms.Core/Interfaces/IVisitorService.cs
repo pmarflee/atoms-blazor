@@ -1,12 +1,13 @@
-﻿using Atoms.Core.Data;
-
-namespace Atoms.Core.Interfaces;
+﻿namespace Atoms.Core.Interfaces;
 
 public interface IVisitorService
 {
-    Task SaveVisitorId(VisitorId visitorId, CancellationToken? cancellationToken = null);
-    Task SaveVisitorId(
+    Task AddOrUpdate(
         VisitorId visitorId,
-        ApplicationDbContext dbContext, 
+        CancellationToken? cancellationToken = null);
+
+    Task AddOrUpdate(
+        VisitorId visitorId,
+        string? name,
         CancellationToken? cancellationToken = null);
 }

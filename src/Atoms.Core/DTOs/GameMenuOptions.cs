@@ -19,15 +19,17 @@ public class GameMenuOptions
 
     public bool IsRematch { get; set; }
 
-    public static GameMenuOptions CreateForDebug() =>
+    public static GameMenuOptions Default =>
         new()
         {
             NumberOfPlayers = 2,
-            Players = 
+            Players =
             [
                 new() { Number = 1, Type = PlayerType.Human },
                 new() { Number = 2, Type = PlayerType.Human },
-            ]
+            ],
+            AtomShape = AtomShape.Round,
+            ColourScheme = ColourScheme.Original
         };
 
     public class Player

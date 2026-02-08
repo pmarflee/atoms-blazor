@@ -14,12 +14,14 @@ public class InvitePageComponent : Component2Base
     [Inject]
     NavigationManager Navigation { get; set; } = default!;
 
+    [Inject]
+    VisitorIdCookieValueService CookieValueService { get; set; } = default!;
+
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
+
     [Parameter]
     public string Code { get; set; } = default!;
-
-    protected InputText InputName { get; set; } = default!;
-
-    protected InputModel Input { get; set; } = new();
 
     protected async override Task OnInitializedAsync()
     {
@@ -34,9 +36,7 @@ public class InvitePageComponent : Component2Base
 
             if (!string.IsNullOrEmpty(username))
             {
-                Input.Name = username;
-
-                await AcceptInvite();
+                await AcceptInvite(new UsernameDTO { Name = username });
             }
             else
             {
@@ -49,33 +49,20 @@ public class InvitePageComponent : Component2Base
         }
     }
 
-    protected async override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && InputName?.Element is not null)
-        {
-            await InputName.Element.Value.FocusAsync();
-        }
-    }
-
-    public async Task AcceptInvite()
+    protected async Task AcceptInvite(UsernameDTO username)
     {
         var response = await Mediator.Send(
             new AcceptInviteRequest(
-                _invite, VisitorId, new(_userId, Input.Name)));
+                _invite, VisitorId, new(_userId, username.Name)));
 
         if (response.Success)
         {
+            CookieValueService.SetName(HttpContext, username.Name!);
             Navigation.NavigateToGame(response.GameId!.Value);
         }
         else
         {
             ErrorMessage = response.ErrorMessage;
         }
-    }
-
-    protected sealed class InputModel
-    {
-        [Required, MaxLength(25), RegularExpression("[A-Za-z0-9_ ]+")]
-        public string Name { get; set; } = default!;
     }
 }

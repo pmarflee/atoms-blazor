@@ -26,20 +26,26 @@ public partial class GameComponent : Component2Base, IDisposable
     {
         StateContainer.OnChange += StateHasChangedAsync;
         StateContainer.OnGameReloadRequired += ReloadGame;
+    }
 
-        if (Debug.HasValue)
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            var response = await Mediator.Send(
-                new CreateDebugGameRequest(
-                    GameId, Debug.Value,
-                    VisitorId));
+            if (Debug.HasValue)
+            {
+                var response = await Mediator.Send(
+                    new CreateDebugGameRequest(
+                        GameId, Debug.Value,
+                        VisitorId));
 
-            await Task.Delay(10);
-            await Initialize(response.Game);
-        }
-        else
-        {
-            await LoadGame();
+                await Task.Delay(10);
+                await Initialize(response.Game);
+            }
+            else
+            {
+                await LoadGame();
+            }
         }
     }
 

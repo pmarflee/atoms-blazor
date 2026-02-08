@@ -14,7 +14,7 @@ public class GameCreationService(
                                           UserIdentity userIdentity,
                                           CancellationToken cancellationToken)
     {
-        await visitorService.SaveVisitorId(visitorId, cancellationToken);
+        await visitorService.AddOrUpdate(visitorId, cancellationToken);
 
         var gameDto = gameFactory.Invoke(options, visitorId, userIdentity);
 

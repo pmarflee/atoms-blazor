@@ -1,5 +1,4 @@
 ﻿using Atoms.Core.DTOs.Notifications.SignalR;
-using Atoms.Core.ValueObjects;
 using Atoms.UseCases.Invites.AcceptInvite;
 using FluentValidation;
 using FluentValidation.Results;
@@ -17,11 +16,13 @@ public class AcceptInviteTests : BaseDbTestFixture
     private IServiceScopeFactoryCreateExpectations _serviceScopeFactoryCreateExpectations = default!;
     private IServiceProviderCreateExpectations _serviceProviderCreateExpectations = default!;
     private IServiceScopeCreateExpectations _serviceScopeCreateExpectations = default!;
+    private IVisitorServiceCreateExpectations _visitorServiceCreateExpectations = default!;
 
     protected override Task SetupInternal()
     {
         _notificationServiceExpectations = new INotificationServiceCreateExpectations();
         _validatorExpectations = new IValidatorCreateExpectations<AcceptInviteRequest>();
+        _visitorServiceCreateExpectations = new IVisitorServiceCreateExpectations();
 
         _dateServiceCreateExpectations = new IDateTimeServiceCreateExpectations();
         _dateServiceCreateExpectations.Setups
@@ -80,6 +81,22 @@ public class AcceptInviteTests : BaseDbTestFixture
         _validatorExpectations.Setups
             .ValidateAsync(Arg.Is(request), CancellationToken.None)
             .ReturnValue(Task.FromResult(new ValidationResult()));
+
+        _visitorServiceCreateExpectations.Setups
+            .AddOrUpdate(
+                Arg.Is(ObjectMother.VisitorId),
+                Arg.Is<string?>(Player_Name),
+                Arg.Any<CancellationToken?>())
+            .Callback(async (id, name, ct) =>
+            {
+                using var dbContext = await DbContextFactory.CreateDbContextAsync(
+                    CancellationToken.None);
+
+                var visitor = await dbContext.GetVisitorById(id);
+                visitor.Name = name;
+
+                await dbContext.SaveChangesAsync(CancellationToken.None);
+            });
 
         await AddGame();
 
@@ -142,6 +159,7 @@ public class AcceptInviteTests : BaseDbTestFixture
         return new(_validatorExpectations.Instance(),
                    DbContextFactory,
                    _dateServiceCreateExpectations.Instance(),
+                   _visitorServiceCreateExpectations.Instance(),
                    _serviceScopeFactoryCreateExpectations.Instance());
     }
 

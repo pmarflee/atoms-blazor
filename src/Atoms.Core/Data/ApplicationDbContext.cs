@@ -93,27 +93,32 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         Guid playerId, CancellationToken cancellationToken)
     {
         return await Games.FirstOrDefaultAsync(
-            game => game.Players.Any(player => player.Id == playerId), 
+            game => game.Players.Any(player => player.Id == playerId),
             cancellationToken: cancellationToken);
     }
 
-    public async Task AddVisitorId(
-        VisitorId visitorId, CancellationToken cancellationToken)
+    public async Task AddOrUpdateVisitor(
+        VisitorId visitorId, string? name, CancellationToken cancellationToken)
     {
-        var visitorExists = await Visitors
-            .AnyAsync(u => u.Id == visitorId.Value, cancellationToken);
+        var visitor = await Visitors.FindAsync(
+            [visitorId.Value], cancellationToken);
 
-        if (visitorExists) return;
+        if (visitor is null)
+        {
+            visitor = new VisitorDTO { Id = visitorId.Value };
 
-        var visitorDto = new VisitorDTO { Id = visitorId.Value };
+            Visitors.Add(visitor);
+        }
 
-        Visitors.Add(visitorDto);
+        if (!string.IsNullOrEmpty(name))
+        {
+            visitor.Name = name;
+        }
 
         await SaveChangesAsync(cancellationToken);
     }
 
-    public ValueTask<VisitorDTO> GetVisitorById(
-        VisitorId visitorId) =>
+    public ValueTask<VisitorDTO> GetVisitorById(VisitorId visitorId) =>
         FindAsync<VisitorDTO>(visitorId.Value)!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

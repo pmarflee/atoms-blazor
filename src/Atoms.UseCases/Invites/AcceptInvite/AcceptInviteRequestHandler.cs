@@ -9,6 +9,7 @@ public class AcceptInviteRequestHandler(
     IValidator<AcceptInviteRequest> acceptInviteRequestValidator,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
     IDateTimeService dateTimeService,
+    IVisitorService visitorService,
     IServiceScopeFactory serviceScopeFactory)
     : IRequestHandler<AcceptInviteRequest, AcceptInviteResponse>
 {
@@ -38,10 +39,10 @@ public class AcceptInviteRequestHandler(
 
         game.LastUpdatedDateUtc = dateTimeService.UtcNow;
 
-        var visitor = (await dbContext.FindAsync<VisitorDTO>(
-            request.VisitorId.Value))!;
-
-        visitor.Name = request.UserIdentity.Name!;
+        await visitorService.AddOrUpdate(
+            request.VisitorId,
+            request.UserIdentity.Name!,
+            cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

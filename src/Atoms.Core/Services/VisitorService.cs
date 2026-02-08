@@ -7,24 +7,23 @@ public class VisitorService(
     IDbContextFactory<ApplicationDbContext> dbContextFactory)
     : IVisitorService
 {
-    public async Task SaveVisitorId(
+    public async Task AddOrUpdate(
         VisitorId visitorId,
+        CancellationToken? cancellationToken = null)
+    {
+        await AddOrUpdate(visitorId, null, cancellationToken);
+    }
+
+    public async Task AddOrUpdate(
+        VisitorId visitorId,
+        string? name,
         CancellationToken? cancellationToken = null)
     {
         cancellationToken ??= CancellationToken.None;
 
         var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken.Value);
 
-        await SaveVisitorId(visitorId, dbContext, cancellationToken);
-    }
-
-    public async Task SaveVisitorId(
-        VisitorId visitorId,
-        ApplicationDbContext dbContext,
-        CancellationToken? cancellationToken = null)
-    {
-        cancellationToken ??= CancellationToken.None;
-
-        await dbContext.AddVisitorId(visitorId, cancellationToken.Value);
+        await dbContext.AddOrUpdateVisitor(
+            visitorId, name, cancellationToken.Value);
     }
 }
