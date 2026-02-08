@@ -7,7 +7,6 @@ using Atoms.Infrastructure.Data.DataProtection;
 using Atoms.Infrastructure.Email;
 using Atoms.Infrastructure.Factories;
 using Atoms.Infrastructure.Middleware;
-using Atoms.Infrastructure.Services;
 using Atoms.Infrastructure.SignalR;
 using Atoms.UseCases.CreateNewGame;
 using Atoms.UseCases.PlayerMove.Rebus;
@@ -213,7 +212,16 @@ try
     app.UseMiddleware<SetVisitorIdCookie>();
 
     app.MapRazorComponents<App>()
-        .AddInteractiveServerRenderMode();
+        .AddInteractiveServerRenderMode()
+        .Add(endpointBuilder =>
+        {
+            if (endpointBuilder.Metadata.OfType<HttpMethodMetadata>()
+                .FirstOrDefault()?.HttpMethods.Contains("GET") == true)
+            {
+                endpointBuilder.Metadata.Add(
+                    new HttpMethodMetadata(["GET", "HEAD"]));
+            }
+        });
 
     app.MapAdditionalIdentityEndpoints();
 
