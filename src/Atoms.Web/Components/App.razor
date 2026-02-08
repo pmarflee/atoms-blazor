@@ -4,6 +4,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=520, height=620">
+    <meta property="title" content="Atoms Blazor">
+    <meta property="description" content="A 1993 Amiga game reimplemented using ASP.NET Blazor web technologies.">
+    <meta property="og:title" content="Atoms Blazor">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="A 1993 Amiga game reimplemented using ASP.NET Blazor web technologies.">
+    <meta property="og:image" content="@($"{Nav.BaseUri}{Assets["images/screenshot.png"]}")">
+    <meta property="og:image:width" content="573">
+    <meta property="og:image:height" content="740">
     <base href="/" />
     <link rel="stylesheet" href="@Assets["css/game.css"]" />
     <link rel="stylesheet" href="@Assets["css/account.css"]" />
@@ -27,6 +35,9 @@
 @code {
     [CascadingParameter]
     private HttpContext _httpContext { get; set; } = default!;
+
+    [Inject]
+    NavigationManager Nav { get; set; } = default!;
 
     private IComponentRenderMode? RenderMode =>
         _httpContext.AcceptsInteractiveRouting()
