@@ -65,7 +65,17 @@ public partial class GameComponent : Component2Base, IDisposable
             {
                 Debug = null;
 
-                await Initialize(response.Game!, isReload);
+                var game = response.Game!;
+                var player = game.Players.FirstOrDefault(
+                    p => game.PlayerBelongsToUser(p, UserId, VisitorId));
+
+                if (player is not null
+                    && string.IsNullOrEmpty(player.AbbreviatedName))
+                {
+                    Navigation.NavigateToSetUserNamePage(game);
+                }
+
+                await Initialize(game, isReload);
             }
             else
             {

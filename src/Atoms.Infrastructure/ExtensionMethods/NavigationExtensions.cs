@@ -36,7 +36,17 @@ public static class NavigationExtensions
 
         public void NavigateToSetUserNamePage(GameDTO gameDto)
         {
-            var url = BaseUrl.AppendPathSegment(gameDto.Id)
+            navigation.NavigateToSetUserNamePage(gameDto.Id);
+        }
+
+        public void NavigateToSetUserNamePage(Game game)
+        {
+            navigation.NavigateToSetUserNamePage(game.Id);
+        }
+
+        void NavigateToSetUserNamePage(Guid gameId)
+        {
+            var url = BaseUrl.AppendPathSegment(gameId)
                              .AppendPathSegment("/username/");
 
             navigation.NavigateTo(url, true);

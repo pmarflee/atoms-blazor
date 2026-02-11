@@ -215,11 +215,16 @@ try
         .AddInteractiveServerRenderMode()
         .Add(endpointBuilder =>
         {
-            if (endpointBuilder.Metadata.OfType<HttpMethodMetadata>()
-                .FirstOrDefault()?.HttpMethods.Contains("GET") == true)
+            var httpMethods = endpointBuilder.Metadata
+                .OfType<HttpMethodMetadata>()
+                .FirstOrDefault()?.HttpMethods;
+
+            if (httpMethods?.Contains("GET") == true)
             {
+                var newHttpMethods = httpMethods.Union(["HEAD"]).ToArray();
+
                 endpointBuilder.Metadata.Add(
-                    new HttpMethodMetadata(["GET", "HEAD"]));
+                    new HttpMethodMetadata(newHttpMethods));
             }
         });
 

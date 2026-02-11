@@ -3,4 +3,4 @@
 
 @page "/games/{gameId:guid}/username"
 
-<UserName GameId=@GameId />
+<UserName OnValid=@HandleValidUserName />
