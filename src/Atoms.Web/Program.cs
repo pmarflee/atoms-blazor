@@ -180,6 +180,15 @@ try
                 : null;
         });
 
+    var supportedCultures = new[] { "en-GB", "en-US" };
+
+    builder.Services.Configure<RequestLocalizationOptions>(options =>
+    {
+        options.SetDefaultCulture(supportedCultures[0])
+            .AddSupportedCultures(supportedCultures)
+            .AddSupportedUICultures(supportedCultures);
+    });
+
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
@@ -210,6 +219,8 @@ try
     app.UseAntiforgery();
 
     app.UseMiddleware<SetVisitorIdCookie>();
+
+    app.UseRequestLocalization();
 
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode()
