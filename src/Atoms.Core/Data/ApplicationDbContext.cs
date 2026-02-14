@@ -16,71 +16,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         VisitorId visitorId,
         UserId? userId)
     {
-        var visitorIdParam = new NpgsqlParameter(
-            "visitorId", NpgsqlTypes.NpgsqlDbType.Uuid)
-        { Value = visitorId.Value };
-        var userIdParam = new NpgsqlParameter(
-            "userId", NpgsqlTypes.NpgsqlDbType.Text)
-        { Value = userId?.Id ?? (object)DBNull.Value };
-
-        return Set<GameInfoDTO>().FromSqlRaw(
-            """
-            SELECT
-                "g"."Id",
-                "g"."CreatedDateUtc",
-                "g"."LastUpdatedDateUtc",
-                "g"."Move",
-                "g"."Round",
-                "g"."IsActive",
-                (
-                    SELECT
-                        STRING_AGG(
-                            CASE "pt"."Name"
-                                WHEN 'Human' THEN COALESCE("u"."Name", 'Player ' || "p"."Number")
-                                ELSE "pt"."Description"
-                            END, ', ' ORDER BY "p"."Number")
-                    FROM
-                        "Players" AS "p"
-                    INNER JOIN
-                        "PlayerTypes" AS "pt" ON "p"."PlayerTypeId" = "pt"."Id"
-                    LEFT JOIN
-                        "Visitors" AS "u" ON "p"."VisitorId" = "u"."Id"
-                    WHERE
-                        "p"."GameId" = "g"."Id"
-                        AND ("p"."VisitorId" IS NULL OR "p"."VisitorId" <> @visitorId)
-                        AND (@userId IS NULL OR "p"."UserId" <> @userId)
-                ) AS "Opponents",
-                (
-                    SELECT
-                        CASE "pt"."Name"
-                            WHEN 'Human' THEN COALESCE("u"."Name", 'Player ' || "p"."Number")
-                            ELSE "pt"."Description"
-                        END
-                    FROM
-                        "Players" AS "p"
-                    INNER JOIN
-                        "PlayerTypes" AS "pt" ON "p"."PlayerTypeId" = "pt"."Id"
-                    LEFT JOIN
-                        "Visitors" AS "u" ON "p"."VisitorId" = "u"."Id"
-                    WHERE
-                        "p"."GameId" = "g"."Id"
-                        AND "p"."IsWinner" = TRUE
-                ) AS "Winner"
-            FROM
-                "Games" AS "g"
-            WHERE
-                (
-                    "g"."VisitorId" = @visitorId
-                    AND (@userId IS NULL OR "g"."UserId" = @userId)
-                )
-                OR EXISTS (
-                    SELECT 1
-                    FROM "Players" AS "p"
-                    WHERE "p"."GameId" = "g"."Id"
-                    AND ("p"."VisitorId" = @visitorId
-                    AND (@userId IS NULL OR "p"."UserId" = @userId))
-                )
-            """, visitorIdParam, userIdParam);
+        return Set<GameInfoDTO>().FromSql(
+            $"SELECT * FROM get_games_for_user({visitorId.Value}, {userId?.Id})");
     }
 
     public async Task<GameDTO?> GetGameById(
