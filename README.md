@@ -17,6 +17,7 @@ dotnet tool update --global dotnet-ef
 dotnet ef migrations add AddGame --project ..\atoms.infrastructure\atoms.infrastructure.csproj --context ApplicationDbContext --namespace Atoms.Infrastructure.Data.Migrations -o ..\Atoms.Infrastructure\Data\Migrations
 dotnet ef migrations add AddDataProtectionKeys --project ..\atoms.infrastructure\atoms.infrastructure.csproj --context DataProtectionKeyContext --namespace Atoms.Infrastructure.Data.DataProtection.Migrations -o ..\Atoms.Infrastructure\Data\DataProtection\Migrations
 dotnet ef migrations add RenameLocalStorageToVisitor --project ..\atoms.infrastructure\atoms.infrastructure.csproj --context ApplicationDbContext --namespace Atoms.Infrastructure.Data.Migrations -o ..\Atoms.Infrastructure\Data\Migrations
+dotnet ef migrations add AddGetGamesForUserFunction --project ..\atoms.infrastructure\atoms.infrastructure.csproj --context ApplicationDbContext --namespace Atoms.Infrastructure.Data.Migrations -o ..\Atoms.Infrastructure\Data\Migrations
 ```
 
 How to authorize with doctl:
