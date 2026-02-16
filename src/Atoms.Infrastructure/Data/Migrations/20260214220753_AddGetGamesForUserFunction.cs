@@ -47,8 +47,7 @@ namespace Atoms.Infrastructure.Data.Migrations
                             WHERE
                                 "p"."GameId" = "g"."Id"
                                 AND ("p"."VisitorId" IS NULL OR "p"."VisitorId" <> visitor_id)
-                                AND (user_id IS NULL OR "p"."UserId" <> user_id)
-                        ) AS "Opponents",
+                                AND (user_id IS NULL OR "p"."UserId" IS NULL OR "p"."UserId" <> user_id)                        ) AS "Opponents",
                         (
                             SELECT
                                 CASE "pt"."Name"
@@ -70,15 +69,14 @@ namespace Atoms.Infrastructure.Data.Migrations
                     WHERE
                         (
                             "g"."VisitorId" = visitor_id
-                            AND (user_id IS NULL OR "g"."UserId" = user_id)
+                            AND (user_id IS NULL OR "p"."UserId" <> user_id)
                         )
                         OR EXISTS (
                             SELECT 1
                             FROM "Players" AS "p"
                             WHERE "p"."GameId" = "g"."Id"
                             AND ("p"."VisitorId" = visitor_id
-                            AND (user_id IS NULL OR "p"."UserId" = user_id))
-                        );
+                            AND (user_id IS NULL OR "g"."UserId" IS NULL OR "p"."UserId" = user_id)                        );
                 END;
                 $$ LANGUAGE plpgsql;
                 """);
