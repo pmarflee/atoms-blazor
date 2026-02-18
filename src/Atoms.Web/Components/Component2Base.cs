@@ -24,8 +24,14 @@ public abstract class Component2Base : ComponentBase
 
     public UserId? UserId => AuthenticatedUser?.GetUserId();
 
-    public string? UserName =>
-        AuthenticatedUser?.GetUserName() ?? VisitorUserName;
+    public string? UserName
+    {
+        get
+        {
+            return AuthenticatedUser?.FindFirstValue(Constants.Claims.Name)
+                   ?? VisitorUserName;
+        }
+    }
 
     public async Task<UserIdentity> GetUserIdentity() => new(UserId, UserName);
 

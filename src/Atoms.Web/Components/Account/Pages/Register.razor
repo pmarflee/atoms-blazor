@@ -12,25 +12,61 @@
         <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
-            <div class="input-group">
-                <label for="Input.Name">Name</label>
-                <InputText @bind-Value="Input.Name" id="Input.Name" autocomplete="username" aria-required="true" placeholder="Name" />
-            </div>
-            <div class="input-group">
-                <label for="Input.Email">Email</label>
-                <InputText @bind-Value="Input.Email" id="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-            </div>
-            <div class="input-group">
-                <label for="Input.Password">Password</label>
-                <InputText type="password" @bind-Value="Input.Password" id="Input.Password" autocomplete="new-password" aria-required="true" placeholder="password" />
-            </div>
-            <div class="input-group">
-                <label for="Input.ConfirmPassword">Confirm Password</label>
-                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="password" />
-            </div>
-            <div class="submit-group">
-                <button type="submit">Register</button>
-            </div>
+            <FluentStack Orientation=@Orientation.Vertical VerticalGap=20>
+                <div class="input-group">
+                    <FluentTextField Name="Input.Name"
+                                     @bind-Value=@Input.Name
+                                     Label="Name"
+                                     Required
+                                     Autofocus
+                                     Placeholder="Please enter your name"
+                                     Maxlength="25"
+                                     AutoComplete="name"
+                                     Style="width: 100%;" />
+                    <FluentValidationMessage For="@(() => Input.Name)" />
+                </div>
+                <div class="input-group">
+                    <FluentTextField Name="Input.Email"
+                                     TextFieldType=@TextFieldType.Email
+                                     @bind-Value=@Input.Email
+                                     Label="Email"
+                                     Required
+                                     Placeholder="name@example.com"
+                                     Maxlength=256
+                                     AutoComplete="username"
+                                     Style="width: 100%;" />
+                    <FluentValidationMessage For="@(() => Input.Email)" />
+                </div>
+                <div class="input-group">
+                    <FluentTextField Name="Input.Password"
+                                     TextFieldType=@TextFieldType.Password
+                                     @bind-Value=@Input.Password
+                                     Label="Password"
+                                     Required
+                                     Placeholder="Please enter your password"
+                                     Minlength=12
+                                     Maxlength=100
+                                     AutoComplete="current-password"
+                                     Style="width: 100%;" />
+                    <FluentValidationMessage For="@(() => Input.Password)" />
+                </div>
+                <div class="input-group">
+                    <FluentTextField Name="Input.ConfirmPassword"
+                                     TextFieldType=@TextFieldType.Password
+                                     @bind-Value=@Input.ConfirmPassword
+                                     Label="Confirm Password"
+                                     Required
+                                     Placeholder="Please confirm your password"
+                                     Minlength=12
+                                     Maxlength=100
+                                     AutoComplete="new-password"
+                                     Style="width: 100%;" />
+                    <FluentValidationMessage For="@(() => Input.ConfirmPassword)" />
+                </div>
+                <div class="input-group center-align">
+                    <button type="submit">Register</button>
+                </div>
+            </FluentStack>
         </EditForm>
     </section>
 </div>

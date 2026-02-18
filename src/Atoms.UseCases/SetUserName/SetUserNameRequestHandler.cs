@@ -1,20 +1,27 @@
-﻿
+﻿using Atoms.Core.Data.Identity;
+using Atoms.Core.Identity;
+
 namespace Atoms.UseCases.SetUserName;
 
 public class SetUserNameRequestHandler(
-    IDbContextFactory<ApplicationDbContext> dbContextFactory,
-    IVisitorService visitorService) 
+    IDbContextFactory<ApplicationDbContext> applicationDbContextFactory,
+    IDbContextFactory<ApplicationIdentityDbContext> identityDbContextFactory,
+    IVisitorService visitorService)
     : IRequestHandler<SetUserNameRequest>
 {
     public async Task Handle(SetUserNameRequest request,
                              CancellationToken cancellationToken)
     {
-        var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        var userName = request.UserIdentity.Name!;
+        var applicationDbContext = await applicationDbContextFactory.CreateDbContextAsync(cancellationToken);
+        var userIdentity = request.UserIdentity;
+        var userName = userIdentity.Name!;
+        var userId = userIdentity.Id;
+        var game = request.Game;
+        var visitorId = request.VisitorId;
 
-        if (request.Game is not null)
+        if (game is not null)
         {
-            var gameDto = await dbContext.GetGameById(request.Game.Id, cancellationToken);
+            var gameDto = await applicationDbContext.GetGameById(game.Id, cancellationToken);
             var playerDto = gameDto!.Players
                 .OrderBy(p => p.Number)
                 .First(p => p.PlayerTypeId == PlayerType.Human);
@@ -25,14 +32,25 @@ public class SetUserNameRequestHandler(
             }
         }
 
-        await visitorService.AddOrUpdate(
-            request.VisitorId,
-            cancellationToken);
+        await visitorService.AddOrUpdate(visitorId, cancellationToken);
 
-        var visitor = dbContext.Find<VisitorDTO>(request.VisitorId.Value)!;
+        var visitor = applicationDbContext.Find<VisitorDTO>(visitorId.Value)!;
 
         visitor.Name = userName;
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        await applicationDbContext.SaveChangesAsync(cancellationToken);
+
+        if (userId is not null)
+        {
+            var identityDbContext = await identityDbContextFactory.CreateDbContextAsync(cancellationToken);
+            var user = await identityDbContext.FindAsync<ApplicationUser>(userId.Id);
+
+            if (user is not null)
+            {
+                user.Name = userName;
+
+                await identityDbContext.SaveChangesAsync(cancellationToken);
+            }
+        }
     }
 }

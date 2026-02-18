@@ -88,6 +88,8 @@ try
         .AddSignInManager()
         .AddDefaultTokenProviders();
 
+    builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, MyUserClaimsPrincipalFactory>();
+
     builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
     builder.Services.AddSingleton<IEmailSender, MailgunApiEmailSender>();
 

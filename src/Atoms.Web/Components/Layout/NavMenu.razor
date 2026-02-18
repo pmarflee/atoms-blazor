@@ -1,13 +1,37 @@
 ﻿@inherits NavMenuComponent
 
 <div id="auth-container">
-    <span class="link-home"><NavLink href="/">Home</NavLink></span>
+    <span class="link-margin-right"><NavLink href="/">Home</NavLink></span>
     <span><NavLink href="/games">Games</NavLink></span>
-    @if (!string.IsNullOrEmpty(UserName))
-    {
-        <span class="push"></span>
-        <span>
-            <NavLink href="/username">@UserName</NavLink>
-        </span>
-    }
+    <span class="push"></span>
+    <AuthorizeView>
+        <Authorized>
+            <span class="link-margin-right">
+                <NavLink href="/username">@UserName</NavLink>
+            </span>
+            <div id="auth-container">
+                <span>
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="@CurrentUrl" />
+                        <button type="submit" class="logout-button">Logout</button>
+                    </form>
+                </span>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            @if (!string.IsNullOrEmpty(UserName))
+            {
+                <span class="link-margin-right">
+                    <NavLink href="/username">@UserName</NavLink>
+                </span>
+            }
+            <span class="link-margin-right">
+                <NavLink href="/account/register">Register</NavLink>
+            </span>
+            <span>
+                <NavLink href="/account/login">Login</NavLink>
+            </span>
+        </NotAuthorized>
+    </AuthorizeView>
 </div>

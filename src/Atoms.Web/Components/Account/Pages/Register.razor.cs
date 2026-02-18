@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-
-namespace Atoms.Web.Components.Account.Pages;
+﻿namespace Atoms.Web.Components.Account.Pages;
 
 public partial class RegisterComponent : ComponentBase
 {
@@ -34,6 +32,11 @@ public partial class RegisterComponent : ComponentBase
     protected string? ReturnUrl { get; set; }
 
     protected string? ErrorMessage => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+
+    protected override void OnInitialized()
+    {
+        Input ??= new();    
+    }
 
     public async Task RegisterUser()
     {
@@ -113,14 +116,14 @@ public partial class RegisterComponent : ComponentBase
         public string Email { get; set; } = "";
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 12)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; } = "";
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
     }
 }

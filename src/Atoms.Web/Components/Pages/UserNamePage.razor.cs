@@ -17,7 +17,8 @@ public class UserNamePageComponent : Component2Base
     {
         await Mediator.Send(
             new SetUserNameRequest(
-                VisitorId, new UserIdentity(username.Name)));
+                VisitorId, 
+                new UserIdentity(UserId, username.Name)));
 
         CookieValueService.SetName(HttpContext, username.Name!);
 

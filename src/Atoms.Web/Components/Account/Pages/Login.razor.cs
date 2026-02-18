@@ -34,6 +34,8 @@ public partial class LoginComponent : ComponentBase
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
+
+        Input ??= new();
     }
 
     public async Task LoginUser()

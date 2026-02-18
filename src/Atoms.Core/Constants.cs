@@ -25,4 +25,9 @@ public static class Constants
     {
         public const string VisitorUserName = nameof(VisitorUserName);
     }
+
+    public static class Claims
+    {
+        public const string Name = nameof(Name);
+    }
 }

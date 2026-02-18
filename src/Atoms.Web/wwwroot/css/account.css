@@ -1,15 +1,6 @@
 ﻿.account form {
-    display: grid;
     gap: 1rem;
     margin: 2rem;
-    grid-template-columns: auto 1fr;
-}
-
-.account .input-group {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    align-items: baseline;
 }
 
 .account #Input\.RememberMe {
@@ -17,8 +8,6 @@
 }
 
 .account .submit-group {
-    display: grid;
-    grid-column: 1 / span 2;
     justify-self: center;
 }
 

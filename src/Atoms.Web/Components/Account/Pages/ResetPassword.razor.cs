@@ -25,6 +25,7 @@ public partial class ResetPasswordComponent : ComponentBase
             RedirectManager.RedirectTo("Account/InvalidPasswordReset");
         }
 
+        Input ??= new();    
         Input.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
     }
 
