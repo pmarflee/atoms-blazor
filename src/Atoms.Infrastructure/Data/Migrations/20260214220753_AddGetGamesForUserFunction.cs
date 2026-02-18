@@ -45,9 +45,10 @@ namespace Atoms.Infrastructure.Data.Migrations
                             LEFT JOIN
                                 "Visitors" AS "u" ON "p"."VisitorId" = "u"."Id"
                             WHERE
-                                "p"."GameId" = "g"."Id"
-                                AND ("p"."VisitorId" IS NULL OR "p"."VisitorId" <> visitor_id)
-                                AND (user_id IS NULL OR "p"."UserId" IS NULL OR "p"."UserId" <> user_id)                        ) AS "Opponents",
+                                "p"."GameId" = "g"."Id" AND 
+                                ("p"."VisitorId" IS NULL OR "p"."VisitorId" <> visitor_id) AND 
+                                (user_id IS NULL OR "p"."UserId" IS NULL OR "p"."UserId" <> user_id)
+                        ) AS "Opponents",
                         (
                             SELECT
                                 CASE "pt"."Name"
@@ -67,16 +68,16 @@ namespace Atoms.Infrastructure.Data.Migrations
                     FROM
                         "Games" AS "g"
                     WHERE
-                        (
-                            "g"."VisitorId" = visitor_id
-                            AND (user_id IS NULL OR "p"."UserId" <> user_id)
-                        )
-                        OR EXISTS (
+                        "g"."VisitorId" = visitor_id OR 
+                        "g"."UserId" = user_id OR 
+                        EXISTS (
                             SELECT 1
                             FROM "Players" AS "p"
                             WHERE "p"."GameId" = "g"."Id"
-                            AND ("p"."VisitorId" = visitor_id
-                            AND (user_id IS NULL OR "g"."UserId" IS NULL OR "p"."UserId" = user_id)                        );
+                            AND (
+                                "p"."VisitorId" = visitor_id OR 
+                                "p"."UserId" = user_id)
+                        );
                 END;
                 $$ LANGUAGE plpgsql;
                 """);
