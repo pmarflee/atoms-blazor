@@ -18,7 +18,7 @@ public class MailgunApiEmailSender(IOptions<EmailSettings> emailSettingsOptions)
             .WithBasicAuth("api", _emailSettings.ApiKey)
             .PostUrlEncodedAsync(new
             {
-                from = $"mailgun@{_emailSettings.Domain}",
+                from = $"Atoms-Blazor <mailgun@{_emailSettings.Domain}>",
                 to = email,
                 subject,
                 html = htmlMessage
