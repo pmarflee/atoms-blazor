@@ -19,6 +19,11 @@ public partial class ResendEmailConfirmationComponent : ComponentBase
     [SupplyParameterFromForm]
     protected InputModel Input { get; set; } = default!;
 
+    protected override void OnInitialized()
+    {
+        Input ??= new();    
+    }
+
     protected async Task OnValidSubmit()
     {
         var user = await UserManager.FindByEmailAsync(Input.Email!);
