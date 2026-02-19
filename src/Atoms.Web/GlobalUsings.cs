@@ -8,6 +8,7 @@ global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.WebUtilities;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using MediatR;
+global using Atoms.Core;
 global using Atoms.Core.DTOs;
 global using Atoms.Core.Entities;
 global using Atoms.Core.Enums;

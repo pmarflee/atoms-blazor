@@ -32,13 +32,7 @@ public class SetUserNameRequestHandler(
             }
         }
 
-        await visitorService.AddOrUpdate(visitorId, cancellationToken);
-
-        var visitor = applicationDbContext.Find<VisitorDTO>(visitorId.Value)!;
-
-        visitor.Name = userName;
-
-        await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await visitorService.AddOrUpdate(visitorId, userName, cancellationToken);
 
         if (userId is not null)
         {

@@ -28,8 +28,8 @@ public abstract class Component2Base : ComponentBase
     {
         get
         {
-            return AuthenticatedUser?.FindFirstValue(Constants.Claims.Name)
-                   ?? VisitorUserName;
+            return VisitorUserName
+                ?? AuthenticatedUser?.FindFirstValue(Constants.Claims.Name);
         }
     }
 

@@ -1,4 +1,6 @@
-﻿namespace Atoms.Web.Components.Account.Pages;
+﻿using Atoms.UseCases.SetUserName;
+
+namespace Atoms.Web.Components.Account.Pages;
 
 public partial class RegisterComponent : ComponentBase
 {
@@ -23,6 +25,15 @@ public partial class RegisterComponent : ComponentBase
     [Inject]
     public IdentityRedirectManager RedirectManager { get; set; } = default!;
 
+    [Inject]
+    public IMediator Mediator { get; set; } = default!;
+
+    [CascadingParameter]
+    public VisitorId VisitorId { get; init; } = default!;
+
+    [CascadingParameter(Name = Constants.CascadingValues.VisitorUserName)]
+    public string? VisitorUserName { get; init; }
+
     private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
@@ -35,7 +46,7 @@ public partial class RegisterComponent : ComponentBase
 
     protected override void OnInitialized()
     {
-        Input ??= new();    
+        Input ??= new() { Name = VisitorUserName ?? string.Empty };    
     }
 
     public async Task RegisterUser()
@@ -55,6 +66,21 @@ public partial class RegisterComponent : ComponentBase
         {
             identityErrors = result.Errors;
             return;
+        }
+
+        try
+        {
+            await Mediator.Send(
+                new SetUserNameRequest(
+                    VisitorId, new(Name: Input.Name)));
+        }
+        catch (Exception ex) 
+        {
+            const string errorMessage = "Error setting visitor user name";
+
+            Logger.LogError(ex, errorMessage);
+
+            identityErrors = [new IdentityError { Description = errorMessage }];
         }
 
         Logger.LogInformation("User created a new account with password.");
