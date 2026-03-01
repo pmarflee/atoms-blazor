@@ -38,6 +38,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Atoms.Core\Atoms.Core.csproj" />
     <ProjectReference Include="..\Atoms.UseCases\Atoms.UseCases.csproj" />
+    <ProjectReference Include="..\Atoms.Components\Atoms.Components.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,6 +11,7 @@ using Atoms.Infrastructure.SignalR;
 using Atoms.UseCases.CreateNewGame;
 using Atoms.UseCases.PlayerMove.Rebus;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -90,8 +91,11 @@ try
 
     builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, MyUserClaimsPrincipalFactory>();
 
-    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
-    builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
+    builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityEmailSender>();
+    builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+    builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+    builder.Services.AddScoped<HtmlRenderer>();
+    builder.Services.AddScoped<BlazorRenderer>();
 
     builder.Services.AddDataProtection()
         .PersistKeysToDbContext<DataProtectionKeyContext>()

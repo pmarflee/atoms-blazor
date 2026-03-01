@@ -20,6 +20,7 @@ public class SmtpEmailSender(IOptions<EmailSettings> emailSettingsOptions) : IEm
             _emailSettings.FromName, _emailSettings.FromAddress);
 
         var bodyBuilder = new BodyBuilder { HtmlBody = htmlMessage };
+
         message.Body = bodyBuilder.ToMessageBody();
 
         using var client = new SmtpClient();
