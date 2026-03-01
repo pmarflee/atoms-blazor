@@ -1,0 +1,20 @@
+﻿@inherits UserNameFormComponent
+
+<div>
+    <section>
+        <EditForm Model="Input"
+                  OnValidSubmit=@OnValidSubmit
+                  FormName="UserNameForm">
+            <FluentValidator />
+            <FluentStack Orientation=@Orientation.Vertical VerticalGap="20">
+                <div class="input-group">
+                    <UserName Name=@Input.Name />
+                    <FluentValidationMessage For="@(() => Input.Name)" />
+                </div>
+                <div class="input-group center-align">
+                    <button type="submit" class="input-button">Submit</button>
+                </div>
+            </FluentStack>
+        </EditForm>
+    </section>
+</div>

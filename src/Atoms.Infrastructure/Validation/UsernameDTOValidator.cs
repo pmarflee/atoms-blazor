@@ -10,14 +10,17 @@ public class UsernameDTOValidator : AbstractValidator<UsernameDTO>
 
         RuleFor(x => x.Name)
             .NotEmpty()
-            .Length(1, 25)
-            .Matches("[A-Za-z0-9_ ]+")
+            .WithMessage("Username is required")
+            .Length(3, 25)
+            .WithMessage("Username must be between 3 and 25 characters")
+            .Matches("^[A-Za-z0-9]([A-Za-z0-9_ ]*[A-Za-z0-9])?$")
+            .WithMessage("Username can only contain letters, numbers, spaces, underscores and dashes, and must start and end with a letter or number")
             .Must(name =>
             {
                 var filter = new ProfanityFilter.ProfanityFilter();
-                var profanities = filter.DetectAllProfanities(name);
+                var profanities = filter.DetectAllProfanities(name.ToLower());
 
                 return profanities.Count == 0;
-            }).WithMessage("Username is invalid");
+            }).WithMessage("Username contains inappropriate language");
     }
 }

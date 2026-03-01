@@ -1,28 +1,14 @@
 ﻿@inherits UserNameComponent
 
-<div>
-    <section>
-        <EditForm Model="Input"
-                  OnValidSubmit=@OnValidSubmit
-                  FormName="UserNameForm">
-            <FluentValidator />
-            <FluentStack Orientation=@Orientation.Vertical VerticalGap="20">
-                <div class="input-group">
-                    <FluentTextField Name="Input.Name"
-                                     @bind-Value=@Input.Name
-                                     Label="Name"
-                                     Required
-                                     Autofocus
-                                     Placeholder="Please enter your name"
-                                     Maxlength="25"
-                                     AutoComplete="name"
-                                     Style="width: 100%;" />
-                    <FluentValidationMessage For="@(() => Input.Name)" />
-                </div>
-                <div class="input-group center-align">
-                    <button type="submit" class="input-button">Submit</button>
-                </div>
-            </FluentStack>
-        </EditForm>
-    </section>
-</div>
+<FluentTextField Name="Input.Name"
+                 @bind-Value=@Name
+                 Label="Name"
+                 Required
+                 Autofocus
+                 Placeholder="Please enter your name"
+                 Minlength="3"
+                 Maxlength="25"
+                 Pattern="^[A-Za-z0-9]([A-Za-z0-9_ ]*[A-Za-z0-9])?$"
+                 Title="Username can only contain letters, numbers, spaces, underscores and dashes, and must start and end with a letter or number"
+                 AutoComplete="name"
+                 Style="width: 100%;" />

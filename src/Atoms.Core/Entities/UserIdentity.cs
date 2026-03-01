@@ -1,7 +1,10 @@
 ﻿namespace Atoms.Core.Entities;
 
-public record UserIdentity(UserId? Id = null, string? Name = null)
+public class UserIdentity(UserId? id = null, string? name = null)
 {
+    public UserId? Id { get; set; } = id;
+    public string? Name { get; set; } = name?.Trim();
+
     public UserIdentity(string? name) : this(null, name) { }
 
     public string? GetAbbreviatedName(IEnumerable<PlayerDTO>? players = null)
@@ -24,7 +27,7 @@ public record UserIdentity(UserId? Id = null, string? Name = null)
                         && !string.IsNullOrEmpty(p.AbbreviatedName))
             .Select(p => p.AbbreviatedName!.ToArray())
             .ToList();
-         var abbreviatedChars = new LinkedList<char>(firstChars);
+        var abbreviatedChars = new LinkedList<char>(firstChars);
         var insertAt = abbreviatedChars.First!;
         var wordIndex = 0;
         var letterIndex = 1;

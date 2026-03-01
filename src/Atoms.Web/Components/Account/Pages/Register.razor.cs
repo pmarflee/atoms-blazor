@@ -72,7 +72,7 @@ public partial class RegisterComponent : ComponentBase
         {
             await Mediator.Send(
                 new SetUserNameRequest(
-                    VisitorId, new(Name: Input.Name)));
+                    VisitorId, new UserIdentity(Input.Name)));
         }
         catch (Exception ex) 
         {
