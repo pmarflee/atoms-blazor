@@ -94,6 +94,7 @@ try
     builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityEmailSender>();
     builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
     builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+    builder.Services.AddScoped<IEmailInliner, EmailInliner>();
     builder.Services.AddScoped<HtmlRenderer>();
     builder.Services.AddScoped<BlazorRenderer>();
 

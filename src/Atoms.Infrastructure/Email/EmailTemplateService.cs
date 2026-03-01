@@ -1,13 +1,15 @@
 namespace Atoms.Infrastructure.Email;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Components;
 using Atoms.Components.Email;
 using Atoms.Core.Interfaces;
 
 public class EmailTemplateService(
     IOptions<EmailSettings> emailSettingsOptions,
     BlazorRenderer blazorRenderer,
-    IHttpContextAccessor httpContextAccessor) : IEmailTemplateService
+    IHttpContextAccessor httpContextAccessor,
+    IEmailInliner emailInliner) : IEmailTemplateService
 {
     private readonly EmailSettings _emailSettings = emailSettingsOptions.Value;
 
@@ -21,7 +23,7 @@ public class EmailTemplateService(
             { nameof(EmailConfirmationComponent.LogoHtml), GetLogoHtml() }
         };
 
-        return blazorRenderer.RenderComponent<EmailConfirmation>(parameters);
+        return RenderAndInlineEmailAsync<EmailConfirmation>(parameters);
     }
 
     public Task<string> GetPasswordResetLinkTemplate(string resetLink, string userName)
@@ -34,7 +36,7 @@ public class EmailTemplateService(
             { nameof(PasswordResetLinkComponent.LogoHtml), GetLogoHtml() }
         };
 
-        return blazorRenderer.RenderComponent<PasswordResetLink>(parameters);
+        return RenderAndInlineEmailAsync<PasswordResetLink>(parameters);
     }
 
     public Task<string> GetPasswordResetCodeTemplate(string resetCode, string userName)
@@ -47,7 +49,14 @@ public class EmailTemplateService(
             { nameof(PasswordResetCodeComponent.LogoHtml), GetLogoHtml() }
         };
 
-        return blazorRenderer.RenderComponent<PasswordResetCode>(parameters);
+        return RenderAndInlineEmailAsync<PasswordResetCode>(parameters);
+    }
+
+    private async Task<string> RenderAndInlineEmailAsync<T>(Dictionary<string, object?> parameters) where T : IComponent
+    {
+        var html = await blazorRenderer.RenderComponent<T>(parameters);
+
+        return await emailInliner.InlineCssAsync(html);
     }
 
     private string GetLogoHtml()
@@ -59,20 +68,16 @@ public class EmailTemplateService(
             return string.Empty;
         }
 
-        var logoUrl = $"{baseUrl.TrimEnd('/')}/images/logo.svg";
+        var logoUrl = $"{baseUrl.TrimEnd('/')}/images/logo.png";
 
         return $@"<img src=""{logoUrl}"" alt=""Atoms Logo"" style=""max-width: 150px; height: auto;"" />";
     }
 
     private string GetBaseUrl()
     {
-        var httpContext = httpContextAccessor.HttpContext;
-        if (httpContext != null)
-        {
-            var request = httpContext.Request;
-            return $"{request.Scheme}://{request.Host}";
-        }
+        var httpContext = httpContextAccessor.HttpContext!;
+        var request = httpContext.Request;
 
-        return string.Empty;
+        return $"{request.Scheme}://{request.Host}";
     }
 }
