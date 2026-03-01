@@ -20,7 +20,7 @@ public class EmailTemplateService(
             { nameof(EmailConfirmationComponent.UserName), userName },
             { nameof(EmailConfirmationComponent.ConfirmationLink), confirmationLink },
             { nameof(EmailConfirmationComponent.FromAddress), _emailSettings.FromAddress },
-            { nameof(EmailConfirmationComponent.LogoHtml), GetLogoHtml() }
+            { nameof(EmailConfirmationComponent.LogoUrl), GetLogoUrl() }
         };
 
         return RenderAndInlineEmailAsync<EmailConfirmation>(parameters);
@@ -33,7 +33,7 @@ public class EmailTemplateService(
             { nameof(PasswordResetLinkComponent.UserName), userName },
             { nameof(PasswordResetLinkComponent.ResetLink), resetLink },
             { nameof(PasswordResetLinkComponent.FromAddress), _emailSettings.FromAddress },
-            { nameof(PasswordResetLinkComponent.LogoHtml), GetLogoHtml() }
+            { nameof(PasswordResetLinkComponent.LogoUrl), GetLogoUrl() }
         };
 
         return RenderAndInlineEmailAsync<PasswordResetLink>(parameters);
@@ -46,7 +46,7 @@ public class EmailTemplateService(
             { nameof(PasswordResetCodeComponent.UserName), userName },
             { nameof(PasswordResetCodeComponent.ResetCode), resetCode },
             { nameof(PasswordResetCodeComponent.FromAddress), _emailSettings.FromAddress },
-            { nameof(PasswordResetCodeComponent.LogoHtml), GetLogoHtml() }
+            { nameof(PasswordResetCodeComponent.LogoUrl), GetLogoUrl() }
         };
 
         return RenderAndInlineEmailAsync<PasswordResetCode>(parameters);
@@ -59,7 +59,7 @@ public class EmailTemplateService(
         return await emailInliner.InlineCssAsync(html);
     }
 
-    private string GetLogoHtml()
+    private string GetLogoUrl()
     {
         var baseUrl = GetBaseUrl();
 
@@ -68,9 +68,7 @@ public class EmailTemplateService(
             return string.Empty;
         }
 
-        var logoUrl = $"{baseUrl.TrimEnd('/')}/images/logo.png";
-
-        return $@"<img src=""{logoUrl}"" alt=""Atoms Logo"" style=""max-width: 150px; height: auto;"" />";
+        return $"{baseUrl.TrimEnd('/')}/images/logo.png";
     }
 
     private string GetBaseUrl()

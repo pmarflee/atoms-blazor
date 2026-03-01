@@ -44,9 +44,9 @@
 <body>
     <div class="email-container">
         <div class="email-header">
-            @if (!string.IsNullOrEmpty(LogoHtml))
+            @if (!string.IsNullOrEmpty(LogoUrl))
             {
-                @((MarkupString)LogoHtml)
+                <img src="@LogoUrl" alt="Atoms Logo" style="max-width: 600px; height: auto;" />
             }
             <h1 style="margin: 15px 0 0 0;">@Title</h1>
         </div>

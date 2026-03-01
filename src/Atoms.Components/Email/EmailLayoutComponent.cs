@@ -9,7 +9,7 @@ public class EmailLayoutComponent : ComponentBase
     public string FromAddress { get; set; } = string.Empty;
 
     [Parameter]
-    public string LogoHtml { get; set; } = string.Empty;
+    public string LogoUrl { get; set; } = string.Empty;
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
