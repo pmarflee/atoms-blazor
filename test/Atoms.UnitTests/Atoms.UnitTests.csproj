@@ -9,11 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="14.0.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
-    <PackageReference Include="TUnit" Version="1.11.45" />
-    <PackageReference Include="Rocks" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.3" />
+    <PackageReference Include="TUnit" Version="1.17.54" />
+    <PackageReference Include="Rocks" Version="10.1.0" />
   </ItemGroup>
 
   <ItemGroup>
