@@ -91,7 +91,7 @@ try
     builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, MyUserClaimsPrincipalFactory>();
 
     builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
-    builder.Services.AddSingleton<IEmailSender, MailgunApiEmailSender>();
+    builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
 
     builder.Services.AddDataProtection()
         .PersistKeysToDbContext<DataProtectionKeyContext>()
