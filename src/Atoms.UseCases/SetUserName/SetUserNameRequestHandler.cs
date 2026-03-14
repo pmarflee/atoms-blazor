@@ -29,6 +29,8 @@ public class SetUserNameRequestHandler(
             if (string.IsNullOrEmpty(playerDto.AbbreviatedName))
             {
                 playerDto.AbbreviatedName = request.UserIdentity.GetAbbreviatedName();
+
+                await applicationDbContext.SaveChangesAsync(cancellationToken);
             }
         }
 

@@ -1,0 +1,112 @@
+﻿@page "/Account/DeletePersonalData"
+
+@using System.ComponentModel.DataAnnotations
+@using Atoms.UseCases.DeleteUserData
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityUserAccessor UserAccessor
+@inject IdentityRedirectManager RedirectManager
+@inject ILogger<DeletePersonalData> Logger
+
+<PageTitle>Delete Personal Data</PageTitle>
+
+<StatusMessage Message="@message" />
+
+<h3>Delete Personal Data</h3>
+
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
+    </p>
+</div>
+
+<div class="account">
+    <EditForm Model="Input" FormName="delete-user" OnValidSubmit="OnValidSubmitAsync" method="post">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" role="alert" />
+        <FluentStack Orientation=@Orientation.Vertical VerticalGap=20>
+            @if (requirePassword)
+            {
+                <div class="input-group">
+                    <FluentTextField Name="Input.Password"
+                                     TextFieldType=@TextFieldType.Password
+                                     @bind-Value=@Input.Password
+                                     Label="Password"
+                                     Required
+                                     Placeholder="Please enter your password"
+                                     Minlength=12
+                                     Maxlength=100
+                                     AutoComplete="current-password"
+                                     Style="width: 100%;" />
+                    <ValidationMessage For="() => Input.Password" class="text-danger" />
+                </div>
+            }
+            <div class="input-group center-align">
+                <button type="submit">Delete data and close my account</button>
+            </div>
+        </FluentStack>
+    </EditForm>
+</div>
+
+@code {
+    private string? message;
+    private ApplicationUser? user;
+    private bool requirePassword;
+
+    [Inject]
+    IMediator Mediator { get; set; } = default!;
+
+    [CascadingParameter]
+    HttpContext HttpContext { get; set; } = default!;
+
+    [CascadingParameter]
+    public VisitorId VisitorId { get; init; } = default!;
+
+    [CascadingParameter]
+    public ClaimsPrincipal? AuthenticatedUser { get; set; }
+
+    [SupplyParameterFromForm]
+    InputModel Input { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Input ??= new();
+
+        if (AuthenticatedUser is not null)
+        {
+            user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            requirePassword = await UserManager.HasPasswordAsync(user);
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        if (requirePassword && !await UserManager.CheckPasswordAsync(user!, Input.Password))
+        {
+            message = "Error: Incorrect password.";
+            return;
+        }
+
+        UserId? userId = user is not null ? new(user.Id) : null;
+
+        await Mediator.Send(new DeleteUserDataRequest(VisitorId, userId));
+        await SignInManager.SignOutAsync();
+
+        if (userId is not null)
+        {
+            Logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
+        }
+
+        this.HttpContext.Response.Cookies.Delete(Constants.Cookies.VisitorId);
+
+        RedirectManager.RedirectTo("/");
+    }
+
+    private sealed class InputModel
+    {
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+    }
+}

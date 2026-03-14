@@ -10,6 +10,7 @@
     <DockerServiceName>atoms.web</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include=".github\copilot-instructions.md" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>

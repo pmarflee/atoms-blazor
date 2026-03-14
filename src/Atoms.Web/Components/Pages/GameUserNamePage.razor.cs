@@ -41,7 +41,7 @@ public class GameUserNamePageComponent : Component2Base
         var firstHumanPlayer = game.Players.FirstOrDefault(p => p.IsHuman);
 
         var canSetUserName = firstHumanPlayer is not null
-                             && string.IsNullOrEmpty(firstHumanPlayer.Name);
+                             && string.IsNullOrEmpty(firstHumanPlayer.AbbreviatedName);
 
         if (!canSetUserName)
         {
