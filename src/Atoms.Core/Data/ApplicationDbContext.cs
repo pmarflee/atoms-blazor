@@ -7,6 +7,16 @@ namespace Atoms.Core.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : DbContext(options)
 {
+    public List<GameDTO> GetGamesForUserOrVisitor(string? userId, Guid visitorId)
+    {
+        return Games
+            .Include(g => g.Players)
+            .Where(g => (userId != null && g.UserId == userId)
+                        || g.VisitorId == visitorId
+                        || (userId != null && g.Players.Any(p => p.UserId == userId))
+                        || g.Players.Any(p => p.VisitorId == visitorId))
+            .ToList();
+    }
     public DbSet<GameDTO> Games { get; set; }
     public DbSet<PlayerDTO> Players { get; set; }
     public DbSet<PlayerTypeDTO> PlayerTypes { get; set; }

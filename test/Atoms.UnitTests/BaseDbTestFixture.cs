@@ -1,4 +1,8 @@
-﻿namespace Atoms.UnitTests;
+﻿using Atoms.Core.Data.Identity;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+
+namespace Atoms.UnitTests;
 
 public abstract class BaseDbTestFixture
 {
@@ -47,5 +51,27 @@ public abstract class BaseDbTestFixture
         {
             throw new Exception("Unable to create test database");
         }
+    }
+
+    protected static IDbContextFactory<ApplicationIdentityDbContext> CreateIdentityDbContextFactory()
+    {
+        var connection = new SqliteConnection("Filename=:memory:");
+        connection.Open();
+
+        var dbContextOptions = new DbContextOptionsBuilder<ApplicationIdentityDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var dbContextFactoryExpectations = new IDbContextFactoryCreateExpectations<ApplicationIdentityDbContext>();
+        dbContextFactoryExpectations.Setups
+            .CreateDbContextAsync(Arg.Any<CancellationToken>())
+            .Callback(async token =>
+            {
+                var context = new ApplicationIdentityDbContext(dbContextOptions);
+                await context.Database.EnsureCreatedAsync(token);
+                return context;
+            });
+
+        return dbContextFactoryExpectations.Instance();
     }
 }
