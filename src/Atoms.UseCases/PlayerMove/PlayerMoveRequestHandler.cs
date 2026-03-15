@@ -14,7 +14,7 @@ public class PlayerMoveRequestHandler(
         CancellationToken cancellationToken)
     {
         var game = request.Game;
-        var cell = request.Position is not null 
+        var cell = request.Position is not null
             ? game.Board[request.Position.Row, request.Position.Column]
             : null;
 
@@ -30,7 +30,15 @@ public class PlayerMoveRequestHandler(
                 return new PlayerMoveResponse(PlayerMoveResult.InvalidMove);
             }
 
-            var (gameStateHasChanged, allowRetry) = await GameStateHasChanged(game, cancellationToken);
+            var gameDto = await GetGameDTO(game, cancellationToken);
+
+            if (gameDto is null)
+            {
+                return new PlayerMoveResponse(PlayerMoveResult.GameDoesNotExist);
+            }
+
+            var (gameStateHasChanged, allowRetry) = GameStateHasChanged(
+                game, gameDto);
 
             if (gameStateHasChanged)
             {
@@ -45,27 +53,23 @@ public class PlayerMoveRequestHandler(
 
         await bus.Send(
             new PlayerMoveMessage(
-                game.Id, cell?.Row, cell?.Column, 
+                game.Id, cell?.Row, cell?.Column,
                 game.LastUpdatedDateUtc));
 
         return new PlayerMoveResponse(PlayerMoveResult.Ok);
     }
 
-    static async Task<GameDTO> GetGameDTO(Game game,
-                                          ApplicationDbContext dbContext,
-                                          CancellationToken cancellationToken)
-    {
-        return await dbContext.GetGameById(game.Id, cancellationToken)
-            ?? throw new Exception("Game not found");
-    }
-
-    async Task<(bool HasChanged, bool AllowRetry)> GameStateHasChanged(
-        Game game, CancellationToken cancellationToken)
+    async Task<GameDTO?> GetGameDTO(Game game, CancellationToken cancellationToken)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync(
             cancellationToken);
 
-        var gameDto = await GetGameDTO(game, dbContext, cancellationToken);
+        return await dbContext.GetGameById(game.Id, cancellationToken);
+    }
+
+    static (bool HasChanged, bool AllowRetry) GameStateHasChanged(
+        Game game, GameDTO gameDto)
+    {
         var changed = gameDto.LastUpdatedDateUtc != game.LastUpdatedDateUtc;
         var allowRetry = changed && game.Move == gameDto.Move;
 

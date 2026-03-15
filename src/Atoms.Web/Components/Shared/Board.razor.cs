@@ -356,9 +356,14 @@ public class BoardComponent : Component2Base, IDisposable, IAsyncDisposable
                     UserId,
                     VisitorId));
 
-            if (response.Result == PlayerMoveResult.GameStateHasChanged)
+            switch (response.Result)
             {
-                await ReloadGame();
+                case PlayerMoveResult.GameDoesNotExist:
+                    NavigationManager.NavigateTo("/");
+                    break;
+                case PlayerMoveResult.GameStateHasChanged:
+                    await ReloadGame();
+                    break;
             }
         } while (response.AllowRetry);
     }
