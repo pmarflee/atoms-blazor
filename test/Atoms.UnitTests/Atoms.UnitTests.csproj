@@ -8,12 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="14.1.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.5" />
-    <PackageReference Include="TUnit" Version="1.19.57" />
-    <PackageReference Include="Rocks" Version="10.1.0" />
+    <PackageReference Include="MediatR" Version="14.2.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.10" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
+    <PackageReference Include="TUnit" Version="1.63.0" />
+    <PackageReference Include="Rocks" Version="10.3.0" />
   </ItemGroup>
 
   <ItemGroup>
