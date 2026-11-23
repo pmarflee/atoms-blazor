@@ -11,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".github\copilot-instructions.md" />
+    <None Include=".github\upgrades\scenarios\dotnet-version-upgrade\tasks\02-solution-validation\progress-details.md" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
