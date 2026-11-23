@@ -7,6 +7,7 @@ FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/Atoms.Web/Atoms.Web.csproj", "Atoms.Web/"]
+COPY ["src/Atoms.Components/Atoms.Components.csproj", "Atoms.Components/"]
 COPY ["src/Atoms.Core/Atoms.Core.csproj", "Atoms.Core/"]
 COPY ["src/Atoms.Infrastructure/Atoms.Infrastructure.csproj", "Atoms.Infrastructure/"]
 COPY ["src/Atoms.UseCases/Atoms.UseCases.csproj", "Atoms.UseCases/"]
