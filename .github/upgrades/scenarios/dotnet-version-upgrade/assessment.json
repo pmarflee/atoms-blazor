@@ -1,0 +1,2089 @@
+{
+  "settings": {
+    "components": {
+      "code": true,
+      "binaries": false
+    },
+    "targetId": "net11.0",
+    "targetDisplayName": ".NETCoreApp,Version=v11.0"
+  },
+  "analysisStartTime": "2026-11-23T19:33:44.5508527Z",
+  "analysisEndTime": "2026-11-23T19:33:47.1966388Z",
+  "privacyModeHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2270980",
+  "stats": {
+    "summary": {
+      "projects": 7,
+      "issues": 6,
+      "incidents": 65,
+      "effort": 65
+    },
+    "charts": {
+      "severity": {
+        "Mandatory": 8,
+        "Optional": 0,
+        "Potential": 57,
+        "Information": 0
+      },
+      "category": {
+        "NuGet": 17,
+        "Project": 6,
+        "Api": 42
+      }
+    }
+  },
+  "projects": [
+    {
+      "path": "src\\Atoms.Components\\Atoms.Components.csproj",
+      "startingProject": true,
+      "issues": 2,
+      "storyPoints": 2,
+      "properties": {
+        "appName": "Atoms.Components",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 10,
+        "numberOfCodeFiles": 5,
+        "linesTotal": 176,
+        "linesOfCode": 65,
+        "totalApiScanned": 463,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "8acbda46-98e7-443e-bdc9-a6b045da3943",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Components\\Atoms.Components.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.Components.Web, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.Web, and replace with new package Microsoft.AspNetCore.Components.Web 10.0.15",
+              "protected": "Microsoft.AspNetCore.Components.Web, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.Web, and replace with new package Microsoft.AspNetCore.Components.Web 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Components\\Atoms.Components.csproj",
+            "snippet": "Microsoft.AspNetCore.Components.Web, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.Web, and replace with new package Microsoft.AspNetCore.Components.Web 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.Components.Web, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.Web, and replace with new package Microsoft.AspNetCore.Components.Web 10.0.15",
+            "label": "Microsoft.AspNetCore.Components.Web 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Components.Web",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "3951bce9-aa81-4d73-ac4d-e56775f6efa0",
+          "ruleId": "Project.0002",
+          "projectPath": "src\\Atoms.Components\\Atoms.Components.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net10.0\nRecommended target framework: net11.0",
+              "protected": "Current target framework: net10.0\nRecommended target framework: net11.0"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Components\\Atoms.Components.csproj",
+            "snippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "protectedSnippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "properties": {
+              "CurrentTargetFramework": "net10.0",
+              "RecommendedTargetFramework": "net11.0"
+            }
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "src\\Atoms.Core\\Atoms.Core.csproj",
+      "startingProject": true,
+      "issues": 4,
+      "storyPoints": 14,
+      "properties": {
+        "appName": "Atoms.Core",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 65,
+        "numberOfCodeFiles": 65,
+        "linesTotal": 2389,
+        "linesOfCode": 2389,
+        "totalApiScanned": 2450,
+        "minLinesOfCodeToChange": 10,
+        "maxLinesOfCodeToChange": 10
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "7b2a6972-f38d-4aa0-80bc-91e31b13e12d",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.15",
+              "protected": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\Atoms.Core.csproj",
+            "snippet": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.15",
+            "label": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "dd7a290f-f691-44e9-a620-5a2391ab0292",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15",
+              "protected": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\Atoms.Core.csproj",
+            "snippet": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15",
+            "label": "Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "becfed0c-90c0-4bb6-809b-723969acfbdb",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15",
+              "protected": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\Atoms.Core.csproj",
+            "snippet": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15",
+            "label": "Microsoft.AspNetCore.SignalR.Client 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.SignalR.Client",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "5cddaa5c-8fe5-44ab-bd3f-94de38c7e4ae",
+          "ruleId": "Project.0002",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net10.0\nRecommended target framework: net11.0",
+              "protected": "Current target framework: net10.0\nRecommended target framework: net11.0"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\Atoms.Core.csproj",
+            "snippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "protectedSnippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "properties": {
+              "CurrentTargetFramework": "net10.0",
+              "RecommendedTargetFramework": "net11.0"
+            }
+          }
+        },
+        {
+          "incidentId": "92d5e1cb-f047-4dd4-8ce1-96c8dde88ba6",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "get;",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\ValueObjects\\InviteLink.cs",
+            "snippet": "get;",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "433"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 15,
+            "column": 21
+          }
+        },
+        {
+          "incidentId": "fbeb3dce-a5a6-4e92-bd5c-a99e83d91c0f",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "public Uri Url",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\ValueObjects\\InviteLink.cs",
+            "snippet": "public Uri Url",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "433"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 15,
+            "column": 4
+          }
+        },
+        {
+          "incidentId": "3cf072a2-5daf-4108-973e-8395f0a06847",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\ValueObjects\\InviteLink.cs",
+            "snippet": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "433"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "bb3c6b74-07e9-4e8e-bbd0-b89dfae8c2c1",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+              "protected": "M:System.Uri.#ctor(System.String)"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\ValueObjects\\InviteLink.cs",
+            "snippet": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+            "protectedSnippet": "M:System.Uri.#ctor(System.String)",
+            "label": "M:System.Uri.#ctor(System.String)",
+            "properties": {
+              "CharCount": "433"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "14954508-129d-4778-a83b-7c6e51ee1ef2",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\ValueObjects\\InviteLink.cs",
+            "snippet": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "433"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "eebc37aa-089a-433f-bd79-88d50b577b37",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\ValueObjects\\InviteLink.cs",
+            "snippet": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "433"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "d44beaca-d466-473e-8029-29fbab43a248",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+              "protected": "M:System.Uri.#ctor(System.String)"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\ValueObjects\\InviteLink.cs",
+            "snippet": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+            "protectedSnippet": "M:System.Uri.#ctor(System.String)",
+            "label": "M:System.Uri.#ctor(System.String)",
+            "properties": {
+              "CharCount": "433"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "1ab10c56-9176-4e68-a78c-39b93e2dbe5c",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\ValueObjects\\InviteLink.cs",
+            "snippet": "Url = new(\u0022https://wa.me/\u0022.SetQueryParam(\u0022text\u0022, message, true));",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "433"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "ef9dc553-7704-4a34-bc54-4d5bc06e15ca",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: C# overload resolution prefers \u0060params\u0060 span-type overloads ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var cellCsv = board.Cells\r\n            .Where(cell =\u003E cell.Player is not null)\r\n            .Select(cell =\u003E\r\n                string.Join(\r\n                    CellItemSeparator,\r\n                    cell.Row, cell.Column, cell.Player, cell.Atoms))\r\n            .ToCsv(CellSeparator);",
+              "protected": "M:System.String.Join(System.Char,System.ReadOnlySpan{System.Object})"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\DTOs\\Game.cs",
+            "snippet": "var cellCsv = board.Cells\r\n            .Where(cell =\u003E cell.Player is not null)\r\n            .Select(cell =\u003E\r\n                string.Join(\r\n                    CellItemSeparator,\r\n                    cell.Row, cell.Column, cell.Player, cell.Atoms))\r\n            .ToCsv(CellSeparator);",
+            "protectedSnippet": "M:System.String.Join(System.Char,System.ReadOnlySpan{System.Object})",
+            "label": "M:System.String.Join(System.Char,System.ReadOnlySpan{System.Object})",
+            "properties": {
+              "CharCount": "12253"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/params-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 346,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "fce6f045-baa4-4f6c-979f-2433595bd46a",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: C# overload resolution prefers \u0060params\u0060 span-type overloads ",
+          "projectPath": "src\\Atoms.Core\\Atoms.Core.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var words = Name.Split(\u0027 \u0027, \u0027_\u0027, \u0027-\u0027);",
+              "protected": "M:System.String.Split(System.ReadOnlySpan{System.Char})"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Core\\Entities\\UserIdentity.cs",
+            "snippet": "var words = Name.Split(\u0027 \u0027, \u0027_\u0027, \u0027-\u0027);",
+            "protectedSnippet": "M:System.String.Split(System.ReadOnlySpan{System.Char})",
+            "label": "M:System.String.Split(System.ReadOnlySpan{System.Char})",
+            "properties": {
+              "CharCount": "2259"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/params-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 13,
+            "column": 8
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+      "startingProject": true,
+      "issues": 3,
+      "storyPoints": 14,
+      "properties": {
+        "appName": "Atoms.Infrastructure",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 43,
+        "numberOfCodeFiles": 43,
+        "linesTotal": 3949,
+        "linesOfCode": 3949,
+        "totalApiScanned": 5227,
+        "minLinesOfCodeToChange": 9,
+        "maxLinesOfCodeToChange": 9
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "a92da85e-5b78-4ea0-851e-1499b9f90a5e",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15",
+              "protected": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+            "snippet": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15",
+            "label": "Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "41beb61b-cacd-4ef6-ae8e-68decf32c299",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15",
+              "protected": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+            "snippet": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15",
+            "label": "Microsoft.AspNetCore.SignalR.Client 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.SignalR.Client",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "fcdebdd5-e0c9-4706-9bdc-fcc6715ae433",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.Design, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Design, and replace with new package Microsoft.EntityFrameworkCore.Design 10.0.15",
+              "protected": "Microsoft.EntityFrameworkCore.Design, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Design, and replace with new package Microsoft.EntityFrameworkCore.Design 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.Design, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Design, and replace with new package Microsoft.EntityFrameworkCore.Design 10.0.15",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.Design, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Design, and replace with new package Microsoft.EntityFrameworkCore.Design 10.0.15",
+            "label": "Microsoft.EntityFrameworkCore.Design 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.Design",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "ea140c3c-552a-4046-b95f-8300126c087b",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.Tools, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Tools, and replace with new package Microsoft.EntityFrameworkCore.Tools 10.0.15",
+              "protected": "Microsoft.EntityFrameworkCore.Tools, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Tools, and replace with new package Microsoft.EntityFrameworkCore.Tools 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.Tools, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Tools, and replace with new package Microsoft.EntityFrameworkCore.Tools 10.0.15",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.Tools, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Tools, and replace with new package Microsoft.EntityFrameworkCore.Tools 10.0.15",
+            "label": "Microsoft.EntityFrameworkCore.Tools 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "2deabc36-026d-4ab5-8125-55aec3fce81f",
+          "ruleId": "Project.0002",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net10.0\nRecommended target framework: net11.0",
+              "protected": "Current target framework: net10.0\nRecommended target framework: net11.0"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+            "snippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "protectedSnippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "properties": {
+              "CurrentTargetFramework": "net10.0",
+              "RecommendedTargetFramework": "net11.0"
+            }
+          }
+        },
+        {
+          "incidentId": "651958f7-6d94-4af4-89b3-8962d8e9c68e",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "return navigation.ToAbsoluteUri(url).AbsoluteUri;",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\ExtensionMethods\\NavigationExtensions.cs",
+            "snippet": "return navigation.ToAbsoluteUri(url).AbsoluteUri;",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "2104"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 58,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "18dd9ccd-8e19-48a1-901d-668179dbe9dc",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "return navigation.ToAbsoluteUri(url).AbsoluteUri;",
+              "protected": "P:System.Uri.AbsoluteUri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\ExtensionMethods\\NavigationExtensions.cs",
+            "snippet": "return navigation.ToAbsoluteUri(url).AbsoluteUri;",
+            "protectedSnippet": "P:System.Uri.AbsoluteUri",
+            "label": "P:System.Uri.AbsoluteUri",
+            "properties": {
+              "CharCount": "2104"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 58,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "d801dfa5-dfe9-4f9b-b8e2-dff3b22d4cf6",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var baseHubUrl = appSettings.Value.BaseHubUrl\r\n                         ?? navigationManager.ToAbsoluteUri(\u0022/\u0022).AbsoluteUri;",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Services\\NotificationService.cs",
+            "snippet": "var baseHubUrl = appSettings.Value.BaseHubUrl\r\n                         ?? navigationManager.ToAbsoluteUri(\u0022/\u0022).AbsoluteUri;",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "7428"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 31,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "5c20fd00-ffe4-4775-b5e5-c672e0a24455",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var baseHubUrl = appSettings.Value.BaseHubUrl\r\n                         ?? navigationManager.ToAbsoluteUri(\u0022/\u0022).AbsoluteUri;",
+              "protected": "P:System.Uri.AbsoluteUri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Services\\NotificationService.cs",
+            "snippet": "var baseHubUrl = appSettings.Value.BaseHubUrl\r\n                         ?? navigationManager.ToAbsoluteUri(\u0022/\u0022).AbsoluteUri;",
+            "protectedSnippet": "P:System.Uri.AbsoluteUri",
+            "label": "P:System.Uri.AbsoluteUri",
+            "properties": {
+              "CharCount": "7428"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 31,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "6f22c62c-8085-4860-ab9c-4072913f8fb8",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var baseHubUrl = appSettings.Value.BaseHubUrl\r\n                         ?? navigationManager.ToAbsoluteUri(\u0022/\u0022).AbsoluteUri;",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Services\\NotificationService.cs",
+            "snippet": "var baseHubUrl = appSettings.Value.BaseHubUrl\r\n                         ?? navigationManager.ToAbsoluteUri(\u0022/\u0022).AbsoluteUri;",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "7428"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 31,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "7e983f1f-6b8b-4f78-a5a7-bffea0861f02",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var baseHubUrl = appSettings.Value.BaseHubUrl\r\n                         ?? navigationManager.ToAbsoluteUri(\u0022/\u0022).AbsoluteUri;",
+              "protected": "P:System.Uri.AbsoluteUri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Services\\NotificationService.cs",
+            "snippet": "var baseHubUrl = appSettings.Value.BaseHubUrl\r\n                         ?? navigationManager.ToAbsoluteUri(\u0022/\u0022).AbsoluteUri;",
+            "protectedSnippet": "P:System.Uri.AbsoluteUri",
+            "label": "P:System.Uri.AbsoluteUri",
+            "properties": {
+              "CharCount": "7428"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 31,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "c31bed26-2d68-484c-bf69-adeac336dfe5",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "navigationManager.ToAbsoluteUri(navigationManager.Uri)",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Identity\\IdentityRedirectManager.cs",
+            "snippet": "navigationManager.ToAbsoluteUri(navigationManager.Uri)",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "2256"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 50,
+            "column": 34
+          }
+        },
+        {
+          "incidentId": "c90641cc-d53f-4c85-b406-fc6623bb4ef6",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var uriWithoutQuery = navigationManager.ToAbsoluteUri(uri).GetLeftPart(UriPartial.Path);",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Identity\\IdentityRedirectManager.cs",
+            "snippet": "var uriWithoutQuery = navigationManager.ToAbsoluteUri(uri).GetLeftPart(UriPartial.Path);",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "2256"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 38,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "38a6728f-856a-4d08-981b-39644f4062b6",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Infrastructure\\Atoms.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "if (!Uri.IsWellFormedUriString(uri, UriKind.Relative))\r\n        {\r\n            uri = navigationManager.ToBaseRelativePath(uri);\r\n        }",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Infrastructure\\Identity\\IdentityRedirectManager.cs",
+            "snippet": "if (!Uri.IsWellFormedUriString(uri, UriKind.Relative))\r\n        {\r\n            uri = navigationManager.ToBaseRelativePath(uri);\r\n        }",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "2256"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 24,
+            "column": 8
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "test\\Atoms.UnitTests\\Atoms.UnitTests.csproj",
+      "startingProject": true,
+      "issues": 2,
+      "storyPoints": 4,
+      "properties": {
+        "appName": "Atoms.UnitTests",
+        "projectKind": "DotNetCoreApp",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": true,
+        "numberOfFiles": 42,
+        "numberOfCodeFiles": 42,
+        "linesTotal": 3589,
+        "linesOfCode": 3589,
+        "totalApiScanned": 7422,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "8f1ae7d7-a590-4e9e-836e-8abc56dc5016",
+          "ruleId": "NuGet.0002",
+          "projectPath": "test\\Atoms.UnitTests\\Atoms.UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Data.Sqlite.Core, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.Data.Sqlite.Core, and replace with new package Microsoft.Data.Sqlite.Core 10.0.15",
+              "protected": "Microsoft.Data.Sqlite.Core, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.Data.Sqlite.Core, and replace with new package Microsoft.Data.Sqlite.Core 10.0.15"
+            },
+            "kind": "File",
+            "path": "test\\Atoms.UnitTests\\Atoms.UnitTests.csproj",
+            "snippet": "Microsoft.Data.Sqlite.Core, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.Data.Sqlite.Core, and replace with new package Microsoft.Data.Sqlite.Core 10.0.15",
+            "protectedSnippet": "Microsoft.Data.Sqlite.Core, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.Data.Sqlite.Core, and replace with new package Microsoft.Data.Sqlite.Core 10.0.15",
+            "label": "Microsoft.Data.Sqlite.Core 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.Data.Sqlite.Core",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "d3515d69-aa46-4869-ae17-cae61ed366c7",
+          "ruleId": "NuGet.0002",
+          "projectPath": "test\\Atoms.UnitTests\\Atoms.UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.InMemory, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.InMemory, and replace with new package Microsoft.EntityFrameworkCore.InMemory 10.0.15",
+              "protected": "Microsoft.EntityFrameworkCore.InMemory, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.InMemory, and replace with new package Microsoft.EntityFrameworkCore.InMemory 10.0.15"
+            },
+            "kind": "File",
+            "path": "test\\Atoms.UnitTests\\Atoms.UnitTests.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.InMemory, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.InMemory, and replace with new package Microsoft.EntityFrameworkCore.InMemory 10.0.15",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.InMemory, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.InMemory, and replace with new package Microsoft.EntityFrameworkCore.InMemory 10.0.15",
+            "label": "Microsoft.EntityFrameworkCore.InMemory 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.InMemory",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "0e2057d8-e6cf-4c33-96a1-36836b8e828d",
+          "ruleId": "NuGet.0002",
+          "projectPath": "test\\Atoms.UnitTests\\Atoms.UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.Sqlite, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Sqlite, and replace with new package Microsoft.EntityFrameworkCore.Sqlite 10.0.15",
+              "protected": "Microsoft.EntityFrameworkCore.Sqlite, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Sqlite, and replace with new package Microsoft.EntityFrameworkCore.Sqlite 10.0.15"
+            },
+            "kind": "File",
+            "path": "test\\Atoms.UnitTests\\Atoms.UnitTests.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.Sqlite, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Sqlite, and replace with new package Microsoft.EntityFrameworkCore.Sqlite 10.0.15",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.Sqlite, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Sqlite, and replace with new package Microsoft.EntityFrameworkCore.Sqlite 10.0.15",
+            "label": "Microsoft.EntityFrameworkCore.Sqlite 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.Sqlite",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "4b6508e9-3d9e-4387-93f7-0818d3b4a613",
+          "ruleId": "Project.0002",
+          "projectPath": "test\\Atoms.UnitTests\\Atoms.UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net10.0\nRecommended target framework: net11.0",
+              "protected": "Current target framework: net10.0\nRecommended target framework: net11.0"
+            },
+            "kind": "File",
+            "path": "test\\Atoms.UnitTests\\Atoms.UnitTests.csproj",
+            "snippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "protectedSnippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "properties": {
+              "CurrentTargetFramework": "net10.0",
+              "RecommendedTargetFramework": "net11.0"
+            }
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "src\\Atoms.UseCases\\Atoms.UseCases.csproj",
+      "startingProject": true,
+      "issues": 1,
+      "storyPoints": 1,
+      "properties": {
+        "appName": "Atoms.UseCases",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 36,
+        "numberOfCodeFiles": 36,
+        "linesTotal": 802,
+        "linesOfCode": 802,
+        "totalApiScanned": 844,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "e94b6e08-a6df-47b2-8e19-13b04b810799",
+          "ruleId": "Project.0002",
+          "projectPath": "src\\Atoms.UseCases\\Atoms.UseCases.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net10.0\nRecommended target framework: net11.0",
+              "protected": "Current target framework: net10.0\nRecommended target framework: net11.0"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.UseCases\\Atoms.UseCases.csproj",
+            "snippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "protectedSnippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "properties": {
+              "CurrentTargetFramework": "net10.0",
+              "RecommendedTargetFramework": "net11.0"
+            }
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "src\\Atoms.Web\\Atoms.Web.csproj",
+      "startingProject": true,
+      "issues": 6,
+      "storyPoints": 30,
+      "properties": {
+        "appName": "Atoms.Web",
+        "projectKind": "AspNetCore",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 81,
+        "numberOfCodeFiles": 25,
+        "linesTotal": 24352,
+        "linesOfCode": 2080,
+        "totalApiScanned": 7124,
+        "minLinesOfCodeToChange": 23,
+        "maxLinesOfCodeToChange": 23
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "a8aa219c-0f5d-4662-ad74-58f99c72b612",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.15",
+              "protected": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Atoms.Web.csproj",
+            "snippet": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.DataProtection.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.15",
+            "label": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.DataProtection.EntityFrameworkCore",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "92b8492e-82e1-4044-b26a-d2523db89889",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 10.0.15",
+              "protected": "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Atoms.Web.csproj",
+            "snippet": "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 10.0.15",
+            "label": "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "472132fc-145e-4d99-bfa5-4eb3daa913ae",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15",
+              "protected": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Atoms.Web.csproj",
+            "snippet": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.Identity.EntityFrameworkCore, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Identity.EntityFrameworkCore, and replace with new package Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.15",
+            "label": "Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "c969d03e-773f-4eae-9993-fb814f14ac5d",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15",
+              "protected": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Atoms.Web.csproj",
+            "snippet": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15",
+            "protectedSnippet": "Microsoft.AspNetCore.SignalR.Client, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SignalR.Client, and replace with new package Microsoft.AspNetCore.SignalR.Client 10.0.15",
+            "label": "Microsoft.AspNetCore.SignalR.Client 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.SignalR.Client",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "cfafbe5d-46a4-4ac7-a648-1aba4dd61419",
+          "ruleId": "NuGet.0002",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.Design, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Design, and replace with new package Microsoft.EntityFrameworkCore.Design 10.0.15",
+              "protected": "Microsoft.EntityFrameworkCore.Design, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Design, and replace with new package Microsoft.EntityFrameworkCore.Design 10.0.15"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Atoms.Web.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.Design, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Design, and replace with new package Microsoft.EntityFrameworkCore.Design 10.0.15",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.Design, 10.0.10\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Design, and replace with new package Microsoft.EntityFrameworkCore.Design 10.0.15",
+            "label": "Microsoft.EntityFrameworkCore.Design 10.0.10",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.Design",
+              "PackageVersion": "10.0.10",
+              "PackageNewVersion": "10.0.15",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "35599b68-c46d-48d2-b361-544b6132e4eb",
+          "ruleId": "NuGet.0001",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.VisualStudio.Azure.Containers.Tools.Targets, 1.23.0\n\nRecommendation:\n\nNo supported version found",
+              "protected": "Microsoft.VisualStudio.Azure.Containers.Tools.Targets, 1.23.0\n\nRecommendation:\n\nNo supported version found"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Atoms.Web.csproj",
+            "snippet": "Microsoft.VisualStudio.Azure.Containers.Tools.Targets, 1.23.0\n\nRecommendation:\n\nNo supported version found",
+            "protectedSnippet": "Microsoft.VisualStudio.Azure.Containers.Tools.Targets, 1.23.0\n\nRecommendation:\n\nNo supported version found",
+            "label": "Microsoft.VisualStudio.Azure.Containers.Tools.Targets 1.23.0",
+            "properties": {
+              "PackageId": "Microsoft.VisualStudio.Azure.Containers.Tools.Targets",
+              "PackageVersion": "1.23.0",
+              "PackageNewVersion": null,
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "c925737f-6c11-42f1-9a88-9fcdb4172120",
+          "ruleId": "Project.0002",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net10.0\nRecommended target framework: net11.0",
+              "protected": "Current target framework: net10.0\nRecommended target framework: net11.0"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Atoms.Web.csproj",
+            "snippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "protectedSnippet": "Current target framework: net10.0\nRecommended target framework: net11.0",
+            "properties": {
+              "CurrentTargetFramework": "net10.0",
+              "RecommendedTargetFramework": "net11.0"
+            }
+          }
+        },
+        {
+          "incidentId": "34cc9dcb-1447-4cb8-95f4-f48d9b2d7635",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "__builder.AddAttribute(43, \u0022href\u0022, \r\n#nullable restore\r\n#line (60,43)-(60,57) \u0022C:\\Users\\paulm\\source\\repos\\atoms-blazor\\src\\Atoms.Web\\Components\\Shared\\Board.razor\u0022\r\ninviteLink.Url\r\n\r\n#line default\r\n#line hidden\r\n#nullable disable\r\n            );",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\obj\\Debug\\net10.0\\Microsoft.CodeAnalysis.Razor.Compiler\\Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator\\Components/Shared/Board_razor.g.cs",
+            "snippet": "__builder.AddAttribute(43, \u0022href\u0022, \r\n#nullable restore\r\n#line (60,43)-(60,57) \u0022C:\\Users\\paulm\\source\\repos\\atoms-blazor\\src\\Atoms.Web\\Components\\Shared\\Board.razor\u0022\r\ninviteLink.Url\r\n\r\n#line default\r\n#line hidden\r\n#nullable disable\r\n            );",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "20974"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 549,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "59c92d34-1d4b-41e4-8112-829c3fd12711",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: Ambiguous overload resolution affecting StringValues implicit operators ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "return string.Join(\u0022 \u0022,\r\n            [\r\n                \u0022explosion\u0022,\r\n                Data.Explosion switch\r\n                {\r\n                    ExplosionState.Before =\u003E \u0022start\u0022,\r\n                    ExplosionState.After =\u003E \u0022end\u0022,\r\n                    _ =\u003E \u0022\u0022\r\n                }\r\n            ]);",
+              "protected": "M:System.String.Join(System.String,System.ReadOnlySpan{System.String})"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Shared\\Cell.razor.cs",
+            "snippet": "return string.Join(\u0022 \u0022,\r\n            [\r\n                \u0022explosion\u0022,\r\n                Data.Explosion switch\r\n                {\r\n                    ExplosionState.Before =\u003E \u0022start\u0022,\r\n                    ExplosionState.After =\u003E \u0022end\u0022,\r\n                    _ =\u003E \u0022\u0022\r\n                }\r\n            ]);",
+            "protectedSnippet": "M:System.String.Join(System.String,System.ReadOnlySpan{System.String})",
+            "label": "M:System.String.Join(System.String,System.ReadOnlySpan{System.String})",
+            "properties": {
+              "CharCount": "1849"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/ambiguous-overload.md",
+                "isCustom": false
+              }
+            ],
+            "line": 60,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "46b1d768-971b-4c86-8017-652abefd0e99",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: Ambiguous overload resolution affecting StringValues implicit operators ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "return string.Join(\u0022 \u0022, \r\n            [\r\n                \u0022atom\u0022,\r\n                $\u0022atom{atom}\u0022,\r\n                PlayerClassName,\r\n                $\u0022pos{pos}\u0022\r\n            ]);",
+              "protected": "M:System.String.Join(System.String,System.ReadOnlySpan{System.String})"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Shared\\Cell.razor.cs",
+            "snippet": "return string.Join(\u0022 \u0022, \r\n            [\r\n                \u0022atom\u0022,\r\n                $\u0022atom{atom}\u0022,\r\n                PlayerClassName,\r\n                $\u0022pos{pos}\u0022\r\n            ]);",
+            "protectedSnippet": "M:System.String.Join(System.String,System.ReadOnlySpan{System.String})",
+            "label": "M:System.String.Join(System.String,System.ReadOnlySpan{System.String})",
+            "properties": {
+              "CharCount": "1849"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/ambiguous-overload.md",
+                "isCustom": false
+              }
+            ],
+            "line": 49,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "638269d7-d189-4968-b248-c61ce90aa709",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: Ambiguous overload resolution affecting StringValues implicit operators ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "string.Join(\u0022 \u0022,\r\n            [ \r\n                \u0022cell\u0022,\r\n                CanHighlight \u0026\u0026 Data.Highlighted ? \u0022highlighted\u0022 : \u0022filled\u0022\r\n            ])",
+              "protected": "M:System.String.Join(System.String,System.ReadOnlySpan{System.String})"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Shared\\Cell.razor.cs",
+            "snippet": "string.Join(\u0022 \u0022,\r\n            [ \r\n                \u0022cell\u0022,\r\n                CanHighlight \u0026\u0026 Data.Highlighted ? \u0022highlighted\u0022 : \u0022filled\u0022\r\n            ])",
+            "protectedSnippet": "M:System.String.Join(System.String,System.ReadOnlySpan{System.String})",
+            "label": "M:System.String.Join(System.String,System.ReadOnlySpan{System.String})",
+            "properties": {
+              "CharCount": "1849"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/ambiguous-overload.md",
+                "isCustom": false
+              }
+            ],
+            "line": 34,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "7ca03fa2-13fb-4c48-a3e4-34463baf9030",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "EmailConfirmationLink = NavigationManager.GetUriWithQueryParameters(\r\n                NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n                new Dictionary\u003Cstring, object?\u003E \r\n                {\r\n                    [\u0022userId\u0022] = userId, \r\n                    [\u0022code\u0022] = code, \r\n                    [\u0022returnUrl\u0022] = ReturnUrl \r\n                });",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\RegisterConfirmation.razor.cs",
+            "snippet": "EmailConfirmationLink = NavigationManager.GetUriWithQueryParameters(\r\n                NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n                new Dictionary\u003Cstring, object?\u003E \r\n                {\r\n                    [\u0022userId\u0022] = userId, \r\n                    [\u0022code\u0022] = code, \r\n                    [\u0022returnUrl\u0022] = ReturnUrl \r\n                });",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "2063"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 49,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "6a87cf43-e3cf-44e6-9d5f-8f61d93f048f",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "EmailConfirmationLink = NavigationManager.GetUriWithQueryParameters(\r\n                NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n                new Dictionary\u003Cstring, object?\u003E \r\n                {\r\n                    [\u0022userId\u0022] = userId, \r\n                    [\u0022code\u0022] = code, \r\n                    [\u0022returnUrl\u0022] = ReturnUrl \r\n                });",
+              "protected": "P:System.Uri.AbsoluteUri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\RegisterConfirmation.razor.cs",
+            "snippet": "EmailConfirmationLink = NavigationManager.GetUriWithQueryParameters(\r\n                NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n                new Dictionary\u003Cstring, object?\u003E \r\n                {\r\n                    [\u0022userId\u0022] = userId, \r\n                    [\u0022code\u0022] = code, \r\n                    [\u0022returnUrl\u0022] = ReturnUrl \r\n                });",
+            "protectedSnippet": "P:System.Uri.AbsoluteUri",
+            "label": "P:System.Uri.AbsoluteUri",
+            "properties": {
+              "CharCount": "2063"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 49,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "e20c117d-fa11-4f81-a143-22333dcd2bb4",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: Nullable.GetUnderlyingType throws for custom Type subclasses ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "throw new NotSupportedException(\u0022The default UI requires a user store with email support.\u0022);",
+              "protected": "T:System.NotSupportedException"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\Register.razor.cs",
+            "snippet": "throw new NotSupportedException(\u0022The default UI requires a user store with email support.\u0022);",
+            "protectedSnippet": "T:System.NotSupportedException",
+            "label": "T:System.NotSupportedException",
+            "properties": {
+              "CharCount": "5216"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/11/nullable-getunderlyingtype-throws.md",
+                "isCustom": false
+              }
+            ],
+            "line": 127,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "4c9dd472-d32a-4a76-bdb6-dfb0990aa1c6",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: Passkey sign-in enforces email/phone confirmation and lockout ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "if (UserManager.Options.SignIn.RequireConfirmedAccount)\r\n        {\r\n            RedirectManager.RedirectTo(\r\n                \u0022Account/RegisterConfirmation\u0022,\r\n                new() { [\u0022email\u0022] = Input.Email, [\u0022returnUrl\u0022] = ReturnUrl });\r\n        }",
+              "protected": "P:Microsoft.AspNetCore.Identity.SignInOptions.RequireConfirmedAccount"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\Register.razor.cs",
+            "snippet": "if (UserManager.Options.SignIn.RequireConfirmedAccount)\r\n        {\r\n            RedirectManager.RedirectTo(\r\n                \u0022Account/RegisterConfirmation\u0022,\r\n                new() { [\u0022email\u0022] = Input.Email, [\u0022returnUrl\u0022] = ReturnUrl });\r\n        }",
+            "protectedSnippet": "P:Microsoft.AspNetCore.Identity.SignInOptions.RequireConfirmedAccount",
+            "label": "P:Microsoft.AspNetCore.Identity.SignInOptions.RequireConfirmedAccount",
+            "properties": {
+              "CharCount": "5216"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/breaking-changes/11/passkey-signin-enforces-confirmation-lockout.md",
+                "isCustom": false
+              }
+            ],
+            "line": 98,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "5717e75e-4a53-4ecc-bed9-87a4e61a4bc4",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022userId\u0022] = userId, [\u0022code\u0022] = code, [\u0022returnUrl\u0022] = ReturnUrl });",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\Register.razor.cs",
+            "snippet": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022userId\u0022] = userId, [\u0022code\u0022] = code, [\u0022returnUrl\u0022] = ReturnUrl });",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "5216"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 92,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "28f2f9e8-f521-4388-b11e-f92b2a68fb99",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022userId\u0022] = userId, [\u0022code\u0022] = code, [\u0022returnUrl\u0022] = ReturnUrl });",
+              "protected": "P:System.Uri.AbsoluteUri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\Register.razor.cs",
+            "snippet": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022userId\u0022] = userId, [\u0022code\u0022] = code, [\u0022returnUrl\u0022] = ReturnUrl });",
+            "protectedSnippet": "P:System.Uri.AbsoluteUri",
+            "label": "P:System.Uri.AbsoluteUri",
+            "properties": {
+              "CharCount": "5216"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 92,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "c07b7eea-d3bc-4f88-b53c-b3fb9d2d992e",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ResetPassword\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022code\u0022] = code });",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\ForgotPassword.razor.cs",
+            "snippet": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ResetPassword\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022code\u0022] = code });",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "1939"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 39,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "81159798-677a-4369-95e6-9e80c0c8c606",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ResetPassword\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022code\u0022] = code });",
+              "protected": "P:System.Uri.AbsoluteUri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\ForgotPassword.razor.cs",
+            "snippet": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ResetPassword\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022code\u0022] = code });",
+            "protectedSnippet": "P:System.Uri.AbsoluteUri",
+            "label": "P:System.Uri.AbsoluteUri",
+            "properties": {
+              "CharCount": "1939"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 39,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "a99958b7-070b-4336-a15e-6146b2368706",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022userId\u0022] = userId, [\u0022code\u0022] = code });",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\ResendEmailConfirmation.razor.cs",
+            "snippet": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022userId\u0022] = userId, [\u0022code\u0022] = code });",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "properties": {
+              "CharCount": "1757"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 38,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "50e76222-e5f4-4fcc-9923-fc4bd2df80ad",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022userId\u0022] = userId, [\u0022code\u0022] = code });",
+              "protected": "P:System.Uri.AbsoluteUri"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Components\\Account\\Pages\\ResendEmailConfirmation.razor.cs",
+            "snippet": "var callbackUrl = NavigationManager.GetUriWithQueryParameters(\r\n            NavigationManager.ToAbsoluteUri(\u0022Account/ConfirmEmail\u0022).AbsoluteUri,\r\n            new Dictionary\u003Cstring, object?\u003E { [\u0022userId\u0022] = userId, [\u0022code\u0022] = code });",
+            "protectedSnippet": "P:System.Uri.AbsoluteUri",
+            "label": "P:System.Uri.AbsoluteUri",
+            "properties": {
+              "CharCount": "1757"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 38,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "3402e91d-1fd2-4381-aff6-7dd55dbdb125",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: Exception diagnostics are suppressed when IExceptionHandler.TryHandleAsync returns true ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "app.UseExceptionHandler(\u0022/Error\u0022, createScopeForErrors: true);",
+              "protected": "M:Microsoft.AspNetCore.Builder.ExceptionHandlerExtensions.UseExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Boolean)"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Program.cs",
+            "snippet": "app.UseExceptionHandler(\u0022/Error\u0022, createScopeForErrors: true);",
+            "protectedSnippet": "M:Microsoft.AspNetCore.Builder.ExceptionHandlerExtensions.UseExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Boolean)",
+            "label": "M:Microsoft.AspNetCore.Builder.ExceptionHandlerExtensions.UseExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Boolean)",
+            "properties": {
+              "CharCount": "9876"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/aspnet-core/10/exception-handler-diagnostics-suppressed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 224,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "306d4fae-504d-4f5d-aa6c-2058e9444bb5",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: Response compression always emits Vary: Accept-Encoding ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "app.UseResponseCompression();",
+              "protected": "M:Microsoft.AspNetCore.Builder.ResponseCompressionBuilderExtensions.UseResponseCompression(Microsoft.AspNetCore.Builder.IApplicationBuilder)"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Program.cs",
+            "snippet": "app.UseResponseCompression();",
+            "protectedSnippet": "M:Microsoft.AspNetCore.Builder.ResponseCompressionBuilderExtensions.UseResponseCompression(Microsoft.AspNetCore.Builder.IApplicationBuilder)",
+            "label": "M:Microsoft.AspNetCore.Builder.ResponseCompressionBuilderExtensions.UseResponseCompression(Microsoft.AspNetCore.Builder.IApplicationBuilder)",
+            "properties": {
+              "CharCount": "9876"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/breaking-changes/11/response-compression-always-vary.md",
+                "isCustom": false
+              }
+            ],
+            "line": 218,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "785db82e-3478-4e32-8d61-e71783b154f4",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: Forwarded Headers Middleware ignores X-Forwarded-* headers from unknown proxies ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "app.UseForwardedHeaders(forwardedHeaders);",
+              "protected": "M:Microsoft.AspNetCore.Builder.ForwardedHeadersExtensions.UseForwardedHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Builder.ForwardedHeadersOptions)"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Program.cs",
+            "snippet": "app.UseForwardedHeaders(forwardedHeaders);",
+            "protectedSnippet": "M:Microsoft.AspNetCore.Builder.ForwardedHeadersExtensions.UseForwardedHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Builder.ForwardedHeadersOptions)",
+            "label": "M:Microsoft.AspNetCore.Builder.ForwardedHeadersExtensions.UseForwardedHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Builder.ForwardedHeadersOptions)",
+            "properties": {
+              "CharCount": "9876"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/aspnet-core/8.0/forwarded-headers-unknown-proxies.md",
+                "isCustom": false
+              }
+            ],
+            "line": 211,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "752b3c10-e77c-4751-9edc-078b6bde4355",
+          "ruleId": "Api.0001",
+          "description": "Breaking change: DynamicallyAccessedMembers annotation removed from trim-unsafe configuration APIs ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services.Configure\u003CAppSettings\u003E(\r\n        builder.Configuration.GetSection(\u0022AppSettings\u0022));",
+              "protected": "M:Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions.Configure\u0060\u00601(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Program.cs",
+            "snippet": "builder.Services.Configure\u003CAppSettings\u003E(\r\n        builder.Configuration.GetSection(\u0022AppSettings\u0022));",
+            "protectedSnippet": "M:Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions.Configure\u0060\u00601(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)",
+            "label": "M:Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions.Configure\u0060\u00601(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)",
+            "properties": {
+              "CharCount": "9876"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/extensions/10.0/dynamically-accessed-members-configuration.md",
+                "isCustom": false
+              }
+            ],
+            "line": 161,
+            "column": 4
+          }
+        },
+        {
+          "incidentId": "d7bf13c6-4411-4dc3-9ecd-392b584c32a0",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: Passkey sign-in enforces email/phone confirmation and lockout ",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services.AddIdentityCore\u003CApplicationUser\u003E(\r\n        options =\u003E options.SignIn.RequireConfirmedAccount = true)\r\n        .AddEntityFrameworkStores\u003CApplicationIdentityDbContext\u003E()\r\n        .AddSignInManager()\r\n        .AddDefaultTokenProviders();",
+              "protected": "P:Microsoft.AspNetCore.Identity.SignInOptions.RequireConfirmedAccount"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Program.cs",
+            "snippet": "builder.Services.AddIdentityCore\u003CApplicationUser\u003E(\r\n        options =\u003E options.SignIn.RequireConfirmedAccount = true)\r\n        .AddEntityFrameworkStores\u003CApplicationIdentityDbContext\u003E()\r\n        .AddSignInManager()\r\n        .AddDefaultTokenProviders();",
+            "protectedSnippet": "P:Microsoft.AspNetCore.Identity.SignInOptions.RequireConfirmedAccount",
+            "label": "P:Microsoft.AspNetCore.Identity.SignInOptions.RequireConfirmedAccount",
+            "properties": {
+              "CharCount": "9876"
+            },
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/breaking-changes/11/passkey-signin-enforces-confirmation-lockout.md",
+                "isCustom": false
+              }
+            ],
+            "line": 86,
+            "column": 4
+          }
+        },
+        {
+          "incidentId": "c4b20bd5-51ce-45a8-803b-727e7f690c7f",
+          "ruleId": "Api.0002",
+          "description": "API is available in package Microsoft.AspNetCore.Identity.EntityFrameworkCore, 8.0.6. Add package reference to Microsoft.AspNetCore.Identity.EntityFrameworkCore, 8.0.6",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services.AddIdentityCore\u003CApplicationUser\u003E(\r\n        options =\u003E options.SignIn.RequireConfirmedAccount = true)\r\n        .AddEntityFrameworkStores\u003CApplicationIdentityDbContext\u003E()\r\n        .AddSignInManager()\r\n        .AddDefaultTokenProviders();",
+              "protected": "T:Microsoft.Extensions.DependencyInjection.IdentityEntityFrameworkBuilderExtensions"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Program.cs",
+            "snippet": "builder.Services.AddIdentityCore\u003CApplicationUser\u003E(\r\n        options =\u003E options.SignIn.RequireConfirmedAccount = true)\r\n        .AddEntityFrameworkStores\u003CApplicationIdentityDbContext\u003E()\r\n        .AddSignInManager()\r\n        .AddDefaultTokenProviders();",
+            "protectedSnippet": "T:Microsoft.Extensions.DependencyInjection.IdentityEntityFrameworkBuilderExtensions",
+            "label": "T:Microsoft.Extensions.DependencyInjection.IdentityEntityFrameworkBuilderExtensions",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+              "PackageNewVersion": "8.0.6",
+              "CharCount": "9876"
+            },
+            "line": 86,
+            "column": 4
+          }
+        },
+        {
+          "incidentId": "e669c643-e8ab-46b2-8b94-bc8052806b38",
+          "ruleId": "Api.0002",
+          "description": "API is available in package Microsoft.AspNetCore.Identity.EntityFrameworkCore, 8.0.6. Add package reference to Microsoft.AspNetCore.Identity.EntityFrameworkCore, 8.0.6",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services.AddIdentityCore\u003CApplicationUser\u003E(\r\n        options =\u003E options.SignIn.RequireConfirmedAccount = true)\r\n        .AddEntityFrameworkStores\u003CApplicationIdentityDbContext\u003E()\r\n        .AddSignInManager()\r\n        .AddDefaultTokenProviders();",
+              "protected": "M:Microsoft.Extensions.DependencyInjection.IdentityEntityFrameworkBuilderExtensions.AddEntityFrameworkStores\u0060\u00601(Microsoft.AspNetCore.Identity.IdentityBuilder)"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Program.cs",
+            "snippet": "builder.Services.AddIdentityCore\u003CApplicationUser\u003E(\r\n        options =\u003E options.SignIn.RequireConfirmedAccount = true)\r\n        .AddEntityFrameworkStores\u003CApplicationIdentityDbContext\u003E()\r\n        .AddSignInManager()\r\n        .AddDefaultTokenProviders();",
+            "protectedSnippet": "M:Microsoft.Extensions.DependencyInjection.IdentityEntityFrameworkBuilderExtensions.AddEntityFrameworkStores\u0060\u00601(Microsoft.AspNetCore.Identity.IdentityBuilder)",
+            "label": "M:Microsoft.Extensions.DependencyInjection.IdentityEntityFrameworkBuilderExtensions.AddEntityFrameworkStores\u0060\u00601(Microsoft.AspNetCore.Identity.IdentityBuilder)",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+              "PackageNewVersion": "8.0.6",
+              "CharCount": "9876"
+            },
+            "line": 86,
+            "column": 4
+          }
+        },
+        {
+          "incidentId": "7c01e876-0808-4d9f-a9fd-ef2cdffa65b6",
+          "ruleId": "Api.0002",
+          "description": "API is available in package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, 8.0.6. Add package reference to Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, 8.0.6",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services.AddDatabaseDeveloperPageExceptionFilter();",
+              "protected": "T:Microsoft.Extensions.DependencyInjection.DatabaseDeveloperPageExceptionFilterServiceExtensions"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Program.cs",
+            "snippet": "builder.Services.AddDatabaseDeveloperPageExceptionFilter();",
+            "protectedSnippet": "T:Microsoft.Extensions.DependencyInjection.DatabaseDeveloperPageExceptionFilterServiceExtensions",
+            "label": "T:Microsoft.Extensions.DependencyInjection.DatabaseDeveloperPageExceptionFilterServiceExtensions",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore",
+              "PackageNewVersion": "8.0.6",
+              "CharCount": "9876"
+            },
+            "line": 83,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "f3adbed0-6e5a-49f2-b50d-730b47313cef",
+          "ruleId": "Api.0002",
+          "description": "API is available in package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, 8.0.6. Add package reference to Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, 8.0.6",
+          "projectPath": "src\\Atoms.Web\\Atoms.Web.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services.AddDatabaseDeveloperPageExceptionFilter();",
+              "protected": "M:Microsoft.Extensions.DependencyInjection.DatabaseDeveloperPageExceptionFilterServiceExtensions.AddDatabaseDeveloperPageExceptionFilter(Microsoft.Extensions.DependencyInjection.IServiceCollection)"
+            },
+            "kind": "File",
+            "path": "src\\Atoms.Web\\Program.cs",
+            "snippet": "builder.Services.AddDatabaseDeveloperPageExceptionFilter();",
+            "protectedSnippet": "M:Microsoft.Extensions.DependencyInjection.DatabaseDeveloperPageExceptionFilterServiceExtensions.AddDatabaseDeveloperPageExceptionFilter(Microsoft.Extensions.DependencyInjection.IServiceCollection)",
+            "label": "M:Microsoft.Extensions.DependencyInjection.DatabaseDeveloperPageExceptionFilterServiceExtensions.AddDatabaseDeveloperPageExceptionFilter(Microsoft.Extensions.DependencyInjection.IServiceCollection)",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore",
+              "PackageNewVersion": "8.0.6",
+              "CharCount": "9876"
+            },
+            "line": 83,
+            "column": 8
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "docker-compose.dcproj",
+      "startingProject": true,
+      "issues": 0,
+      "storyPoints": 0,
+      "properties": {
+        "appName": "docker-compose",
+        "projectKind": "DotNetCoreApp",
+        "frameworks": [],
+        "languages": [
+          ""
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 0,
+        "numberOfCodeFiles": 0,
+        "linesTotal": 0,
+        "linesOfCode": 0,
+        "totalApiScanned": 0,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [],
+      "features": []
+    }
+  ],
+  "rules": {
+    "NuGet.0002": {
+      "id": "NuGet.0002",
+      "isFeature": false,
+      "description": "NuGet package upgrade is recommended for selected target framework.\n\nStandard .NET packages are recommended to have versions matching version of .NET that project targets.\n\nSome other packages also are known to work better for selected target frameworks.",
+      "label": "NuGet package upgrade is recommended",
+      "severity": "Potential",
+      "effort": 1,
+      "links": [
+        {
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262530",
+          "isCustom": false
+        }
+      ]
+    },
+    "Project.0002": {
+      "id": "Project.0002",
+      "isFeature": false,
+      "description": "Project\u0027s target framework(s) needs to be changed to the new target framework that you selected for this upgrade.\n\nDuring upgrade target framework will be adjusted to corresponding platform when applicable. In some cases project would result in multiple target frameworks after the upgrade if it was using features that now have their own platforms in modern .NET frameworks (windows, iOS, Android etc).",
+      "label": "Project\u0027s target framework(s) needs to be changed",
+      "severity": "Mandatory",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Overview of porting from .NET Framework to .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2265227",
+          "isCustom": false
+        },
+        {
+          "title": ".NET project SDKs",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2265226",
+          "isCustom": false
+        }
+      ]
+    },
+    "Api.0003": {
+      "id": "Api.0003",
+      "isFeature": false,
+      "description": "API has a behavioral change in selected .NET version: code and binaries may behave differently at runtime without needing recompilation, but the new behavior might be undesirable and require updates.",
+      "label": "Behavioral change in selected .NET version",
+      "severity": "Potential",
+      "effort": 1
+    },
+    "Api.0002": {
+      "id": "Api.0002",
+      "isFeature": false,
+      "description": "API is source incompatible for selected .NET version: requires code changes to compile successfully when targeting a new version, such as removing obsolete APIs or changing method signatures.",
+      "label": "Source incompatible for selected .NET version",
+      "severity": "Potential",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Breaking changes in .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262679",
+          "isCustom": false
+        }
+      ]
+    },
+    "NuGet.0001": {
+      "id": "NuGet.0001",
+      "isFeature": false,
+      "description": "NuGet package is incompatible with selected target framework.\n\nPackage needs to be upgraded to a version supporting selected project target framework. If there no new package versions supporting new target framework, different package needs to be used and all code needs to be upgraded to new API.",
+      "label": "NuGet package is incompatible",
+      "severity": "Mandatory",
+      "effort": 1,
+      "links": [
+        {
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262529",
+          "isCustom": false
+        }
+      ]
+    },
+    "Api.0001": {
+      "id": "Api.0001",
+      "isFeature": false,
+      "description": "API is binary incompatible for selected .NET version: affects existing binaries, often requiring recompilation, because the API has changed in a way that prevents older binaries from loading or executing.",
+      "label": "Binary incompatible for selected .NET version",
+      "severity": "Mandatory",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Breaking changes in .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262679",
+          "isCustom": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,45 @@
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Atoms.Components' Or '$(MSBuildProjectName)' == 'Atoms.Core' Or '$(MSBuildProjectName)' == 'Atoms.Infrastructure' Or '$(MSBuildProjectName)' == 'Atoms.UseCases' Or '$(MSBuildProjectName)' == 'Atoms.Web' Or '$(MSBuildProjectName)' == 'Atoms.UnitTests'">
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(ManagePackageVersionsCentrally)' == 'true'">
+    <PackageVersion Include="Ardalis.SmartEnum" Version="8.2.0" />
+    <PackageVersion Include="Ardalis.SmartEnum.EFCore" Version="8.2.0" />
+    <PackageVersion Include="Ardalis.SmartEnum.SystemTextJson" Version="8.1.0" />
+    <PackageVersion Include="EntityFramework" Version="6.5.2" />
+    <PackageVersion Include="FluentValidation" Version="12.1.1" />
+    <PackageVersion Include="Flurl" Version="4.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="11.0.0" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.0.0" />
+    <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageVersion Include="MailKit" Version="4.17.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="11.0.0" />
+    <PackageVersion Include="PreMailer.Net" Version="2.7.3" />
+    <PackageVersion Include="Profanity.Detector" Version="0.1.8" />
+    <PackageVersion Include="MediatR" Version="14.2.0" />
+    <PackageVersion Include="Rebus" Version="8.9.2" />
+    <PackageVersion Include="Blazilla" Version="2.4.0" />
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.14.4" />
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" Version="4.14.4" />
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.14.4" />
+    <PackageVersion Include="Rebus.PostgreSql" Version="9.1.1" />
+    <PackageVersion Include="Rebus.ServiceProvider" Version="10.7.2" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Expressions" Version="5.0.0" />
+    <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.1" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageVersion Include="Serilog.Formatting.Compact" Version="3.0.0" />
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="11.0.0" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
+    <PackageVersion Include="TUnit" Version="1.87.12" />
+    <PackageVersion Include="Rocks" Version="10.3.0" />
+  </ItemGroup>
+</Project>
