@@ -15,7 +15,7 @@ workflow:
 # Run unit tests first
 test:
   stage: test
-  image: mcr.microsoft.com/dotnet/sdk:10.0
+  image: mcr.microsoft.com/dotnet/sdk:11.0
   before_script:
     - dotnet restore Atoms.sln
   script:
