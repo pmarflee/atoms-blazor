@@ -13,6 +13,7 @@ using Atoms.UseCases.PlayerMove.Rebus;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -197,6 +198,19 @@ try
     });
 
     var app = builder.Build();
+
+    if (!app.Environment.IsDevelopment())
+    {
+        var forwardedHeaders = new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedProto,
+            ForwardLimit = 1
+        };
+        forwardedHeaders.KnownProxies.Clear();
+        forwardedHeaders.KnownIPNetworks.Clear();
+
+        app.UseForwardedHeaders(forwardedHeaders);
+    }
 
     app.UseSerilogRequestLogging();
 
